@@ -1,5 +1,6 @@
 import { registry, getComponentDefinition, type PropDefinition } from '@studio/component-registry';
 import type { AppDefinition, ValidationIssue } from './types.ts';
+import { validateDataSemantics } from './semantic-data.ts';
 import {
   LIMITS,
   PATTERNS,
@@ -57,6 +58,14 @@ export function validatePropValue(def: PropDefinition, value: unknown): string |
       }
       return null;
     }
+    case 'model':
+    case 'field':
+      // Referential checks live in validateDataSemantics.
+      return typeof value === 'string' && (value === '' || /^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(value)) ? null : 'must be an id';
+    case 'fieldList':
+      if (!Array.isArray(value) || value.some((v) => typeof v !== 'string' || !/^[A-Za-z][A-Za-z0-9_-]{0,63}$/.test(v))) return 'must be a list of ids';
+      if (def.maxItems !== undefined && value.length > def.maxItems) return `must have at most ${def.maxItems} items`;
+      return null;
     case 'stringList': {
       if (!Array.isArray(value)) return 'must be a list';
       if (def.maxItems !== undefined && value.length > def.maxItems) return `must have at most ${def.maxItems} items`;
@@ -224,6 +233,8 @@ export function validateSemantics(doc: AppDefinition): ValidationIssue[] {
   for (const id of componentIds) {
     if (!visited.has(id) && components[id].type !== 'Page') add(`/components/${id}`, 'orphan', 'component is not reachable from any page');
   }
+
+  issues.push(...validateDataSemantics(doc, parentOf));
 
   // Derived asset list must be consistent
   const expectedAssets = collectAssetRefs(doc);

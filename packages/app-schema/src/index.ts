@@ -5,3 +5,5 @@ export * from './semantic.ts';
 export * from './commands.ts';
 export * from './factory.ts';
 export * from './validate.ts';
+export * from './semantic-data.ts';
+export * from './upcast.ts';

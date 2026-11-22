@@ -7,7 +7,9 @@ use App\Domain\Schema\CommandApplier;
 use App\Domain\Schema\CommandException;
 use App\Domain\Schema\DefinitionValidator;
 use App\Domain\Schema\DocumentCodec;
+use App\Domain\Data\FieldValue;
 use App\Domain\Schema\Rules;
+use App\Domain\Schema\Upcaster;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -94,7 +96,7 @@ class SchemaParityTest extends TestCase
     public function test_structural_validation_rejects_reserved_sections_and_unknown_keys(): void
     {
         $doc = self::fixture('initial.json');
-        $doc['dataModels'] = [['name' => 'x']];
+        $doc['actions'] = [['name' => 'x']];
         $doc['evil'] = true;
         $codes = array_column(DefinitionValidator::validate($doc), 'code');
         $this->assertContains('schema.maxItems', $codes);
@@ -111,6 +113,21 @@ class SchemaParityTest extends TestCase
         $shuffled['components'] = array_reverse($shuffled['components'], true);
         $this->assertSame(DocumentCodec::hash($json), DocumentCodec::hash(DocumentCodec::encode($shuffled)));
         $this->assertIsArray(Canonical::sort(['b' => 1, 'a' => 2]));
+    }
+
+    public function test_field_values_match_typescript_table(): void
+    {
+        foreach (self::fixture('field-values.json') as $c) {
+            $this->assertSame($c['ok'], FieldValue::validate($c['field'], $c['value']) === null, json_encode($c, JSON_UNESCAPED_UNICODE));
+        }
+    }
+
+    public function test_v1_documents_are_upcast(): void
+    {
+        $doc = self::fixture('initial.json');
+        $doc['schemaVersion'] = 1;
+        $this->assertNotSame([], DefinitionValidator::validate($doc));
+        $this->assertSame([], DefinitionValidator::validate(Upcaster::upcast($doc)));
     }
 
     public function test_href_safety_matches_typescript_table(): void

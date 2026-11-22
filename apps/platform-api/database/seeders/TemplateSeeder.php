@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Domain\Schema\DefinitionValidator;
 use App\Domain\Schema\DocumentCodec;
 use App\Domain\Schema\SchemaException;
+use App\Domain\Schema\Upcaster;
 use App\Models\Template;
 use App\Models\TemplateVersion;
 use Illuminate\Database\Seeder;
@@ -26,7 +27,7 @@ class TemplateSeeder extends Seeder
         }
         foreach ($files as $file) {
             $data = json_decode((string) file_get_contents($file), true, 128, JSON_THROW_ON_ERROR);
-            $doc = $data['document'];
+            $doc = Upcaster::upcast($data['document']);
             $issues = DefinitionValidator::validate($doc);
             if ($issues !== []) {
                 throw new SchemaException($issues, "Template {$data['slug']} is invalid");

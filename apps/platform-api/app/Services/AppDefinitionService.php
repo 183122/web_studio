@@ -8,6 +8,7 @@ use App\Domain\Schema\DefinitionValidator;
 use App\Domain\Schema\DocumentCodec;
 use App\Domain\Schema\SchemaException;
 use App\Domain\Schema\StructuralValidator;
+use App\Domain\Schema\Upcaster;
 use App\Models\AppChangeEvent;
 use App\Models\AppDefinition;
 use App\Models\AppRevision;
@@ -30,6 +31,7 @@ class AppDefinitionService
     /** Create the first revision of a brand-new project. Caller wraps in a transaction. */
     public function initialize(Project $project, array $doc, string $source, ?User $user, ?string $message = null): AppDefinition
     {
+        $doc = Upcaster::upcast($doc);
         $doc['projectId'] = $project->id;
         $this->assertDocument($project, $doc);
         $json = DocumentCodec::encode($doc);
@@ -62,7 +64,7 @@ class AppDefinitionService
 
         return [
             'revision' => $def->current_revision,
-            'document' => DocumentCodec::decodeForResponse($def->document),
+            'document' => DocumentCodec::restoreObjects(Upcaster::upcast(DocumentCodec::decode($def->document))),
             'contentHash' => $def->content_hash,
             'updatedAt' => $def->updated_at?->toIso8601String(),
         ];
@@ -98,7 +100,7 @@ class AppDefinitionService
         return DB::transaction(function () use ($project, $baseRevision, $commands, $events, $user, $message) {
             $def = $this->lockHead($project, $baseRevision);
             try {
-                $doc = CommandApplier::applyAll(DocumentCodec::decode($def->document), $commands);
+                $doc = CommandApplier::applyAll(Upcaster::upcast(DocumentCodec::decode($def->document)), $commands);
             } catch (CommandException $e) {
                 throw ApiException::unprocessable('command_rejected', $e->getMessage(), [
                     'commandIndex' => $e->commandIndex,
@@ -173,6 +175,7 @@ class AppDefinitionService
      */
     private function persist(Project $project, AppDefinition $def, array $doc, string $source, User $user, ?string $message, array $events, bool $forceCheckpoint, ?int $restoredFrom): array
     {
+        $doc = Upcaster::upcast($doc);
         $doc['projectId'] = $project->id;
         $this->assertDocument($project, $doc);
 

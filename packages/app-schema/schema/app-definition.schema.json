@@ -1,87 +1,210 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.ai-studio.local/app-definition/v1.json",
-  "title": "AppDefinition v1",
+  "$id": "https://schemas.ai-studio.local/app-definition/v2.json",
+  "title": "AppDefinition v2",
   "description": "Canonical, versioned definition of a generated application. Structural rules only; semantic rules (component registry, referential integrity, URL safety) are enforced by the semantic validator in both TypeScript and PHP.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schemaVersion", "projectId", "name", "pages", "routes", "components", "designTokens",
-    "dataModels", "permissions", "actions", "workflows", "integrations", "assets", "seo", "settings"
+    "schemaVersion",
+    "projectId",
+    "name",
+    "pages",
+    "routes",
+    "components",
+    "designTokens",
+    "dataModels",
+    "permissions",
+    "actions",
+    "workflows",
+    "integrations",
+    "assets",
+    "seo",
+    "settings"
   ],
   "properties": {
-    "schemaVersion": { "const": 1 },
-    "projectId": { "type": "string", "minLength": 1, "maxLength": 64 },
-    "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "schemaVersion": {
+      "const": 2
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
     "pages": {
       "type": "array",
       "minItems": 1,
       "maxItems": 100,
-      "items": { "$ref": "#/$defs/page" }
+      "items": {
+        "$ref": "#/$defs/page"
+      }
     },
     "routes": {
       "type": "array",
       "maxItems": 200,
-      "items": { "$ref": "#/$defs/redirect" }
+      "items": {
+        "$ref": "#/$defs/redirect"
+      }
     },
     "components": {
       "type": "object",
       "maxProperties": 5000,
-      "propertyNames": { "$ref": "#/$defs/id" },
-      "additionalProperties": { "$ref": "#/$defs/component" }
+      "propertyNames": {
+        "$ref": "#/$defs/id"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/component"
+      }
     },
-    "designTokens": { "$ref": "#/$defs/designTokens" },
-    "dataModels": { "type": "array", "maxItems": 0, "description": "Reserved for Phase 2 (data model designer)." },
-    "permissions": { "type": "array", "maxItems": 0, "description": "Reserved for Phase 2 (generated app RBAC)." },
-    "actions": { "type": "array", "maxItems": 0, "description": "Reserved for Phase 2 (allowlisted actions)." },
-    "workflows": { "type": "array", "maxItems": 0, "description": "Reserved for Phase 2 (workflow builder)." },
-    "integrations": { "type": "array", "maxItems": 0, "description": "Reserved for Phase 5 (Google, connectors)." },
+    "designTokens": {
+      "$ref": "#/$defs/designTokens"
+    },
+    "dataModels": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/dataModel"
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/permission"
+      }
+    },
+    "actions": {
+      "type": "array",
+      "maxItems": 0,
+      "description": "Reserved: UI-bound server actions beyond form submission (Phase 3+)."
+    },
+    "workflows": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/workflow"
+      }
+    },
+    "integrations": {
+      "type": "array",
+      "maxItems": 0,
+      "description": "Reserved for Phase 5 (Google, connectors)."
+    },
     "assets": {
       "type": "array",
       "maxItems": 2000,
       "uniqueItems": true,
-      "items": { "type": "string", "pattern": "^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$" },
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$"
+      },
       "description": "Derived: sorted unique platform asset IDs referenced as asset:<id>."
     },
     "seo": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["siteName", "description", "lang"],
+      "required": [
+        "siteName",
+        "description",
+        "lang"
+      ],
       "properties": {
-        "siteName": { "type": "string", "maxLength": 120 },
-        "description": { "type": "string", "maxLength": 320 },
-        "lang": { "enum": ["th", "en"] }
+        "siteName": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 320
+        },
+        "lang": {
+          "enum": [
+            "th",
+            "en"
+          ]
+        }
       }
     },
     "settings": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["homePageId"],
+      "required": [
+        "homePageId"
+      ],
       "properties": {
-        "homePageId": { "$ref": "#/$defs/id" },
-        "notFoundPageId": { "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] }
+        "homePageId": {
+          "$ref": "#/$defs/id"
+        },
+        "notFoundPageId": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       }
     }
   },
   "$defs": {
-    "id": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$" },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$"
+    },
     "page": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "path", "rootId", "seo"],
+      "required": [
+        "id",
+        "name",
+        "path",
+        "rootId",
+        "seo"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/id" },
-        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
-        "path": { "type": "string", "pattern": "^/([a-z0-9]+(-[a-z0-9]+)*(/[a-z0-9]+(-[a-z0-9]+)*)*)?$", "maxLength": 200 },
-        "rootId": { "$ref": "#/$defs/id" },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/([a-z0-9]+(-[a-z0-9]+)*(/[a-z0-9]+(-[a-z0-9]+)*)*)?$",
+          "maxLength": 200
+        },
+        "rootId": {
+          "$ref": "#/$defs/id"
+        },
         "seo": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["title", "description", "noindex"],
+          "required": [
+            "title",
+            "description",
+            "noindex"
+          ],
           "properties": {
-            "title": { "type": "string", "maxLength": 120 },
-            "description": { "type": "string", "maxLength": 320 },
-            "noindex": { "type": "boolean" }
+            "title": {
+              "type": "string",
+              "maxLength": 120
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 320
+            },
+            "noindex": {
+              "type": "boolean"
+            }
           }
         }
       }
@@ -89,77 +212,492 @@
     "redirect": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "from", "to", "status"],
+      "required": [
+        "id",
+        "from",
+        "to",
+        "status"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/id" },
-        "from": { "type": "string", "pattern": "^/[A-Za-z0-9/_-]*$", "maxLength": 200 },
-        "to": { "type": "string", "pattern": "^/[A-Za-z0-9/_#-]*$", "maxLength": 200 },
-        "status": { "enum": [301, 302] }
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "from": {
+          "type": "string",
+          "pattern": "^/[A-Za-z0-9/_-]*$",
+          "maxLength": 200
+        },
+        "to": {
+          "type": "string",
+          "pattern": "^/[A-Za-z0-9/_#-]*$",
+          "maxLength": 200
+        },
+        "status": {
+          "enum": [
+            301,
+            302
+          ]
+        }
       }
     },
     "styleMap": {
       "type": "object",
       "maxProperties": 40,
-      "propertyNames": { "pattern": "^[a-zA-Z]{1,32}$" },
-      "additionalProperties": { "type": ["string", "number"] }
+      "propertyNames": {
+        "pattern": "^[a-zA-Z]{1,32}$"
+      },
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number"
+        ]
+      }
     },
     "component": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "type", "props", "styles", "children"],
+      "required": [
+        "id",
+        "type",
+        "props",
+        "styles",
+        "children"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/id" },
-        "type": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]{0,40}$" },
-        "name": { "type": "string", "maxLength": 80 },
-        "props": { "type": "object", "maxProperties": 30 },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]{0,40}$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "props": {
+          "type": "object",
+          "maxProperties": 30
+        },
         "styles": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "base": { "$ref": "#/$defs/styleMap" },
-            "tablet": { "$ref": "#/$defs/styleMap" },
-            "mobile": { "$ref": "#/$defs/styleMap" }
+            "base": {
+              "$ref": "#/$defs/styleMap"
+            },
+            "tablet": {
+              "$ref": "#/$defs/styleMap"
+            },
+            "mobile": {
+              "$ref": "#/$defs/styleMap"
+            }
           }
         },
         "children": {
           "type": "array",
           "maxItems": 500,
-          "items": { "$ref": "#/$defs/id" }
+          "items": {
+            "$ref": "#/$defs/id"
+          }
         }
       }
     },
     "designTokens": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["colors", "fonts", "radius"],
+      "required": [
+        "colors",
+        "fonts",
+        "radius"
+      ],
       "properties": {
         "colors": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["primary", "secondary", "accent", "background", "surface", "text", "muted"],
+          "required": [
+            "primary",
+            "secondary",
+            "accent",
+            "background",
+            "surface",
+            "text",
+            "muted"
+          ],
           "properties": {
-            "primary": { "$ref": "#/$defs/hexColor" },
-            "secondary": { "$ref": "#/$defs/hexColor" },
-            "accent": { "$ref": "#/$defs/hexColor" },
-            "background": { "$ref": "#/$defs/hexColor" },
-            "surface": { "$ref": "#/$defs/hexColor" },
-            "text": { "$ref": "#/$defs/hexColor" },
-            "muted": { "$ref": "#/$defs/hexColor" }
+            "primary": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "secondary": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "accent": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "background": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "surface": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "text": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "muted": {
+              "$ref": "#/$defs/hexColor"
+            }
           }
         },
         "fonts": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["heading", "body"],
+          "required": [
+            "heading",
+            "body"
+          ],
           "properties": {
-            "heading": { "$ref": "#/$defs/fontFamily" },
-            "body": { "$ref": "#/$defs/fontFamily" }
+            "heading": {
+              "$ref": "#/$defs/fontFamily"
+            },
+            "body": {
+              "$ref": "#/$defs/fontFamily"
+            }
           }
         },
-        "radius": { "type": "string", "pattern": "^(0|[0-9]{1,2}px)$" }
+        "radius": {
+          "type": "string",
+          "pattern": "^(0|[0-9]{1,2}px)$"
+        }
       }
     },
-    "hexColor": { "type": "string", "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$" },
-    "fontFamily": { "enum": ["Kanit", "Sarabun", "Prompt", "Noto Sans Thai", "system"] }
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"
+    },
+    "fontFamily": {
+      "enum": [
+        "Kanit",
+        "Sarabun",
+        "Prompt",
+        "Noto Sans Thai",
+        "system"
+      ]
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "label",
+        "type",
+        "required",
+        "unique"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,39}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "type": {
+          "enum": [
+            "text",
+            "longtext",
+            "number",
+            "integer",
+            "boolean",
+            "date",
+            "datetime",
+            "email",
+            "phone",
+            "url",
+            "select"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "unique": {
+          "type": "boolean"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "helpText": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    },
+    "dataModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "label",
+        "fields",
+        "displayFieldId"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,39}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "displayFieldId": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelId",
+        "rules"
+      ],
+      "properties": {
+        "modelId": {
+          "$ref": "#/$defs/id"
+        },
+        "rules": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "public",
+            "member",
+            "admin"
+          ],
+          "properties": {
+            "public": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "create",
+                  "read",
+                  "update",
+                  "delete"
+                ]
+              }
+            },
+            "member": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "create",
+                  "read",
+                  "update",
+                  "delete"
+                ]
+              }
+            },
+            "admin": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 4,
+              "items": {
+                "enum": [
+                  "create",
+                  "read",
+                  "update",
+                  "delete"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "enabled",
+        "trigger",
+        "conditions",
+        "actions"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "trigger": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "event",
+            "modelId"
+          ],
+          "properties": {
+            "event": {
+              "enum": [
+                "record.created",
+                "record.updated"
+              ]
+            },
+            "modelId": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "fieldId",
+              "op"
+            ],
+            "properties": {
+              "fieldId": {
+                "$ref": "#/$defs/id"
+              },
+              "op": {
+                "enum": [
+                  "eq",
+                  "neq",
+                  "contains",
+                  "empty",
+                  "not_empty",
+                  "gt",
+                  "lt"
+                ]
+              },
+              "value": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "type",
+                  "fieldId",
+                  "value"
+                ],
+                "properties": {
+                  "type": {
+                    "const": "record.setField"
+                  },
+                  "fieldId": {
+                    "$ref": "#/$defs/id"
+                  },
+                  "value": {
+                    "type": [
+                      "string",
+                      "number",
+                      "boolean",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "type",
+                  "to",
+                  "subject",
+                  "body"
+                ],
+                "properties": {
+                  "type": {
+                    "const": "email.send"
+                  },
+                  "to": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 254
+                  },
+                  "subject": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 5000
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
   }
 }

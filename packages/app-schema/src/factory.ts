@@ -87,3 +87,25 @@ export function cloneWithNewIds(nodes: ComponentNode[]): ComponentNode[] {
     children: n.children.map((c) => map.get(c) ?? c),
   }));
 }
+
+// ---------------- Phase 2 factories ----------------
+import type { DataModel, FieldDefinition, FieldType, Permission } from './types.ts';
+
+export function createField(label: string, type: FieldType, name: string): FieldDefinition {
+  return {
+    id: generateId('f'),
+    name,
+    label,
+    type,
+    required: false,
+    unique: false,
+    ...(type === 'select' ? { options: ['ตัวเลือก 1', 'ตัวเลือก 2'] } : {}),
+  };
+}
+
+/** New model with a required title field and an explicit default-deny permission. */
+export function createModel(label: string, name: string): { model: DataModel; permission: Permission } {
+  const title = { ...createField('ชื่อ', 'text', 'title'), required: true };
+  const model: DataModel = { id: generateId('m'), name, label, fields: [title], displayFieldId: title.id };
+  return { model, permission: { modelId: model.id, rules: { public: [], member: ['read'], admin: ['create', 'read', 'update', 'delete'] } } };
+}

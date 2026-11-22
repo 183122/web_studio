@@ -59,7 +59,7 @@ class Builder {
 
   build(name: string, description: string, tokens: DesignTokens): AppDefinition {
     const doc: AppDefinition = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       projectId: 'template',
       name,
       pages: this.pages,

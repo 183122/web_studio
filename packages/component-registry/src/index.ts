@@ -10,7 +10,10 @@ export type PropKind =
   | 'slug'
   | 'videoId'
   | 'links'
-  | 'stringList';
+  | 'stringList'
+  | 'model'
+  | 'field'
+  | 'fieldList';
 
 export interface PropDefinition {
   kind: PropKind;
@@ -37,7 +40,7 @@ export type ResponsiveStyles = Partial<Record<Breakpoint, StyleMap>>;
 export interface ComponentDefinition {
   label: string;
   labelTh: string;
-  category: 'system' | 'layout' | 'basic' | 'media' | 'navigation';
+  category: 'system' | 'layout' | 'basic' | 'media' | 'navigation' | 'data';
   icon: string;
   acceptsChildren: boolean;
   insertable: boolean;

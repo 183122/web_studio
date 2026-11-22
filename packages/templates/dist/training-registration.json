@@ -1456,7 +1456,7 @@
     "permissions": [],
     "projectId": "template",
     "routes": [],
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "seo": {
       "description": "ลงทะเบียนเข้าร่วมอบรมออนไลน์",
       "lang": "th",

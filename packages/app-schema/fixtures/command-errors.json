@@ -89,6 +89,26 @@
     "errorCode": "not_found"
   },
   {
+    "name": "remove model in use",
+    "commands": [
+      {
+        "type": "model.remove",
+        "id": "m_reg"
+      }
+    ],
+    "errorCode": "model_in_use"
+  },
+  {
+    "name": "remove missing permission",
+    "commands": [
+      {
+        "type": "permission.remove",
+        "modelId": "m_none"
+      }
+    ],
+    "errorCode": "not_found"
+  },
+  {
     "name": "unknown token",
     "commands": [
       {

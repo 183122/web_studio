@@ -58,3 +58,67 @@ export function codePointLength(value: string): number {
   for (const _ of value) n++;
   return n;
 }
+
+// ---------------- Phase 2: record values ----------------
+
+export const RESERVED_FIELD_NAMES = ['id', 'created_at', 'updated_at', 'version'] as const;
+
+export const DATA_PATTERNS = {
+  date: /^\d{4}-\d{2}-\d{2}$/,
+  datetime: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})?$/,
+  email: /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,253}\.[A-Za-z]{2,63}$/,
+  phone: /^[0-9+\-() ]{3,32}$/,
+  emailTarget: /^field:[A-Za-z][A-Za-z0-9_-]{0,63}$/,
+  placeholder: /\{\{\s*([a-z][a-z0-9_]{0,39})\s*\}\}/g,
+} as const;
+
+function isRealDate(value: string): boolean {
+  const [y, m, d] = value.slice(0, 10).split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d && y >= 1900 && y <= 2200;
+}
+
+/**
+ * Validates one (already normalised) record value against its field. Mirror:
+ * apps/platform-api/app/Domain/Data/FieldValue.php. Empty values: null.
+ */
+export function validateFieldValue(
+  field: { type: string; required: boolean; options?: string[]; maxLength?: number; min?: number; max?: number },
+  value: unknown,
+): string | null {
+  if (value === null || value === undefined) return field.required ? 'required' : null;
+  switch (field.type) {
+    case 'text':
+    case 'longtext': {
+      if (typeof value !== 'string') return 'must be text';
+      const max = field.maxLength ?? (field.type === 'text' ? 255 : 10000);
+      if (codePointLength(value) > max) return `must be at most ${max} characters`;
+      if (PATTERNS.forbiddenControl.test(value)) return 'contains control characters';
+      if (field.type === 'text' && PATTERNS.newline.test(value)) return 'must be a single line';
+      return null;
+    }
+    case 'number':
+    case 'integer':
+      if (typeof value !== 'number' || !Number.isFinite(value)) return 'must be a number';
+      if (field.type === 'integer' && !Number.isInteger(value)) return 'must be a whole number';
+      if (field.min !== undefined && value < field.min) return `must be at least ${field.min}`;
+      if (field.max !== undefined && value > field.max) return `must be at most ${field.max}`;
+      return null;
+    case 'boolean':
+      return typeof value === 'boolean' ? null : 'must be true or false';
+    case 'date':
+      return typeof value === 'string' && DATA_PATTERNS.date.test(value) && isRealDate(value) ? null : 'must be a date (YYYY-MM-DD)';
+    case 'datetime':
+      return typeof value === 'string' && DATA_PATTERNS.datetime.test(value) && isRealDate(value) ? null : 'must be a date and time';
+    case 'email':
+      return typeof value === 'string' && value.length <= 254 && DATA_PATTERNS.email.test(value) ? null : 'must be an e-mail address';
+    case 'phone':
+      return typeof value === 'string' && DATA_PATTERNS.phone.test(value) ? null : 'must be a phone number';
+    case 'url':
+      return typeof value === 'string' && /^https?:\/\//.test(value) && isSafeHref(value) ? null : 'must be an http(s) URL';
+    case 'select':
+      return typeof value === 'string' && (field.options ?? []).includes(value) ? null : 'is not one of the options';
+    default:
+      return 'has an unsupported type';
+  }
+}

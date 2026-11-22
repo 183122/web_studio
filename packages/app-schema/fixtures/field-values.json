@@ -1,0 +1,162 @@
+[
+  {
+    "field": {
+      "type": "text",
+      "required": true
+    },
+    "value": null,
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "text",
+      "required": false
+    },
+    "value": null,
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "text",
+      "required": false
+    },
+    "value": "บรรทัด\nสอง",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "longtext",
+      "required": false
+    },
+    "value": "บรรทัด\nสอง",
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "text",
+      "required": false,
+      "maxLength": 3
+    },
+    "value": "สวัสดี",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "integer",
+      "required": false,
+      "min": 1,
+      "max": 10
+    },
+    "value": 5,
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "integer",
+      "required": false
+    },
+    "value": 2.5,
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "number",
+      "required": false
+    },
+    "value": "5",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "number",
+      "required": false,
+      "max": 1
+    },
+    "value": 1.5,
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "boolean",
+      "required": false
+    },
+    "value": "true",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "date",
+      "required": false
+    },
+    "value": "2026-02-29",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "date",
+      "required": false
+    },
+    "value": "2028-02-29",
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "datetime",
+      "required": false
+    },
+    "value": "2026-11-22T10:30:00+07:00",
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "email",
+      "required": false
+    },
+    "value": "a@b.co",
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "email",
+      "required": false
+    },
+    "value": "not-an-email",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "phone",
+      "required": false
+    },
+    "value": "+66 81-234-5678",
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "url",
+      "required": false
+    },
+    "value": "javascript:alert(1)",
+    "ok": false
+  },
+  {
+    "field": {
+      "type": "url",
+      "required": false
+    },
+    "value": "https://example.com/x",
+    "ok": true
+  },
+  {
+    "field": {
+      "type": "select",
+      "required": false,
+      "options": [
+        "a",
+        "b"
+      ]
+    },
+    "value": "c",
+    "ok": false
+  }
+]

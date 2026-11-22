@@ -52,6 +52,44 @@
           "styles": {},
           "type": "Button"
         },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -113,6 +151,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -124,7 +178,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -141,7 +197,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -184,10 +289,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -197,7 +320,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -279,6 +431,44 @@
           "styles": {},
           "type": "Text"
         },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -329,6 +519,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -340,7 +546,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -358,7 +566,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -401,10 +658,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -414,7 +689,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -431,6 +735,44 @@
         "01HZZZZZZZZZZZZZZZZZZZZZZZ"
       ],
       "components": {
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -480,6 +822,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -491,7 +849,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -508,7 +868,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -551,10 +960,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -564,7 +991,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -606,6 +1062,44 @@
           },
           "styles": {},
           "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
         },
         "c_heading": {
           "children": [],
@@ -658,6 +1152,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -669,7 +1179,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -686,7 +1198,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -729,10 +1290,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -742,7 +1321,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -786,6 +1394,44 @@
           },
           "styles": {},
           "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
         },
         "c_heading": {
           "children": [],
@@ -837,6 +1483,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -848,7 +1510,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -865,7 +1529,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -908,10 +1621,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -921,7 +1652,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -980,6 +1740,44 @@
           "styles": {},
           "type": "Button"
         },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -1031,6 +1829,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -1042,7 +1856,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -1059,7 +1875,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -1102,10 +1967,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -1115,7 +1998,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -1158,6 +2070,44 @@
           },
           "styles": {},
           "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
         },
         "c_heading": {
           "children": [],
@@ -1209,6 +2159,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -1220,7 +2186,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -1237,7 +2205,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -1280,10 +2297,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -1293,7 +2328,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -1378,6 +2442,44 @@
           "styles": {},
           "type": "Heading"
         },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -1428,6 +2530,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -1439,7 +2557,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -1465,7 +2585,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -1519,10 +2688,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -1532,7 +2719,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -1628,7 +2844,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -1660,10 +2925,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -1673,7 +2956,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -1721,6 +3033,44 @@
           },
           "styles": {},
           "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
         },
         "c_heading": {
           "children": [],
@@ -1772,6 +3122,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -1783,7 +3149,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -1800,7 +3168,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -1843,10 +3260,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -1856,7 +3291,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -1907,6 +3371,44 @@
           "styles": {},
           "type": "Button"
         },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -1957,6 +3459,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -1968,7 +3486,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -1985,7 +3505,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -2028,10 +3597,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -2041,7 +3628,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -2058,6 +3674,1834 @@
             "notFoundPageId": "pg_about"
           }
         }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img",
+            "c_form",
+            "c_table"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ใหม่",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 2,
+      "seo": {
+        "description": "คำอธิบาย",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": "pg_about"
+      },
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "add model with permission",
+    "commands": [
+      {
+        "type": "model.upsert",
+        "index": 1,
+        "model": {
+          "id": "m_course",
+          "name": "courses",
+          "label": "หลักสูตร",
+          "displayFieldId": "f_ctitle",
+          "fields": [
+            {
+              "id": "f_ctitle",
+              "name": "title",
+              "label": "ชื่อหลักสูตร",
+              "type": "text",
+              "required": true,
+              "unique": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "permission.set",
+        "permission": {
+          "modelId": "m_course",
+          "rules": {
+            "public": [
+              "read"
+            ],
+            "member": [
+              "read"
+            ],
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ]
+          }
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img",
+            "c_form",
+            "c_table"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        },
+        {
+          "displayFieldId": "f_ctitle",
+          "fields": [
+            {
+              "id": "f_ctitle",
+              "label": "ชื่อหลักสูตร",
+              "name": "title",
+              "required": true,
+              "type": "text",
+              "unique": true
+            }
+          ],
+          "id": "m_course",
+          "label": "หลักสูตร",
+          "name": "courses"
+        }
+      ],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        },
+        {
+          "modelId": "m_course",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "read"
+            ]
+          }
+        }
+      ],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 2,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "update model fields",
+    "commands": [
+      {
+        "type": "model.upsert",
+        "index": 0,
+        "model": {
+          "id": "m_reg",
+          "name": "registrations",
+          "label": "ผู้สมัครอบรม",
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "name": "full_name",
+              "label": "ชื่อ",
+              "type": "text",
+              "required": true,
+              "unique": false,
+              "maxLength": 120
+            },
+            {
+              "id": "f_email",
+              "name": "email",
+              "label": "อีเมล",
+              "type": "email",
+              "required": true,
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "name": "seats",
+              "label": "จำนวนที่นั่ง",
+              "type": "integer",
+              "required": false,
+              "unique": false,
+              "min": 1,
+              "max": 10
+            },
+            {
+              "id": "f_status",
+              "name": "status",
+              "label": "สถานะ",
+              "type": "select",
+              "required": false,
+              "unique": false,
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled",
+                "waitlist"
+              ]
+            },
+            {
+              "id": "f_org",
+              "name": "organization",
+              "label": "หน่วยงาน",
+              "type": "text",
+              "required": false,
+              "unique": false
+            }
+          ]
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img",
+            "c_form",
+            "c_table"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled",
+                "waitlist"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            },
+            {
+              "id": "f_org",
+              "label": "หน่วยงาน",
+              "name": "organization",
+              "required": false,
+              "type": "text",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัครอบรม",
+          "name": "registrations"
+        }
+      ],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 2,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "change permissions",
+    "commands": [
+      {
+        "type": "permission.set",
+        "permission": {
+          "modelId": "m_reg",
+          "rules": {
+            "public": [
+              "create",
+              "read"
+            ],
+            "member": [],
+            "admin": [
+              "read"
+            ]
+          }
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img",
+            "c_form",
+            "c_table"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "read"
+            ],
+            "member": [],
+            "public": [
+              "create",
+              "read"
+            ]
+          }
+        }
+      ],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 2,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "upsert and remove workflow",
+    "commands": [
+      {
+        "type": "workflow.upsert",
+        "index": 0,
+        "workflow": {
+          "id": "w_notify",
+          "name": "แจ้งผู้ดูแล",
+          "enabled": false,
+          "trigger": {
+            "event": "record.updated",
+            "modelId": "m_reg"
+          },
+          "conditions": [
+            {
+              "fieldId": "f_seats",
+              "op": "gt",
+              "value": 3
+            }
+          ],
+          "actions": [
+            {
+              "type": "email.send",
+              "to": "admin@example.com",
+              "subject": "จองเกิน",
+              "body": "{{full_name}} จอง {{seats}} ที่"
+            }
+          ]
+        }
+      },
+      {
+        "type": "workflow.remove",
+        "id": "w_welcome"
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img",
+            "c_form",
+            "c_table"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 2,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": [
+        {
+          "actions": [
+            {
+              "body": "{{full_name}} จอง {{seats}} ที่",
+              "subject": "จองเกิน",
+              "to": "admin@example.com",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_seats",
+              "op": "gt",
+              "value": 3
+            }
+          ],
+          "enabled": false,
+          "id": "w_notify",
+          "name": "แจ้งผู้ดูแล",
+          "trigger": {
+            "event": "record.updated",
+            "modelId": "m_reg"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "remove data bindings then model",
+    "commands": [
+      {
+        "type": "component.remove",
+        "id": "c_form"
+      },
+      {
+        "type": "component.remove",
+        "id": "c_table"
+      },
+      {
+        "type": "workflow.remove",
+        "id": "w_welcome"
+      },
+      {
+        "type": "permission.remove",
+        "modelId": "m_reg"
+      },
+      {
+        "type": "model.remove",
+        "id": "m_reg"
       }
     ],
     "expected": {
@@ -2188,7 +5632,7 @@
         "radius": "12px"
       },
       "integrations": [],
-      "name": "ใหม่",
+      "name": "ทดสอบ",
       "pages": [
         {
           "id": "pg_home",
@@ -2216,17 +5660,374 @@
       "permissions": [],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
-        "description": "คำอธิบาย",
+        "description": "",
         "lang": "th",
         "siteName": "ทดสอบ"
       },
       "settings": {
         "homePageId": "pg_home",
-        "notFoundPageId": "pg_about"
+        "notFoundPageId": null
       },
       "workflows": []
+    }
+  },
+  {
+    "name": "insert form field into form",
+    "commands": [
+      {
+        "type": "component.insert",
+        "parentId": "c_form",
+        "index": 2,
+        "nodes": [
+          {
+            "id": "c_ff_seats",
+            "type": "FormField",
+            "props": {
+              "fieldId": "f_seats",
+              "label": "",
+              "placeholder": "",
+              "helpText": ""
+            },
+            "styles": {},
+            "children": []
+          }
+        ]
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_seats": {
+          "children": [],
+          "id": "c_ff_seats",
+          "props": {
+            "fieldId": "f_seats",
+            "helpText": "",
+            "label": "",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email",
+            "c_ff_seats"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img",
+            "c_form",
+            "c_table"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 2,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   },
   {
@@ -2302,6 +6103,44 @@
           "styles": {},
           "type": "Divider"
         },
+        "c_ff_email": {
+          "children": [],
+          "id": "c_ff_email",
+          "props": {
+            "fieldId": "f_email",
+            "helpText": "",
+            "label": "อีเมล",
+            "placeholder": ""
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_ff_name": {
+          "children": [],
+          "id": "c_ff_name",
+          "props": {
+            "fieldId": "f_name",
+            "helpText": "",
+            "label": "",
+            "placeholder": "ชื่อ"
+          },
+          "styles": {},
+          "type": "FormField"
+        },
+        "c_form": {
+          "children": [
+            "c_ff_name",
+            "c_ff_email"
+          ],
+          "id": "c_form",
+          "props": {
+            "modelId": "m_reg",
+            "submitLabel": "สมัคร",
+            "successMessage": "ขอบคุณ"
+          },
+          "styles": {},
+          "type": "Form"
+        },
         "c_heading": {
           "children": [],
           "id": "c_heading",
@@ -2351,6 +6190,22 @@
           },
           "type": "Section"
         },
+        "c_table": {
+          "children": [],
+          "id": "c_table",
+          "props": {
+            "emptyMessage": "ว่าง",
+            "fieldIds": [
+              "f_name",
+              "f_status"
+            ],
+            "modelId": "m_reg",
+            "pageSize": "10",
+            "searchable": true
+          },
+          "styles": {},
+          "type": "DataTable"
+        },
         "c_text": {
           "children": [],
           "id": "c_text",
@@ -2362,7 +6217,9 @@
         },
         "p_about": {
           "children": [
-            "c_img"
+            "c_img",
+            "c_form",
+            "c_table"
           ],
           "id": "p_about",
           "props": {},
@@ -2379,7 +6236,56 @@
           "type": "Page"
         }
       },
-      "dataModels": [],
+      "dataModels": [
+        {
+          "displayFieldId": "f_name",
+          "fields": [
+            {
+              "id": "f_name",
+              "label": "ชื่อ–นามสกุล",
+              "maxLength": 120,
+              "name": "full_name",
+              "required": true,
+              "type": "text",
+              "unique": false
+            },
+            {
+              "id": "f_email",
+              "label": "อีเมล",
+              "name": "email",
+              "required": true,
+              "type": "email",
+              "unique": true
+            },
+            {
+              "id": "f_seats",
+              "label": "จำนวนที่นั่ง",
+              "max": 10,
+              "min": 1,
+              "name": "seats",
+              "required": false,
+              "type": "integer",
+              "unique": false
+            },
+            {
+              "id": "f_status",
+              "label": "สถานะ",
+              "name": "status",
+              "options": [
+                "pending",
+                "confirmed",
+                "cancelled"
+              ],
+              "required": false,
+              "type": "select",
+              "unique": false
+            }
+          ],
+          "id": "m_reg",
+          "label": "ผู้สมัคร",
+          "name": "registrations"
+        }
+      ],
       "designTokens": {
         "colors": {
           "accent": "#f59e0b",
@@ -2422,10 +6328,28 @@
           }
         }
       ],
-      "permissions": [],
+      "permissions": [
+        {
+          "modelId": "m_reg",
+          "rules": {
+            "admin": [
+              "create",
+              "read",
+              "update",
+              "delete"
+            ],
+            "member": [
+              "read"
+            ],
+            "public": [
+              "create"
+            ]
+          }
+        }
+      ],
       "projectId": "01JTESTPROJECT0000000000000",
       "routes": [],
-      "schemaVersion": 1,
+      "schemaVersion": 2,
       "seo": {
         "description": "",
         "lang": "th",
@@ -2435,7 +6359,36 @@
         "homePageId": "pg_home",
         "notFoundPageId": null
       },
-      "workflows": []
+      "workflows": [
+        {
+          "actions": [
+            {
+              "fieldId": "f_status",
+              "type": "record.setField",
+              "value": "pending"
+            },
+            {
+              "body": "สวัสดี {{ full_name }} เราได้รับข้อมูลแล้ว",
+              "subject": "ได้รับใบสมัครของ {{full_name}}",
+              "to": "field:f_email",
+              "type": "email.send"
+            }
+          ],
+          "conditions": [
+            {
+              "fieldId": "f_email",
+              "op": "not_empty"
+            }
+          ],
+          "enabled": true,
+          "id": "w_welcome",
+          "name": "ยืนยันการสมัคร",
+          "trigger": {
+            "event": "record.created",
+            "modelId": "m_reg"
+          }
+        }
+      ]
     }
   }
 ]

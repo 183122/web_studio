@@ -34,6 +34,12 @@ final class CommandApplier
             'page.update' => self::pageUpdate($doc, $cmd),
             'tokens.update' => self::tokensUpdate($doc, $cmd),
             'site.update' => self::siteUpdate($doc, $cmd),
+            'model.upsert' => self::upsertById($doc, 'dataModels', $cmd['model'], $cmd['index']),
+            'model.remove' => self::modelRemove($doc, $cmd),
+            'permission.set' => self::permissionSet($doc, $cmd),
+            'permission.remove' => self::permissionRemove($doc, $cmd),
+            'workflow.upsert' => self::upsertById($doc, 'workflows', $cmd['workflow'], $cmd['index']),
+            'workflow.remove' => self::removeById($doc, 'workflows', $cmd['id'], 'workflow'),
             default => throw new CommandException('unknown_command', 'unsupported command "'.(is_string($cmd['type'] ?? null) ? $cmd['type'] : '?').'"'),
         };
     }
@@ -323,5 +329,72 @@ final class CommandApplier
         }
 
         return $doc;
+    }
+
+    private static function upsertById(array $doc, string $key, array $item, int|float $index): array
+    {
+        foreach ($doc[$key] as $i => $existing) {
+            if ($existing['id'] === $item['id']) {
+                $doc[$key][$i] = $item;
+
+                return $doc;
+            }
+        }
+        array_splice($doc[$key], self::clampIndex($index, count($doc[$key])), 0, [$item]);
+
+        return $doc;
+    }
+
+    private static function removeById(array $doc, string $key, string $id, string $label): array
+    {
+        foreach ($doc[$key] as $i => $existing) {
+            if ($existing['id'] === $id) {
+                array_splice($doc[$key], $i, 1);
+
+                return $doc;
+            }
+        }
+        throw new CommandException('not_found', "{$label} \"{$id}\" does not exist");
+    }
+
+    private static function modelRemove(array $doc, array $cmd): array
+    {
+        if (! in_array($cmd['id'], array_column($doc['dataModels'], 'id'), true)) {
+            throw new CommandException('not_found', "model \"{$cmd['id']}\" does not exist");
+        }
+        if (DataSemanticValidator::modelReferences($doc, $cmd['id']) !== []) {
+            throw new CommandException('model_in_use', 'remove forms, tables and workflows that use this model first');
+        }
+        if (in_array($cmd['id'], array_column($doc['permissions'], 'modelId'), true)) {
+            throw new CommandException('model_in_use', 'remove the model permission first');
+        }
+
+        return self::removeById($doc, 'dataModels', $cmd['id'], 'model');
+    }
+
+    private static function permissionSet(array $doc, array $cmd): array
+    {
+        foreach ($doc['permissions'] as $i => $p) {
+            if ($p['modelId'] === $cmd['permission']['modelId']) {
+                $doc['permissions'][$i] = $cmd['permission'];
+
+                return $doc;
+            }
+        }
+        $doc['permissions'][] = $cmd['permission'];
+
+        return $doc;
+    }
+
+    private static function permissionRemove(array $doc, array $cmd): array
+    {
+        foreach ($doc['permissions'] as $i => $p) {
+            if ($p['modelId'] === $cmd['modelId']) {
+                array_splice($doc['permissions'], $i, 1);
+
+                return $doc;
+            }
+        }
+        throw new CommandException('not_found', "no permission for model \"{$cmd['modelId']}\"");
     }
 }

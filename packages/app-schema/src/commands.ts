@@ -1,6 +1,7 @@
 import { getComponentDefinition } from '@studio/component-registry';
 import type { AppCommand, AppDefinition, ComponentNode, StylePatch } from './types.ts';
 import { collectAssetRefs } from './semantic.ts';
+import { modelReferences } from './semantic-data.ts';
 
 /**
  * Command reducer. Mirrors apps/platform-api/app/Domain/Schema/CommandApplier.php.
@@ -251,6 +252,68 @@ export function applyCommand(doc: AppDefinition, cmd: AppCommand): ApplyResult {
         next.radius = cmd.changes.radius;
       }
       return { doc: { ...doc, designTokens: next }, inverse: [{ type: 'tokens.update', changes: inverse }] };
+    }
+
+    case 'model.upsert': {
+      const i = doc.dataModels.findIndex((m) => m.id === cmd.model.id);
+      const dataModels = [...doc.dataModels];
+      if (i >= 0) {
+        dataModels[i] = clone(cmd.model);
+        return { doc: { ...doc, dataModels }, inverse: [{ type: 'model.upsert', model: clone(doc.dataModels[i]), index: i }] };
+      }
+      dataModels.splice(clampIndex(cmd.index, dataModels.length), 0, clone(cmd.model));
+      return { doc: { ...doc, dataModels }, inverse: [{ type: 'model.remove', id: cmd.model.id }] };
+    }
+
+    case 'model.remove': {
+      const i = doc.dataModels.findIndex((m) => m.id === cmd.id);
+      if (i < 0) throw new CommandError('not_found', `model "${cmd.id}" does not exist`);
+      if (modelReferences(doc, cmd.id).length > 0) throw new CommandError('model_in_use', 'remove forms, tables and workflows that use this model first');
+      if (doc.permissions.some((p) => p.modelId === cmd.id)) throw new CommandError('model_in_use', 'remove the model permission first');
+      return {
+        doc: { ...doc, dataModels: doc.dataModels.filter((m) => m.id !== cmd.id) },
+        inverse: [{ type: 'model.upsert', model: clone(doc.dataModels[i]), index: i }],
+      };
+    }
+
+    case 'permission.set': {
+      const i = doc.permissions.findIndex((p) => p.modelId === cmd.permission.modelId);
+      const permissions = [...doc.permissions];
+      if (i >= 0) {
+        permissions[i] = clone(cmd.permission);
+        return { doc: { ...doc, permissions }, inverse: [{ type: 'permission.set', permission: clone(doc.permissions[i]) }] };
+      }
+      permissions.push(clone(cmd.permission));
+      return { doc: { ...doc, permissions }, inverse: [{ type: 'permission.remove', modelId: cmd.permission.modelId }] };
+    }
+
+    case 'permission.remove': {
+      const i = doc.permissions.findIndex((p) => p.modelId === cmd.modelId);
+      if (i < 0) throw new CommandError('not_found', `no permission for model "${cmd.modelId}"`);
+      return {
+        doc: { ...doc, permissions: doc.permissions.filter((p) => p.modelId !== cmd.modelId) },
+        inverse: [{ type: 'permission.set', permission: clone(doc.permissions[i]) }],
+      };
+    }
+
+    case 'workflow.upsert': {
+      const i = doc.workflows.findIndex((w) => w.id === cmd.workflow.id);
+      const workflows = [...doc.workflows];
+      if (i >= 0) {
+        workflows[i] = clone(cmd.workflow);
+        return { doc: { ...doc, workflows }, inverse: [{ type: 'workflow.upsert', workflow: clone(doc.workflows[i]), index: i }] };
+      }
+      workflows.splice(clampIndex(cmd.index, workflows.length), 0, clone(cmd.workflow));
+      return { doc: { ...doc, workflows }, inverse: [{ type: 'workflow.remove', id: cmd.workflow.id }] };
+    }
+
+    case 'workflow.remove': {
+      const i = doc.workflows.findIndex((w) => w.id === cmd.id);
+      if (i < 0) throw new CommandError('not_found', `workflow "${cmd.id}" does not exist`);
+      return {
+        doc: { ...doc, workflows: doc.workflows.filter((w) => w.id !== cmd.id) },
+        inverse: [{ type: 'workflow.upsert', workflow: clone(doc.workflows[i]), index: i }],
+      };
     }
 
     case 'site.update': {

@@ -13,6 +13,10 @@ import {
   isSafeHref,
   validateCommandShape,
   validateDefinition,
+  validateFieldValue,
+  upcast,
+  createModel,
+  modelReferences,
   type AppCommand,
 } from '../src/index.ts';
 import { sampleDoc } from './fixture-doc.ts';
@@ -26,13 +30,13 @@ describe('structural + semantic validation', () => {
   });
 
   it('rejects unknown top-level keys and unsupported schema versions', () => {
-    const d = { ...sampleDoc(), schemaVersion: 2 };
+    const d = { ...sampleDoc(), schemaVersion: 3 };
     expect(validateDefinition(d).some((i) => i.code === 'schema.const')).toBe(true);
     const e = { ...sampleDoc(), evil: true };
     expect(validateDefinition(e).some((i) => i.code === 'schema.additionalProperties')).toBe(true);
   });
 
-  it('rejects data models until Phase 2 defines them', () => {
+  it('rejects malformed data models', () => {
     const d = { ...sampleDoc(), dataModels: [{ name: 'x' }] };
     expect(validateDefinition(d).length).toBeGreaterThan(0);
   });
@@ -109,5 +113,37 @@ describe('command reducer', () => {
     const btn = createNode('Button');
     expect(btn.props).toMatchObject({ label: 'คลิกที่นี่', href: '#', variant: 'primary', newTab: false });
     expect(btn.styles).toEqual({});
+  });
+});
+
+describe('phase 2: data models, permissions, workflows', () => {
+  it('validates record values against the shared table', () => {
+    for (const c of fixture('field-values.json') as Array<{ field: never; value: unknown; ok: boolean }>) {
+      expect(validateFieldValue(c.field, c.value) === null, JSON.stringify(c)).toBe(c.ok);
+    }
+  });
+
+  it('upcasts v1 documents to v2', () => {
+    const v1 = { ...sampleDoc(), schemaVersion: 1, dataModels: [], permissions: [], workflows: [] };
+    for (const n of Object.values(v1.components)) if (['Form', 'FormField', 'DataTable'].includes(n.type)) delete (v1.components as Record<string, unknown>)[n.id];
+    v1.components.p_about.children = ['c_img'];
+    expect(validateDefinition(v1).length).toBeGreaterThan(0);
+    expect(validateDefinition(upcast(v1))).toEqual([]);
+  });
+
+  it('creates models with explicit permissions', () => {
+    const { model, permission } = createModel('สินค้า', 'products');
+    const r = applyCommands(sampleDoc(), [
+      { type: 'model.upsert', model, index: 9 },
+      { type: 'permission.set', permission },
+    ]);
+    expect(validateDefinition(r.doc)).toEqual([]);
+    expect(r.doc.dataModels.map((m) => m.name)).toEqual(['registrations', 'products']);
+    const undone = applyCommands(r.doc, r.inverse).doc;
+    expect(canonicalJson(undone)).toBe(canonicalJson(sampleDoc()));
+  });
+
+  it('finds model references', () => {
+    expect(modelReferences(sampleDoc(), 'm_reg').sort()).toEqual(['c_form', 'c_table', 'w_welcome']);
   });
 });

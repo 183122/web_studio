@@ -2,7 +2,7 @@ import type { ResponsiveStyles, Breakpoint } from '@studio/component-registry';
 
 export type { ResponsiveStyles, Breakpoint };
 
-export const SCHEMA_VERSION = 1 as const;
+export const SCHEMA_VERSION = 2 as const;
 
 export interface ComponentNode {
   id: string;
@@ -50,6 +50,56 @@ export interface DesignTokens {
   radius: string;
 }
 
+export type FieldType =
+  | 'text' | 'longtext' | 'number' | 'integer' | 'boolean' | 'date' | 'datetime' | 'email' | 'phone' | 'url' | 'select';
+
+export interface FieldDefinition {
+  id: string;
+  /** Machine name used by the REST API and CSV (a-z, 0-9, _). */
+  name: string;
+  label: string;
+  type: FieldType;
+  required: boolean;
+  unique: boolean;
+  options?: string[];
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  helpText?: string;
+}
+
+export interface DataModel {
+  id: string;
+  name: string;
+  label: string;
+  fields: FieldDefinition[];
+  displayFieldId: string;
+}
+
+export type RecordAction = 'create' | 'read' | 'update' | 'delete';
+export type AppRole = 'public' | 'member' | 'admin';
+
+export interface Permission {
+  modelId: string;
+  rules: Record<AppRole, RecordAction[]>;
+}
+
+export type ConditionOp = 'eq' | 'neq' | 'contains' | 'empty' | 'not_empty' | 'gt' | 'lt';
+export type Scalar = string | number | boolean | null;
+
+export type WorkflowAction =
+  | { type: 'record.setField'; fieldId: string; value: Scalar }
+  | { type: 'email.send'; to: string; subject: string; body: string };
+
+export interface Workflow {
+  id: string;
+  name: string;
+  enabled: boolean;
+  trigger: { event: 'record.created' | 'record.updated'; modelId: string };
+  conditions: Array<{ fieldId: string; op: ConditionOp; value?: Scalar }>;
+  actions: WorkflowAction[];
+}
+
 export interface AppDefinition {
   schemaVersion: typeof SCHEMA_VERSION;
   projectId: string;
@@ -58,10 +108,10 @@ export interface AppDefinition {
   routes: Redirect[];
   components: Record<string, ComponentNode>;
   designTokens: DesignTokens;
-  dataModels: never[];
-  permissions: never[];
+  dataModels: DataModel[];
+  permissions: Permission[];
   actions: never[];
-  workflows: never[];
+  workflows: Workflow[];
   integrations: never[];
   assets: string[];
   seo: { siteName: string; description: string; lang: 'th' | 'en' };
@@ -96,6 +146,12 @@ export type AppCommand =
         radius?: string;
       };
     }
+  | { type: 'model.upsert'; model: DataModel; index: number }
+  | { type: 'model.remove'; id: string }
+  | { type: 'permission.set'; permission: Permission }
+  | { type: 'permission.remove'; modelId: string }
+  | { type: 'workflow.upsert'; workflow: Workflow; index: number }
+  | { type: 'workflow.remove'; id: string }
   | {
       type: 'site.update';
       changes: {

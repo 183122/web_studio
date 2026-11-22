@@ -20,7 +20,7 @@ final class DocumentCodec
     /** Decode for API responses: keeps {} (objects) distinct from [] (lists). */
     public static function decodeForResponse(string $json): array
     {
-        return self::restoreObjects(self::decode($json));
+        return self::restoreObjects(Upcaster::upcast(self::decode($json)));
     }
 
     /** Canonical JSON text (sorted keys) of a document array. */

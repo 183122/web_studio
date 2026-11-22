@@ -18,7 +18,7 @@ final class DefinitionFactory
         $pageId = self::newId('pg');
 
         return [
-            'schemaVersion' => 1,
+            'schemaVersion' => 2,
             'projectId' => $projectId,
             'name' => $name,
             'pages' => [[

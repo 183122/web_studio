@@ -1,34 +1,166 @@
 {
-  "registryVersion": 1,
+  "registryVersion": 2,
   "styleProperties": {
-    "display": { "kind": "enum", "values": ["block", "flex", "grid", "inline-block", "none"] },
-    "flexDirection": { "kind": "enum", "values": ["row", "column", "row-reverse", "column-reverse"] },
-    "flexWrap": { "kind": "enum", "values": ["nowrap", "wrap"] },
-    "alignItems": { "kind": "enum", "values": ["stretch", "flex-start", "center", "flex-end", "baseline"] },
-    "justifyContent": { "kind": "enum", "values": ["flex-start", "center", "flex-end", "space-between", "space-around", "space-evenly"] },
-    "columns": { "kind": "integer", "min": 1, "max": 12 },
-    "gap": { "kind": "length" },
-    "padding": { "kind": "box" },
-    "margin": { "kind": "box" },
-    "width": { "kind": "length" },
-    "maxWidth": { "kind": "length" },
-    "minHeight": { "kind": "length" },
-    "height": { "kind": "length" },
-    "color": { "kind": "color" },
-    "backgroundColor": { "kind": "color" },
-    "borderColor": { "kind": "color" },
-    "borderWidth": { "kind": "length" },
-    "borderRadius": { "kind": "length" },
-    "boxShadow": { "kind": "enum", "values": ["none", "sm", "md", "lg"] },
-    "fontFamily": { "kind": "enum", "values": ["$heading", "$body", "system", "serif", "mono"] },
-    "fontSize": { "kind": "length" },
-    "fontWeight": { "kind": "enum", "values": ["300", "400", "500", "600", "700", "800"] },
-    "lineHeight": { "kind": "number", "min": 0.8, "max": 3 },
-    "letterSpacing": { "kind": "length" },
-    "textAlign": { "kind": "enum", "values": ["left", "center", "right", "justify"] },
-    "textTransform": { "kind": "enum", "values": ["none", "uppercase", "lowercase", "capitalize"] },
-    "objectFit": { "kind": "enum", "values": ["cover", "contain", "fill"] },
-    "opacity": { "kind": "number", "min": 0, "max": 1 }
+    "display": {
+      "kind": "enum",
+      "values": [
+        "block",
+        "flex",
+        "grid",
+        "inline-block",
+        "none"
+      ]
+    },
+    "flexDirection": {
+      "kind": "enum",
+      "values": [
+        "row",
+        "column",
+        "row-reverse",
+        "column-reverse"
+      ]
+    },
+    "flexWrap": {
+      "kind": "enum",
+      "values": [
+        "nowrap",
+        "wrap"
+      ]
+    },
+    "alignItems": {
+      "kind": "enum",
+      "values": [
+        "stretch",
+        "flex-start",
+        "center",
+        "flex-end",
+        "baseline"
+      ]
+    },
+    "justifyContent": {
+      "kind": "enum",
+      "values": [
+        "flex-start",
+        "center",
+        "flex-end",
+        "space-between",
+        "space-around",
+        "space-evenly"
+      ]
+    },
+    "columns": {
+      "kind": "integer",
+      "min": 1,
+      "max": 12
+    },
+    "gap": {
+      "kind": "length"
+    },
+    "padding": {
+      "kind": "box"
+    },
+    "margin": {
+      "kind": "box"
+    },
+    "width": {
+      "kind": "length"
+    },
+    "maxWidth": {
+      "kind": "length"
+    },
+    "minHeight": {
+      "kind": "length"
+    },
+    "height": {
+      "kind": "length"
+    },
+    "color": {
+      "kind": "color"
+    },
+    "backgroundColor": {
+      "kind": "color"
+    },
+    "borderColor": {
+      "kind": "color"
+    },
+    "borderWidth": {
+      "kind": "length"
+    },
+    "borderRadius": {
+      "kind": "length"
+    },
+    "boxShadow": {
+      "kind": "enum",
+      "values": [
+        "none",
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "fontFamily": {
+      "kind": "enum",
+      "values": [
+        "$heading",
+        "$body",
+        "system",
+        "serif",
+        "mono"
+      ]
+    },
+    "fontSize": {
+      "kind": "length"
+    },
+    "fontWeight": {
+      "kind": "enum",
+      "values": [
+        "300",
+        "400",
+        "500",
+        "600",
+        "700",
+        "800"
+      ]
+    },
+    "lineHeight": {
+      "kind": "number",
+      "min": 0.8,
+      "max": 3
+    },
+    "letterSpacing": {
+      "kind": "length"
+    },
+    "textAlign": {
+      "kind": "enum",
+      "values": [
+        "left",
+        "center",
+        "right",
+        "justify"
+      ]
+    },
+    "textTransform": {
+      "kind": "enum",
+      "values": [
+        "none",
+        "uppercase",
+        "lowercase",
+        "capitalize"
+      ]
+    },
+    "objectFit": {
+      "kind": "enum",
+      "values": [
+        "cover",
+        "contain",
+        "fill"
+      ]
+    },
+    "opacity": {
+      "kind": "number",
+      "min": 0,
+      "max": 1
+    }
   },
   "components": {
     "Page": {
@@ -39,7 +171,14 @@
       "acceptsChildren": true,
       "insertable": false,
       "props": {},
-      "defaultStyles": { "base": { "backgroundColor": "$background", "color": "$text", "fontFamily": "$body", "minHeight": "100vh" } }
+      "defaultStyles": {
+        "base": {
+          "backgroundColor": "$background",
+          "color": "$text",
+          "fontFamily": "$body",
+          "minHeight": "100vh"
+        }
+      }
     },
     "Section": {
       "label": "Section",
@@ -49,11 +188,38 @@
       "acceptsChildren": true,
       "insertable": true,
       "props": {
-        "tag": { "kind": "select", "label": "แท็ก HTML", "options": ["section", "header", "footer", "main", "div"], "default": "section" },
-        "anchorId": { "kind": "slug", "label": "Anchor ID", "maxLength": 64, "default": "" },
-        "backgroundImage": { "kind": "image", "label": "ภาพพื้นหลัง", "default": "" }
+        "tag": {
+          "kind": "select",
+          "label": "แท็ก HTML",
+          "options": [
+            "section",
+            "header",
+            "footer",
+            "main",
+            "div"
+          ],
+          "default": "section"
+        },
+        "anchorId": {
+          "kind": "slug",
+          "label": "Anchor ID",
+          "maxLength": 64,
+          "default": ""
+        },
+        "backgroundImage": {
+          "kind": "image",
+          "label": "ภาพพื้นหลัง",
+          "default": ""
+        }
       },
-      "defaultStyles": { "base": { "padding": "64px 24px" }, "mobile": { "padding": "40px 16px" } }
+      "defaultStyles": {
+        "base": {
+          "padding": "64px 24px"
+        },
+        "mobile": {
+          "padding": "40px 16px"
+        }
+      }
     },
     "Container": {
       "label": "Container",
@@ -63,7 +229,16 @@
       "acceptsChildren": true,
       "insertable": true,
       "props": {},
-      "defaultStyles": { "base": { "display": "flex", "flexDirection": "column", "gap": "16px", "maxWidth": "1120px", "margin": "0 auto", "width": "100%" } }
+      "defaultStyles": {
+        "base": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "16px",
+          "maxWidth": "1120px",
+          "margin": "0 auto",
+          "width": "100%"
+        }
+      }
     },
     "Columns": {
       "label": "Columns",
@@ -73,7 +248,19 @@
       "acceptsChildren": true,
       "insertable": true,
       "props": {},
-      "defaultStyles": { "base": { "display": "grid", "columns": 3, "gap": "24px" }, "tablet": { "columns": 2 }, "mobile": { "columns": 1 } }
+      "defaultStyles": {
+        "base": {
+          "display": "grid",
+          "columns": 3,
+          "gap": "24px"
+        },
+        "tablet": {
+          "columns": 2
+        },
+        "mobile": {
+          "columns": 1
+        }
+      }
     },
     "Card": {
       "label": "Card",
@@ -83,7 +270,17 @@
       "acceptsChildren": true,
       "insertable": true,
       "props": {},
-      "defaultStyles": { "base": { "display": "flex", "flexDirection": "column", "gap": "12px", "padding": "24px", "backgroundColor": "$surface", "borderRadius": "$radius", "boxShadow": "sm" } }
+      "defaultStyles": {
+        "base": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "12px",
+          "padding": "24px",
+          "backgroundColor": "$surface",
+          "borderRadius": "$radius",
+          "boxShadow": "sm"
+        }
+      }
     },
     "Heading": {
       "label": "Heading",
@@ -93,10 +290,37 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "text": { "kind": "text", "label": "ข้อความ", "maxLength": 300, "default": "หัวข้อใหม่" },
-        "level": { "kind": "select", "label": "ระดับ", "options": ["h1", "h2", "h3", "h4", "h5", "h6"], "default": "h2" }
+        "text": {
+          "kind": "text",
+          "label": "ข้อความ",
+          "maxLength": 300,
+          "default": "หัวข้อใหม่"
+        },
+        "level": {
+          "kind": "select",
+          "label": "ระดับ",
+          "options": [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6"
+          ],
+          "default": "h2"
+        }
       },
-      "defaultStyles": { "base": { "fontFamily": "$heading", "fontWeight": "700", "fontSize": "32px", "lineHeight": 1.3 }, "mobile": { "fontSize": "26px" } }
+      "defaultStyles": {
+        "base": {
+          "fontFamily": "$heading",
+          "fontWeight": "700",
+          "fontSize": "32px",
+          "lineHeight": 1.3
+        },
+        "mobile": {
+          "fontSize": "26px"
+        }
+      }
     },
     "Text": {
       "label": "Text",
@@ -106,9 +330,19 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "text": { "kind": "longtext", "label": "ข้อความ", "maxLength": 5000, "default": "พิมพ์ข้อความของคุณที่นี่" }
+        "text": {
+          "kind": "longtext",
+          "label": "ข้อความ",
+          "maxLength": 5000,
+          "default": "พิมพ์ข้อความของคุณที่นี่"
+        }
       },
-      "defaultStyles": { "base": { "fontSize": "16px", "lineHeight": 1.7 } }
+      "defaultStyles": {
+        "base": {
+          "fontSize": "16px",
+          "lineHeight": 1.7
+        }
+      }
     },
     "Button": {
       "label": "Button",
@@ -118,12 +352,37 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "label": { "kind": "text", "label": "ข้อความบนปุ่ม", "maxLength": 80, "default": "คลิกที่นี่" },
-        "href": { "kind": "url", "label": "ลิงก์", "default": "#" },
-        "variant": { "kind": "select", "label": "รูปแบบ", "options": ["primary", "secondary", "outline", "link"], "default": "primary" },
-        "newTab": { "kind": "boolean", "label": "เปิดแท็บใหม่", "default": false }
+        "label": {
+          "kind": "text",
+          "label": "ข้อความบนปุ่ม",
+          "maxLength": 80,
+          "default": "คลิกที่นี่"
+        },
+        "href": {
+          "kind": "url",
+          "label": "ลิงก์",
+          "default": "#"
+        },
+        "variant": {
+          "kind": "select",
+          "label": "รูปแบบ",
+          "options": [
+            "primary",
+            "secondary",
+            "outline",
+            "link"
+          ],
+          "default": "primary"
+        },
+        "newTab": {
+          "kind": "boolean",
+          "label": "เปิดแท็บใหม่",
+          "default": false
+        }
       },
-      "defaultStyles": { "base": {} }
+      "defaultStyles": {
+        "base": {}
+      }
     },
     "Image": {
       "label": "Image",
@@ -133,10 +392,25 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "src": { "kind": "image", "label": "รูปภาพ", "default": "" },
-        "alt": { "kind": "text", "label": "คำอธิบายภาพ (alt)", "maxLength": 250, "default": "" }
+        "src": {
+          "kind": "image",
+          "label": "รูปภาพ",
+          "default": ""
+        },
+        "alt": {
+          "kind": "text",
+          "label": "คำอธิบายภาพ (alt)",
+          "maxLength": 250,
+          "default": ""
+        }
       },
-      "defaultStyles": { "base": { "width": "100%", "objectFit": "cover", "borderRadius": "$radius" } }
+      "defaultStyles": {
+        "base": {
+          "width": "100%",
+          "objectFit": "cover",
+          "borderRadius": "$radius"
+        }
+      }
     },
     "Video": {
       "label": "Video",
@@ -146,11 +420,33 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "provider": { "kind": "select", "label": "ผู้ให้บริการ", "options": ["youtube", "vimeo"], "default": "youtube" },
-        "videoId": { "kind": "videoId", "label": "Video ID", "default": "" },
-        "title": { "kind": "text", "label": "ชื่อวิดีโอ (สำหรับผู้ใช้โปรแกรมอ่านหน้าจอ)", "maxLength": 200, "default": "วิดีโอ" }
+        "provider": {
+          "kind": "select",
+          "label": "ผู้ให้บริการ",
+          "options": [
+            "youtube",
+            "vimeo"
+          ],
+          "default": "youtube"
+        },
+        "videoId": {
+          "kind": "videoId",
+          "label": "Video ID",
+          "default": ""
+        },
+        "title": {
+          "kind": "text",
+          "label": "ชื่อวิดีโอ (สำหรับผู้ใช้โปรแกรมอ่านหน้าจอ)",
+          "maxLength": 200,
+          "default": "วิดีโอ"
+        }
       },
-      "defaultStyles": { "base": { "width": "100%", "borderRadius": "$radius" } }
+      "defaultStyles": {
+        "base": {
+          "width": "100%",
+          "borderRadius": "$radius"
+        }
+      }
     },
     "Navbar": {
       "label": "Navbar",
@@ -160,11 +456,35 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "brand": { "kind": "text", "label": "ชื่อแบรนด์", "maxLength": 80, "default": "แบรนด์ของฉัน" },
-        "logo": { "kind": "image", "label": "โลโก้", "default": "" },
-        "links": { "kind": "links", "label": "เมนู", "maxItems": 12, "default": [{ "label": "หน้าแรก", "href": "/" }] }
+        "brand": {
+          "kind": "text",
+          "label": "ชื่อแบรนด์",
+          "maxLength": 80,
+          "default": "แบรนด์ของฉัน"
+        },
+        "logo": {
+          "kind": "image",
+          "label": "โลโก้",
+          "default": ""
+        },
+        "links": {
+          "kind": "links",
+          "label": "เมนู",
+          "maxItems": 12,
+          "default": [
+            {
+              "label": "หน้าแรก",
+              "href": "/"
+            }
+          ]
+        }
       },
-      "defaultStyles": { "base": { "padding": "16px 24px", "backgroundColor": "$surface" } }
+      "defaultStyles": {
+        "base": {
+          "padding": "16px 24px",
+          "backgroundColor": "$surface"
+        }
+      }
     },
     "List": {
       "label": "List",
@@ -174,10 +494,27 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {
-        "items": { "kind": "stringList", "label": "รายการ", "maxItems": 50, "maxLength": 500, "default": ["รายการที่ 1", "รายการที่ 2"] },
-        "ordered": { "kind": "boolean", "label": "แบบมีลำดับเลข", "default": false }
+        "items": {
+          "kind": "stringList",
+          "label": "รายการ",
+          "maxItems": 50,
+          "maxLength": 500,
+          "default": [
+            "รายการที่ 1",
+            "รายการที่ 2"
+          ]
+        },
+        "ordered": {
+          "kind": "boolean",
+          "label": "แบบมีลำดับเลข",
+          "default": false
+        }
       },
-      "defaultStyles": { "base": { "lineHeight": 1.8 } }
+      "defaultStyles": {
+        "base": {
+          "lineHeight": 1.8
+        }
+      }
     },
     "Divider": {
       "label": "Divider",
@@ -187,7 +524,13 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {},
-      "defaultStyles": { "base": { "borderColor": "$muted", "borderWidth": "1px", "margin": "16px 0" } }
+      "defaultStyles": {
+        "base": {
+          "borderColor": "$muted",
+          "borderWidth": "1px",
+          "margin": "16px 0"
+        }
+      }
     },
     "Spacer": {
       "label": "Spacer",
@@ -197,7 +540,132 @@
       "acceptsChildren": false,
       "insertable": true,
       "props": {},
-      "defaultStyles": { "base": { "height": "32px" } }
+      "defaultStyles": {
+        "base": {
+          "height": "32px"
+        }
+      }
+    },
+    "Form": {
+      "label": "Form",
+      "labelTh": "ฟอร์ม",
+      "category": "data",
+      "icon": "form",
+      "acceptsChildren": true,
+      "insertable": true,
+      "props": {
+        "modelId": {
+          "kind": "model",
+          "label": "บันทึกลงตารางข้อมูล",
+          "default": ""
+        },
+        "submitLabel": {
+          "kind": "text",
+          "label": "ข้อความปุ่มส่ง",
+          "maxLength": 60,
+          "default": "ส่งข้อมูล"
+        },
+        "successMessage": {
+          "kind": "text",
+          "label": "ข้อความเมื่อส่งสำเร็จ",
+          "maxLength": 200,
+          "default": "ส่งข้อมูลเรียบร้อย ขอบคุณค่ะ"
+        }
+      },
+      "defaultStyles": {
+        "base": {
+          "display": "flex",
+          "flexDirection": "column",
+          "gap": "16px",
+          "padding": "24px",
+          "backgroundColor": "$surface",
+          "borderRadius": "$radius"
+        }
+      }
+    },
+    "FormField": {
+      "label": "Form field",
+      "labelTh": "ช่องกรอกข้อมูล",
+      "category": "data",
+      "icon": "text-cursor-input",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "fieldId": {
+          "kind": "field",
+          "label": "ฟิลด์",
+          "default": ""
+        },
+        "label": {
+          "kind": "text",
+          "label": "ป้ายกำกับ (เว้นว่าง = ใช้ชื่อฟิลด์)",
+          "maxLength": 80,
+          "default": ""
+        },
+        "placeholder": {
+          "kind": "text",
+          "label": "ข้อความตัวอย่าง",
+          "maxLength": 120,
+          "default": ""
+        },
+        "helpText": {
+          "kind": "text",
+          "label": "คำอธิบายใต้ช่อง",
+          "maxLength": 200,
+          "default": ""
+        }
+      },
+      "defaultStyles": {
+        "base": {}
+      }
+    },
+    "DataTable": {
+      "label": "Data table",
+      "labelTh": "ตารางแสดงข้อมูล",
+      "category": "data",
+      "icon": "table",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "modelId": {
+          "kind": "model",
+          "label": "ตารางข้อมูล",
+          "default": ""
+        },
+        "fieldIds": {
+          "kind": "fieldList",
+          "label": "คอลัมน์ที่แสดง",
+          "maxItems": 12,
+          "default": []
+        },
+        "pageSize": {
+          "kind": "select",
+          "label": "จำนวนต่อหน้า",
+          "options": [
+            "5",
+            "10",
+            "20",
+            "50"
+          ],
+          "default": "10"
+        },
+        "searchable": {
+          "kind": "boolean",
+          "label": "แสดงช่องค้นหา",
+          "default": true
+        },
+        "emptyMessage": {
+          "kind": "text",
+          "label": "ข้อความเมื่อไม่มีข้อมูล",
+          "maxLength": 120,
+          "default": "ยังไม่มีข้อมูล"
+        }
+      },
+      "defaultStyles": {
+        "base": {
+          "width": "100%"
+        }
+      }
     }
   }
 }

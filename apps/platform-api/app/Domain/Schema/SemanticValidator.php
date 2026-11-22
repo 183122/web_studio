@@ -169,6 +169,10 @@ final class SemanticValidator
             }
         }
 
+        foreach (DataSemanticValidator::validate($doc, $parentOf) as $issue) {
+            $issues[] = $issue;
+        }
+
         if (self::collectAssetRefs($components) !== array_values($doc['assets'])) {
             $add('/assets', 'assets_mismatch', 'assets must list exactly the referenced asset ids (sorted)');
         }
@@ -261,6 +265,23 @@ final class SemanticValidator
                     if (! is_string($item['href']) || ! Rules::isSafeHref($item['href'])) {
                         return 'item href must be a safe link';
                     }
+                }
+
+                return null;
+            case 'model':
+            case 'field':
+                return is_string($value) && ($value === '' || preg_match('/^[A-Za-z][A-Za-z0-9_-]{0,63}$/', $value) === 1) ? null : 'must be an id';
+            case 'fieldList':
+                if (! is_array($value) || ! array_is_list($value)) {
+                    return 'must be a list of ids';
+                }
+                foreach ($value as $v) {
+                    if (! is_string($v) || preg_match('/^[A-Za-z][A-Za-z0-9_-]{0,63}$/', $v) !== 1) {
+                        return 'must be a list of ids';
+                    }
+                }
+                if (isset($def['maxItems']) && count($value) > $def['maxItems']) {
+                    return "must have at most {$def['maxItems']} items";
                 }
 
                 return null;

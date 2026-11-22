@@ -1555,7 +1555,7 @@
     "permissions": [],
     "projectId": "template",
     "routes": [],
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "seo": {
       "description": "เว็บไซต์ทางการของโรงเรียนตัวอย่างวิทยา",
       "lang": "th",

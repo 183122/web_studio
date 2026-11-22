@@ -9,9 +9,9 @@ use Opis\JsonSchema\Validator;
 /** JSON Schema (draft 2020-12) validation using the shared schema files. */
 final class StructuralValidator
 {
-    public const DEFINITION_ID = 'https://schemas.ai-studio.local/app-definition/v1.json';
+    public const DEFINITION_ID = 'https://schemas.ai-studio.local/app-definition/v2.json';
 
-    public const COMMAND_ID = 'https://schemas.ai-studio.local/app-command/v1.json';
+    public const COMMAND_ID = 'https://schemas.ai-studio.local/app-command/v2.json';
 
     private static ?Validator $validator = null;
 
