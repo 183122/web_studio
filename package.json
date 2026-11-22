@@ -13,7 +13,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "build": "npm run build -w apps/studio-web",
     "dev:studio": "npm run dev -w apps/studio-web",
-    "test:e2e": "npm run test -w tests/e2e"
+    "test:e2e": "npm run e2e -w tests/e2e"
   },
   "engines": {
     "node": ">=22"

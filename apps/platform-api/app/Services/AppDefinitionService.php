@@ -15,6 +15,7 @@ use App\Models\Asset;
 use App\Models\Project;
 use App\Models\User;
 use App\Support\ApiException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -221,7 +222,7 @@ class AppDefinitionService
             return true;
         }
 
-        return now()->diffInSeconds(\Illuminate\Support\Carbon::parse($last), true) >= (int) config('studio.schema.checkpoint_interval_seconds');
+        return now()->diffInSeconds(Carbon::parse($last), true) >= (int) config('studio.schema.checkpoint_interval_seconds');
     }
 
     private function checkpoint(Project $project, int $revision, string $json, string $hash, string $source, ?string $message, ?User $user, ?int $restoredFrom): void

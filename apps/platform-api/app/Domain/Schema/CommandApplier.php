@@ -297,7 +297,7 @@ final class CommandApplier
             }
             foreach ($changes[$group] as $k => $v) {
                 if (! array_key_exists($k, $doc['designTokens'][$group])) {
-                    throw new CommandException('unknown_token', "unknown ".rtrim($group, 's')." token \"{$k}\"");
+                    throw new CommandException('unknown_token', 'unknown '.rtrim($group, 's')." token \"{$k}\"");
                 }
                 $doc['designTokens'][$group][$k] = $v;
             }

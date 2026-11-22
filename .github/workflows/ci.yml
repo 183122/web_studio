@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typescript:
+    name: TypeScript packages + studio
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - name: Generated validators are up to date
+        run: npm run generate -w packages/app-schema && git diff --exit-code packages/app-schema/src/generated
+      - name: Parity fixtures are up to date
+        run: npm run fixtures -w packages/app-schema && git diff --exit-code packages/app-schema/fixtures
+      - name: Templates are valid and up to date
+        run: npm run build -w packages/templates && git diff --exit-code packages/templates/dist
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Dependency audit (production, high+)
+        run: npm audit --omit=dev --audit-level=high
+
+  php:
+    name: Platform API (PHPUnit on MySQL 8)
+    runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: studio_test
+          MYSQL_USER: studio
+          MYSQL_PASSWORD: studio
+          MYSQL_ROOT_PASSWORD: root
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1" --health-interval=5s --health-retries=20
+    defaults:
+      run:
+        working-directory: apps/platform-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, pdo_sqlite, gd, intl, zip, mbstring
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer audit
+      - run: cp .env.example .env && php artisan key:generate
+      - name: PHPUnit (MySQL)
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: studio_test
+          DB_USERNAME: studio
+          DB_PASSWORD: studio
+        run: php artisan test
+      - name: PHPUnit (SQLite)
+        run: php artisan test
+      - run: vendor/bin/pint --test
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-24.04
+    needs: [typescript, php]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, gd, intl, zip, mbstring
+          coverage: none
+      - run: npm ci --no-audit --no-fund
+      - run: composer install --no-interaction --prefer-dist --no-progress
+        working-directory: apps/platform-api
+      - run: cp .env.example .env && php artisan key:generate
+        working-directory: apps/platform-api
+      - run: npx playwright install --with-deps chromium
+        working-directory: tests/e2e
+      - run: npm run test:e2e

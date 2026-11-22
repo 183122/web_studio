@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Domain\Schema\SchemaException;
+use App\Domain\Schema\DocumentCodec;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Services\AppDefinitionService;
@@ -20,7 +20,7 @@ class SchemaController extends Controller
         $head = $this->definitions->head($project);
 
         return response()
-            ->json(['data' => $head], 200, [], \App\Domain\Schema\DocumentCodec::JSON_FLAGS & ~JSON_THROW_ON_ERROR)
+            ->json(['data' => $head], 200, [], DocumentCodec::JSON_FLAGS & ~JSON_THROW_ON_ERROR)
             ->setEtag((string) $head['revision'])
             ->header('Cache-Control', 'private, no-cache');
     }
@@ -60,7 +60,7 @@ class SchemaController extends Controller
 
     private function ifMatchRevision(Request $request): int
     {
-        $header = trim((string) $request->header('If-Match'), " \"W/");
+        $header = trim((string) $request->header('If-Match'), ' "W/');
         if ($header === '' || ! ctype_digit($header)) {
             throw new ApiException(428, 'precondition_required', 'If-Match header with the current revision is required');
         }
