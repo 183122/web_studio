@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+/tests/e2e/test-results/
+/tests/e2e/playwright-report/
+/tests/e2e/.auth/
+.idea/
+.vscode/
+
+# Built templates are committed (imported by the API seeder)
+!packages/templates/dist/

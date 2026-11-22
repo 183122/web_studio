@@ -1,0 +1,2441 @@
+[
+  {
+    "name": "insert heading at index 1",
+    "commands": [
+      {
+        "type": "component.insert",
+        "parentId": "c_section",
+        "index": 1,
+        "nodes": [
+          {
+            "id": "c_new",
+            "type": "Heading",
+            "props": {
+              "text": "ใหม่",
+              "level": "h2"
+            },
+            "styles": {},
+            "children": []
+          }
+        ]
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_new": {
+          "children": [],
+          "id": "c_new",
+          "props": {
+            "level": "h2",
+            "text": "ใหม่"
+          },
+          "styles": {},
+          "type": "Heading"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_new",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "insert subtree with clamped index",
+    "commands": [
+      {
+        "type": "component.insert",
+        "parentId": "p_home",
+        "index": 999,
+        "nodes": [
+          {
+            "id": "c_card",
+            "type": "Card",
+            "props": {},
+            "styles": {},
+            "children": [
+              "c_card_t"
+            ]
+          },
+          {
+            "id": "c_card_t",
+            "type": "Text",
+            "props": {
+              "text": "ในการ์ด"
+            },
+            "styles": {},
+            "children": []
+          }
+        ]
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_card": {
+          "children": [
+            "c_card_t"
+          ],
+          "id": "c_card",
+          "props": {},
+          "styles": {},
+          "type": "Card"
+        },
+        "c_card_t": {
+          "children": [],
+          "id": "c_card_t",
+          "props": {
+            "text": "ในการ์ด"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section",
+            "c_card"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "remove container subtree",
+    "commands": [
+      {
+        "type": "component.remove",
+        "id": "c_box"
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "move button to section start",
+    "commands": [
+      {
+        "type": "component.move",
+        "id": "c_btn",
+        "parentId": "c_section",
+        "index": 0
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_btn",
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "move within same parent",
+    "commands": [
+      {
+        "type": "component.move",
+        "id": "c_heading",
+        "parentId": "c_section",
+        "index": 2
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_text",
+            "c_box",
+            "c_heading"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "update props and styles with unset",
+    "commands": [
+      {
+        "type": "component.update",
+        "id": "c_heading",
+        "name": "Hero title",
+        "props": {
+          "text": "สวัสดีชาวโลก"
+        },
+        "styles": {
+          "base": {
+            "fontSize": null,
+            "color": "$primary"
+          },
+          "mobile": {
+            "fontSize": null
+          },
+          "tablet": {
+            "textAlign": "center"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "name": "Hero title",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดีชาวโลก"
+          },
+          "styles": {
+            "base": {
+              "color": "$primary"
+            },
+            "tablet": {
+              "textAlign": "center"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "image asset change updates derived assets",
+    "commands": [
+      {
+        "type": "component.update",
+        "id": "c_img",
+        "props": {
+          "src": "https://example.com/a.jpg"
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "https://example.com/a.jpg"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "add page",
+    "commands": [
+      {
+        "type": "page.add",
+        "index": 1,
+        "page": {
+          "id": "pg_contact",
+          "name": "ติดต่อ",
+          "path": "/contact",
+          "rootId": "p_contact",
+          "seo": {
+            "title": "ติดต่อ",
+            "description": "",
+            "noindex": false
+          }
+        },
+        "nodes": [
+          {
+            "id": "p_contact",
+            "type": "Page",
+            "props": {},
+            "styles": {},
+            "children": [
+              "c_contact_h"
+            ]
+          },
+          {
+            "id": "c_contact_h",
+            "type": "Heading",
+            "props": {
+              "text": "ติดต่อเรา",
+              "level": "h1"
+            },
+            "styles": {},
+            "children": []
+          }
+        ]
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_contact_h": {
+          "children": [],
+          "id": "c_contact_h",
+          "props": {
+            "level": "h1",
+            "text": "ติดต่อเรา"
+          },
+          "styles": {},
+          "type": "Heading"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_contact": {
+          "children": [
+            "c_contact_h"
+          ],
+          "id": "p_contact",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_contact",
+          "name": "ติดต่อ",
+          "path": "/contact",
+          "rootId": "p_contact",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "ติดต่อ"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "remove page",
+    "commands": [
+      {
+        "type": "page.remove",
+        "id": "pg_about"
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "update page path and seo",
+    "commands": [
+      {
+        "type": "page.update",
+        "id": "pg_about",
+        "changes": {
+          "path": "/about-us",
+          "seo": {
+            "noindex": true
+          }
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about-us",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": true,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "tokens update",
+    "commands": [
+      {
+        "type": "tokens.update",
+        "changes": {
+          "colors": {
+            "primary": "#123456"
+          },
+          "fonts": {
+            "heading": "Prompt"
+          },
+          "radius": "4px"
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#123456",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Prompt"
+        },
+        "radius": "4px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "site update",
+    "commands": [
+      {
+        "type": "site.update",
+        "changes": {
+          "name": "ใหม่",
+          "seo": {
+            "description": "คำอธิบาย"
+          },
+          "settings": {
+            "notFoundPageId": "pg_about"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "สมัคร",
+            "newTab": false,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_text",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ใหม่",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "คำอธิบาย",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": "pg_about"
+      },
+      "workflows": []
+    }
+  },
+  {
+    "name": "batch of several commands",
+    "commands": [
+      {
+        "type": "component.insert",
+        "parentId": "c_box",
+        "index": 0,
+        "nodes": [
+          {
+            "id": "c_div",
+            "type": "Divider",
+            "props": {},
+            "styles": {},
+            "children": []
+          }
+        ]
+      },
+      {
+        "type": "component.move",
+        "id": "c_text",
+        "parentId": "c_box",
+        "index": 1
+      },
+      {
+        "type": "component.update",
+        "id": "c_btn",
+        "props": {
+          "label": "ลงทะเบียน",
+          "newTab": true
+        }
+      }
+    ],
+    "expected": {
+      "actions": [],
+      "assets": [
+        "01HZZZZZZZZZZZZZZZZZZZZZZZ"
+      ],
+      "components": {
+        "c_box": {
+          "children": [
+            "c_div",
+            "c_text",
+            "c_btn"
+          ],
+          "id": "c_box",
+          "props": {},
+          "styles": {
+            "base": {
+              "display": "flex",
+              "gap": "16px"
+            }
+          },
+          "type": "Container"
+        },
+        "c_btn": {
+          "children": [],
+          "id": "c_btn",
+          "props": {
+            "href": "/register",
+            "label": "ลงทะเบียน",
+            "newTab": true,
+            "variant": "primary"
+          },
+          "styles": {},
+          "type": "Button"
+        },
+        "c_div": {
+          "children": [],
+          "id": "c_div",
+          "props": {},
+          "styles": {},
+          "type": "Divider"
+        },
+        "c_heading": {
+          "children": [],
+          "id": "c_heading",
+          "props": {
+            "level": "h1",
+            "text": "สวัสดี"
+          },
+          "styles": {
+            "base": {
+              "fontSize": "40px"
+            },
+            "mobile": {
+              "fontSize": "28px"
+            }
+          },
+          "type": "Heading"
+        },
+        "c_img": {
+          "children": [],
+          "id": "c_img",
+          "props": {
+            "alt": "ทีมงาน",
+            "src": "asset:01HZZZZZZZZZZZZZZZZZZZZZZZ"
+          },
+          "styles": {
+            "base": {
+              "width": "100%"
+            }
+          },
+          "type": "Image"
+        },
+        "c_section": {
+          "children": [
+            "c_heading",
+            "c_box"
+          ],
+          "id": "c_section",
+          "props": {
+            "anchorId": "",
+            "backgroundImage": "",
+            "tag": "section"
+          },
+          "styles": {
+            "base": {
+              "padding": "64px 24px"
+            }
+          },
+          "type": "Section"
+        },
+        "c_text": {
+          "children": [],
+          "id": "c_text",
+          "props": {
+            "text": "ยินดีต้อนรับ\nบรรทัดสอง"
+          },
+          "styles": {},
+          "type": "Text"
+        },
+        "p_about": {
+          "children": [
+            "c_img"
+          ],
+          "id": "p_about",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        },
+        "p_home": {
+          "children": [
+            "c_section"
+          ],
+          "id": "p_home",
+          "props": {},
+          "styles": {},
+          "type": "Page"
+        }
+      },
+      "dataModels": [],
+      "designTokens": {
+        "colors": {
+          "accent": "#f59e0b",
+          "background": "#ffffff",
+          "muted": "#64748b",
+          "primary": "#0f766e",
+          "secondary": "#1e3a5f",
+          "surface": "#f8fafc",
+          "text": "#0f172a"
+        },
+        "fonts": {
+          "body": "Sarabun",
+          "heading": "Kanit"
+        },
+        "radius": "12px"
+      },
+      "integrations": [],
+      "name": "ทดสอบ",
+      "pages": [
+        {
+          "id": "pg_home",
+          "name": "หน้าแรก",
+          "path": "/",
+          "rootId": "p_home",
+          "seo": {
+            "description": "",
+            "noindex": false,
+            "title": "หน้าแรก"
+          }
+        },
+        {
+          "id": "pg_about",
+          "name": "เกี่ยวกับ",
+          "path": "/about",
+          "rootId": "p_about",
+          "seo": {
+            "description": "ข้อมูล",
+            "noindex": false,
+            "title": "เกี่ยวกับเรา"
+          }
+        }
+      ],
+      "permissions": [],
+      "projectId": "01JTESTPROJECT0000000000000",
+      "routes": [],
+      "schemaVersion": 1,
+      "seo": {
+        "description": "",
+        "lang": "th",
+        "siteName": "ทดสอบ"
+      },
+      "settings": {
+        "homePageId": "pg_home",
+        "notFoundPageId": null
+      },
+      "workflows": []
+    }
+  }
+]

@@ -1,0 +1,203 @@
+{
+  "registryVersion": 1,
+  "styleProperties": {
+    "display": { "kind": "enum", "values": ["block", "flex", "grid", "inline-block", "none"] },
+    "flexDirection": { "kind": "enum", "values": ["row", "column", "row-reverse", "column-reverse"] },
+    "flexWrap": { "kind": "enum", "values": ["nowrap", "wrap"] },
+    "alignItems": { "kind": "enum", "values": ["stretch", "flex-start", "center", "flex-end", "baseline"] },
+    "justifyContent": { "kind": "enum", "values": ["flex-start", "center", "flex-end", "space-between", "space-around", "space-evenly"] },
+    "columns": { "kind": "integer", "min": 1, "max": 12 },
+    "gap": { "kind": "length" },
+    "padding": { "kind": "box" },
+    "margin": { "kind": "box" },
+    "width": { "kind": "length" },
+    "maxWidth": { "kind": "length" },
+    "minHeight": { "kind": "length" },
+    "height": { "kind": "length" },
+    "color": { "kind": "color" },
+    "backgroundColor": { "kind": "color" },
+    "borderColor": { "kind": "color" },
+    "borderWidth": { "kind": "length" },
+    "borderRadius": { "kind": "length" },
+    "boxShadow": { "kind": "enum", "values": ["none", "sm", "md", "lg"] },
+    "fontFamily": { "kind": "enum", "values": ["$heading", "$body", "system", "serif", "mono"] },
+    "fontSize": { "kind": "length" },
+    "fontWeight": { "kind": "enum", "values": ["300", "400", "500", "600", "700", "800"] },
+    "lineHeight": { "kind": "number", "min": 0.8, "max": 3 },
+    "letterSpacing": { "kind": "length" },
+    "textAlign": { "kind": "enum", "values": ["left", "center", "right", "justify"] },
+    "textTransform": { "kind": "enum", "values": ["none", "uppercase", "lowercase", "capitalize"] },
+    "objectFit": { "kind": "enum", "values": ["cover", "contain", "fill"] },
+    "opacity": { "kind": "number", "min": 0, "max": 1 }
+  },
+  "components": {
+    "Page": {
+      "label": "Page",
+      "labelTh": "หน้า",
+      "category": "system",
+      "icon": "file",
+      "acceptsChildren": true,
+      "insertable": false,
+      "props": {},
+      "defaultStyles": { "base": { "backgroundColor": "$background", "color": "$text", "fontFamily": "$body", "minHeight": "100vh" } }
+    },
+    "Section": {
+      "label": "Section",
+      "labelTh": "ส่วนของหน้า",
+      "category": "layout",
+      "icon": "rows",
+      "acceptsChildren": true,
+      "insertable": true,
+      "props": {
+        "tag": { "kind": "select", "label": "แท็ก HTML", "options": ["section", "header", "footer", "main", "div"], "default": "section" },
+        "anchorId": { "kind": "slug", "label": "Anchor ID", "maxLength": 64, "default": "" },
+        "backgroundImage": { "kind": "image", "label": "ภาพพื้นหลัง", "default": "" }
+      },
+      "defaultStyles": { "base": { "padding": "64px 24px" }, "mobile": { "padding": "40px 16px" } }
+    },
+    "Container": {
+      "label": "Container",
+      "labelTh": "กล่องจัดวาง",
+      "category": "layout",
+      "icon": "square",
+      "acceptsChildren": true,
+      "insertable": true,
+      "props": {},
+      "defaultStyles": { "base": { "display": "flex", "flexDirection": "column", "gap": "16px", "maxWidth": "1120px", "margin": "0 auto", "width": "100%" } }
+    },
+    "Columns": {
+      "label": "Columns",
+      "labelTh": "คอลัมน์ (Grid)",
+      "category": "layout",
+      "icon": "columns",
+      "acceptsChildren": true,
+      "insertable": true,
+      "props": {},
+      "defaultStyles": { "base": { "display": "grid", "columns": 3, "gap": "24px" }, "tablet": { "columns": 2 }, "mobile": { "columns": 1 } }
+    },
+    "Card": {
+      "label": "Card",
+      "labelTh": "การ์ด",
+      "category": "layout",
+      "icon": "credit-card",
+      "acceptsChildren": true,
+      "insertable": true,
+      "props": {},
+      "defaultStyles": { "base": { "display": "flex", "flexDirection": "column", "gap": "12px", "padding": "24px", "backgroundColor": "$surface", "borderRadius": "$radius", "boxShadow": "sm" } }
+    },
+    "Heading": {
+      "label": "Heading",
+      "labelTh": "หัวข้อ",
+      "category": "basic",
+      "icon": "heading",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "text": { "kind": "text", "label": "ข้อความ", "maxLength": 300, "default": "หัวข้อใหม่" },
+        "level": { "kind": "select", "label": "ระดับ", "options": ["h1", "h2", "h3", "h4", "h5", "h6"], "default": "h2" }
+      },
+      "defaultStyles": { "base": { "fontFamily": "$heading", "fontWeight": "700", "fontSize": "32px", "lineHeight": 1.3 }, "mobile": { "fontSize": "26px" } }
+    },
+    "Text": {
+      "label": "Text",
+      "labelTh": "ข้อความ",
+      "category": "basic",
+      "icon": "type",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "text": { "kind": "longtext", "label": "ข้อความ", "maxLength": 5000, "default": "พิมพ์ข้อความของคุณที่นี่" }
+      },
+      "defaultStyles": { "base": { "fontSize": "16px", "lineHeight": 1.7 } }
+    },
+    "Button": {
+      "label": "Button",
+      "labelTh": "ปุ่ม",
+      "category": "basic",
+      "icon": "mouse-pointer-click",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "label": { "kind": "text", "label": "ข้อความบนปุ่ม", "maxLength": 80, "default": "คลิกที่นี่" },
+        "href": { "kind": "url", "label": "ลิงก์", "default": "#" },
+        "variant": { "kind": "select", "label": "รูปแบบ", "options": ["primary", "secondary", "outline", "link"], "default": "primary" },
+        "newTab": { "kind": "boolean", "label": "เปิดแท็บใหม่", "default": false }
+      },
+      "defaultStyles": { "base": {} }
+    },
+    "Image": {
+      "label": "Image",
+      "labelTh": "รูปภาพ",
+      "category": "media",
+      "icon": "image",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "src": { "kind": "image", "label": "รูปภาพ", "default": "" },
+        "alt": { "kind": "text", "label": "คำอธิบายภาพ (alt)", "maxLength": 250, "default": "" }
+      },
+      "defaultStyles": { "base": { "width": "100%", "objectFit": "cover", "borderRadius": "$radius" } }
+    },
+    "Video": {
+      "label": "Video",
+      "labelTh": "วิดีโอ",
+      "category": "media",
+      "icon": "video",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "provider": { "kind": "select", "label": "ผู้ให้บริการ", "options": ["youtube", "vimeo"], "default": "youtube" },
+        "videoId": { "kind": "videoId", "label": "Video ID", "default": "" },
+        "title": { "kind": "text", "label": "ชื่อวิดีโอ (สำหรับผู้ใช้โปรแกรมอ่านหน้าจอ)", "maxLength": 200, "default": "วิดีโอ" }
+      },
+      "defaultStyles": { "base": { "width": "100%", "borderRadius": "$radius" } }
+    },
+    "Navbar": {
+      "label": "Navbar",
+      "labelTh": "แถบเมนู",
+      "category": "navigation",
+      "icon": "menu",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "brand": { "kind": "text", "label": "ชื่อแบรนด์", "maxLength": 80, "default": "แบรนด์ของฉัน" },
+        "logo": { "kind": "image", "label": "โลโก้", "default": "" },
+        "links": { "kind": "links", "label": "เมนู", "maxItems": 12, "default": [{ "label": "หน้าแรก", "href": "/" }] }
+      },
+      "defaultStyles": { "base": { "padding": "16px 24px", "backgroundColor": "$surface" } }
+    },
+    "List": {
+      "label": "List",
+      "labelTh": "รายการ",
+      "category": "basic",
+      "icon": "list",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {
+        "items": { "kind": "stringList", "label": "รายการ", "maxItems": 50, "maxLength": 500, "default": ["รายการที่ 1", "รายการที่ 2"] },
+        "ordered": { "kind": "boolean", "label": "แบบมีลำดับเลข", "default": false }
+      },
+      "defaultStyles": { "base": { "lineHeight": 1.8 } }
+    },
+    "Divider": {
+      "label": "Divider",
+      "labelTh": "เส้นคั่น",
+      "category": "basic",
+      "icon": "minus",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {},
+      "defaultStyles": { "base": { "borderColor": "$muted", "borderWidth": "1px", "margin": "16px 0" } }
+    },
+    "Spacer": {
+      "label": "Spacer",
+      "labelTh": "ช่องว่าง",
+      "category": "basic",
+      "icon": "move-vertical",
+      "acceptsChildren": false,
+      "insertable": true,
+      "props": {},
+      "defaultStyles": { "base": { "height": "32px" } }
+    }
+  }
+}

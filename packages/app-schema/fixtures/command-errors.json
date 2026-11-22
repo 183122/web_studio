@@ -1,0 +1,105 @@
+[
+  {
+    "name": "insert into non-container",
+    "commands": [
+      {
+        "type": "component.insert",
+        "parentId": "c_heading",
+        "index": 0,
+        "nodes": [
+          {
+            "id": "c_x",
+            "type": "Text",
+            "props": {
+              "text": "x"
+            },
+            "styles": {},
+            "children": []
+          }
+        ]
+      }
+    ],
+    "errorCode": "not_a_container"
+  },
+  {
+    "name": "insert duplicate id",
+    "commands": [
+      {
+        "type": "component.insert",
+        "parentId": "c_box",
+        "index": 0,
+        "nodes": [
+          {
+            "id": "c_btn",
+            "type": "Text",
+            "props": {
+              "text": "x"
+            },
+            "styles": {},
+            "children": []
+          }
+        ]
+      }
+    ],
+    "errorCode": "duplicate_id"
+  },
+  {
+    "name": "move into own descendant",
+    "commands": [
+      {
+        "type": "component.move",
+        "id": "c_section",
+        "parentId": "c_box",
+        "index": 0
+      }
+    ],
+    "errorCode": "cycle"
+  },
+  {
+    "name": "remove page root as component",
+    "commands": [
+      {
+        "type": "component.remove",
+        "id": "p_home"
+      }
+    ],
+    "errorCode": "invalid_target"
+  },
+  {
+    "name": "remove home page",
+    "commands": [
+      {
+        "type": "page.remove",
+        "id": "pg_home"
+      }
+    ],
+    "errorCode": "home_page"
+  },
+  {
+    "name": "update missing component",
+    "commands": [
+      {
+        "type": "component.update",
+        "id": "c_nope",
+        "props": {
+          "text": "x"
+        }
+      }
+    ],
+    "errorCode": "not_found"
+  },
+  {
+    "name": "unknown token",
+    "commands": [
+      {
+        "type": "tokens.update",
+        "changes": {
+          "colors": {
+            "neon": "#ffffff"
+          }
+        }
+      }
+    ],
+    "errorCode": "unknown_token"
+  }
+]

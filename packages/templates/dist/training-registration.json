@@ -1,0 +1,1474 @@
+{
+  "category": "education",
+  "description": "เว็บไซต์ศูนย์ฝึกอบรม: หน้าแรก รายการหลักสูตร และหน้าลงทะเบียน (ฟอร์มที่บันทึกลงฐานข้อมูลจะเพิ่มใน Phase 2)",
+  "document": {
+    "actions": [],
+    "assets": [],
+    "components": {
+      "c_tr002": {
+        "children": [],
+        "id": "c_tr002",
+        "props": {
+          "brand": "ศูนย์ฝึกอบรมออนไลน์",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/courses",
+              "label": "หลักสูตร"
+            },
+            {
+              "href": "/register",
+              "label": "ลงทะเบียน"
+            },
+            {
+              "href": "/#contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_tr003": {
+        "children": [
+          "c_tr004"
+        ],
+        "id": "c_tr003",
+        "name": "Hero",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$primary",
+            "padding": "96px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr004": {
+        "children": [
+          "c_tr005",
+          "c_tr006",
+          "c_tr007"
+        ],
+        "id": "c_tr004",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr005": {
+        "children": [],
+        "id": "c_tr005",
+        "props": {
+          "level": "h1",
+          "text": "พัฒนาทักษะใหม่ กับหลักสูตรอบรมคุณภาพ"
+        },
+        "styles": {
+          "base": {
+            "color": "#ffffff",
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr006": {
+        "children": [],
+        "id": "c_tr006",
+        "props": {
+          "text": "เลือกหลักสูตรที่สนใจ ลงทะเบียนออนไลน์ และรับใบประกาศนียบัตรเมื่อผ่านการอบรม"
+        },
+        "styles": {
+          "base": {
+            "color": "#e2f3f1",
+            "fontSize": "19px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr007": {
+        "children": [
+          "c_tr008",
+          "c_tr009"
+        ],
+        "id": "c_tr007",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr008": {
+        "children": [],
+        "id": "c_tr008",
+        "props": {
+          "href": "/courses",
+          "label": "ดูหลักสูตรทั้งหมด",
+          "newTab": false,
+          "variant": "secondary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr009": {
+        "children": [],
+        "id": "c_tr009",
+        "props": {
+          "href": "/register",
+          "label": "ลงทะเบียนเลย",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr00a": {
+        "children": [
+          "c_tr00b"
+        ],
+        "id": "c_tr00a",
+        "name": "Benefits",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr00b": {
+        "children": [
+          "c_tr00c",
+          "c_tr00d"
+        ],
+        "id": "c_tr00b",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr00c": {
+        "children": [],
+        "id": "c_tr00c",
+        "props": {
+          "level": "h2",
+          "text": "ทำไมต้องอบรมกับเรา"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3,
+            "textAlign": "center"
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr00d": {
+        "children": [
+          "c_tr00e",
+          "c_tr00h",
+          "c_tr00k"
+        ],
+        "id": "c_tr00d",
+        "props": {},
+        "styles": {
+          "base": {
+            "columns": 3,
+            "display": "grid",
+            "gap": "24px"
+          },
+          "mobile": {
+            "columns": 1
+          },
+          "tablet": {
+            "columns": 2
+          }
+        },
+        "type": "Columns"
+      },
+      "c_tr00e": {
+        "children": [
+          "c_tr00f",
+          "c_tr00g"
+        ],
+        "id": "c_tr00e",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr00f": {
+        "children": [],
+        "id": "c_tr00f",
+        "props": {
+          "level": "h3",
+          "text": "วิทยากรผู้เชี่ยวชาญ"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr00g": {
+        "children": [],
+        "id": "c_tr00g",
+        "props": {
+          "text": "ทีมวิทยากรที่มีประสบการณ์ตรงในแต่ละสาขา"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr00h": {
+        "children": [
+          "c_tr00i",
+          "c_tr00j"
+        ],
+        "id": "c_tr00h",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr00i": {
+        "children": [],
+        "id": "c_tr00i",
+        "props": {
+          "level": "h3",
+          "text": "เรียนได้ทุกที่"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr00j": {
+        "children": [],
+        "id": "c_tr00j",
+        "props": {
+          "text": "อบรมทั้งแบบออนไลน์และในสถานที่ เลือกได้ตามความสะดวก"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr00k": {
+        "children": [
+          "c_tr00l",
+          "c_tr00m"
+        ],
+        "id": "c_tr00k",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr00l": {
+        "children": [],
+        "id": "c_tr00l",
+        "props": {
+          "level": "h3",
+          "text": "ใบประกาศนียบัตร"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr00m": {
+        "children": [],
+        "id": "c_tr00m",
+        "props": {
+          "text": "รับใบประกาศนียบัตรเมื่อผ่านเกณฑ์การอบรม"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr00n": {
+        "children": [
+          "c_tr00o"
+        ],
+        "id": "c_tr00n",
+        "name": "Steps",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr00o": {
+        "children": [
+          "c_tr00p",
+          "c_tr00q",
+          "c_tr00r"
+        ],
+        "id": "c_tr00o",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr00p": {
+        "children": [],
+        "id": "c_tr00p",
+        "props": {
+          "level": "h2",
+          "text": "ขั้นตอนการลงทะเบียน"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr00q": {
+        "children": [],
+        "id": "c_tr00q",
+        "props": {
+          "items": [
+            "เลือกหลักสูตรที่ต้องการ",
+            "กรอกข้อมูลผู้สมัคร",
+            "รอรับอีเมลยืนยันการลงทะเบียน",
+            "เข้าร่วมอบรมตามวันเวลาที่กำหนด"
+          ],
+          "ordered": true
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.9
+          }
+        },
+        "type": "List"
+      },
+      "c_tr00r": {
+        "children": [
+          "c_tr00s"
+        ],
+        "id": "c_tr00r",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr00s": {
+        "children": [],
+        "id": "c_tr00s",
+        "props": {
+          "href": "/register",
+          "label": "เริ่มลงทะเบียน",
+          "newTab": false,
+          "variant": "primary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr00t": {
+        "children": [
+          "c_tr00u"
+        ],
+        "id": "c_tr00t",
+        "name": "Contact",
+        "props": {
+          "anchorId": "contact",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr00u": {
+        "children": [
+          "c_tr00v",
+          "c_tr00w",
+          "c_tr00x"
+        ],
+        "id": "c_tr00u",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr00v": {
+        "children": [],
+        "id": "c_tr00v",
+        "props": {
+          "level": "h2",
+          "text": "ติดต่อเรา"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr00w": {
+        "children": [],
+        "id": "c_tr00w",
+        "props": {
+          "text": "อีเมล: training@example.com\nโทร: 02-000-0000 (จันทร์–ศุกร์ 08:30–16:30 น.)"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr00x": {
+        "children": [
+          "c_tr00y"
+        ],
+        "id": "c_tr00x",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr00y": {
+        "children": [],
+        "id": "c_tr00y",
+        "props": {
+          "href": "mailto:training@example.com",
+          "label": "ส่งอีเมลถึงเรา",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr00z": {
+        "children": [
+          "c_tr010"
+        ],
+        "id": "c_tr00z",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr010": {
+        "children": [
+          "c_tr011"
+        ],
+        "id": "c_tr010",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr011": {
+        "children": [],
+        "id": "c_tr011",
+        "props": {
+          "text": "© ศูนย์ฝึกอบรมออนไลน์ — สร้างด้วย AI Studio Cloud"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr013": {
+        "children": [],
+        "id": "c_tr013",
+        "props": {
+          "brand": "ศูนย์ฝึกอบรมออนไลน์",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/courses",
+              "label": "หลักสูตร"
+            },
+            {
+              "href": "/register",
+              "label": "ลงทะเบียน"
+            },
+            {
+              "href": "/#contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_tr014": {
+        "children": [
+          "c_tr015"
+        ],
+        "id": "c_tr014",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr015": {
+        "children": [
+          "c_tr016",
+          "c_tr017",
+          "c_tr018"
+        ],
+        "id": "c_tr015",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr016": {
+        "children": [],
+        "id": "c_tr016",
+        "props": {
+          "level": "h1",
+          "text": "หลักสูตรที่เปิดรับสมัคร"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr017": {
+        "children": [],
+        "id": "c_tr017",
+        "props": {
+          "text": "เลือกหลักสูตรที่ตรงกับเป้าหมายของคุณ"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr018": {
+        "children": [
+          "c_tr019",
+          "c_tr01e",
+          "c_tr01j"
+        ],
+        "id": "c_tr018",
+        "props": {},
+        "styles": {
+          "base": {
+            "columns": 3,
+            "display": "grid",
+            "gap": "24px"
+          },
+          "mobile": {
+            "columns": 1
+          },
+          "tablet": {
+            "columns": 2
+          }
+        },
+        "type": "Columns"
+      },
+      "c_tr019": {
+        "children": [
+          "c_tr01a",
+          "c_tr01b",
+          "c_tr01c",
+          "c_tr01d"
+        ],
+        "id": "c_tr019",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr01a": {
+        "children": [],
+        "id": "c_tr01a",
+        "props": {
+          "level": "h3",
+          "text": "การใช้ AI เพื่อการทำงาน"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr01b": {
+        "children": [],
+        "id": "c_tr01b",
+        "props": {
+          "text": "อบรม 1 วัน • ออนไลน์"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "15px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01c": {
+        "children": [],
+        "id": "c_tr01c",
+        "props": {
+          "text": "เรียนรู้การใช้เครื่องมือ AI เพื่อเพิ่มประสิทธิภาพงานประจำวัน"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01d": {
+        "children": [],
+        "id": "c_tr01d",
+        "props": {
+          "href": "/register",
+          "label": "ลงทะเบียนหลักสูตรนี้",
+          "newTab": false,
+          "variant": "link"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr01e": {
+        "children": [
+          "c_tr01f",
+          "c_tr01g",
+          "c_tr01h",
+          "c_tr01i"
+        ],
+        "id": "c_tr01e",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr01f": {
+        "children": [],
+        "id": "c_tr01f",
+        "props": {
+          "level": "h3",
+          "text": "การวิเคราะห์ข้อมูลเบื้องต้น"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr01g": {
+        "children": [],
+        "id": "c_tr01g",
+        "props": {
+          "text": "อบรม 2 วัน • ในสถานที่"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "15px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01h": {
+        "children": [],
+        "id": "c_tr01h",
+        "props": {
+          "text": "พื้นฐานการจัดการและวิเคราะห์ข้อมูลด้วยสเปรดชีต"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01i": {
+        "children": [],
+        "id": "c_tr01i",
+        "props": {
+          "href": "/register",
+          "label": "ลงทะเบียนหลักสูตรนี้",
+          "newTab": false,
+          "variant": "link"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr01j": {
+        "children": [
+          "c_tr01k",
+          "c_tr01l",
+          "c_tr01m",
+          "c_tr01n"
+        ],
+        "id": "c_tr01j",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr01k": {
+        "children": [],
+        "id": "c_tr01k",
+        "props": {
+          "level": "h3",
+          "text": "การออกแบบเว็บไซต์ไม่ต้องเขียนโค้ด"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr01l": {
+        "children": [],
+        "id": "c_tr01l",
+        "props": {
+          "text": "อบรม 1 วัน • ออนไลน์"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "15px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01m": {
+        "children": [],
+        "id": "c_tr01m",
+        "props": {
+          "text": "สร้างเว็บไซต์องค์กรด้วยเครื่องมือ No-code อย่างมืออาชีพ"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01n": {
+        "children": [],
+        "id": "c_tr01n",
+        "props": {
+          "href": "/register",
+          "label": "ลงทะเบียนหลักสูตรนี้",
+          "newTab": false,
+          "variant": "link"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr01o": {
+        "children": [
+          "c_tr01p"
+        ],
+        "id": "c_tr01o",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr01p": {
+        "children": [
+          "c_tr01q"
+        ],
+        "id": "c_tr01p",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr01q": {
+        "children": [],
+        "id": "c_tr01q",
+        "props": {
+          "text": "© ศูนย์ฝึกอบรมออนไลน์"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01s": {
+        "children": [],
+        "id": "c_tr01s",
+        "props": {
+          "brand": "ศูนย์ฝึกอบรมออนไลน์",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/courses",
+              "label": "หลักสูตร"
+            },
+            {
+              "href": "/register",
+              "label": "ลงทะเบียน"
+            },
+            {
+              "href": "/#contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_tr01t": {
+        "children": [
+          "c_tr01u"
+        ],
+        "id": "c_tr01t",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr01u": {
+        "children": [
+          "c_tr01v",
+          "c_tr01w",
+          "c_tr01x"
+        ],
+        "id": "c_tr01u",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "760px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr01v": {
+        "children": [],
+        "id": "c_tr01v",
+        "props": {
+          "level": "h1",
+          "text": "ลงทะเบียนเข้าร่วมอบรม"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr01w": {
+        "children": [],
+        "id": "c_tr01w",
+        "props": {
+          "text": "กรุณาเตรียมข้อมูลต่อไปนี้: ชื่อ–นามสกุล อีเมล เบอร์โทรศัพท์ หน่วยงาน และหลักสูตรที่ต้องการ"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr01x": {
+        "children": [
+          "c_tr01y",
+          "c_tr01z",
+          "c_tr020"
+        ],
+        "id": "c_tr01x",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_tr01y": {
+        "children": [],
+        "id": "c_tr01y",
+        "props": {
+          "level": "h3",
+          "text": "ช่องทางลงทะเบียน"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr01z": {
+        "children": [],
+        "id": "c_tr01z",
+        "props": {
+          "text": "ส่งข้อมูลการลงทะเบียนทางอีเมล เจ้าหน้าที่จะยืนยันภายใน 1 วันทำการ"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr020": {
+        "children": [
+          "c_tr021"
+        ],
+        "id": "c_tr020",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr021": {
+        "children": [],
+        "id": "c_tr021",
+        "props": {
+          "href": "mailto:training@example.com?subject=register",
+          "label": "ลงทะเบียนทางอีเมล",
+          "newTab": false,
+          "variant": "primary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_tr022": {
+        "children": [
+          "c_tr023"
+        ],
+        "id": "c_tr022",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr023": {
+        "children": [
+          "c_tr024"
+        ],
+        "id": "c_tr023",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr024": {
+        "children": [],
+        "id": "c_tr024",
+        "props": {
+          "text": "© ศูนย์ฝึกอบรมออนไลน์"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "p_tr001": {
+        "children": [
+          "c_tr002",
+          "c_tr003",
+          "c_tr00a",
+          "c_tr00n",
+          "c_tr00t",
+          "c_tr00z"
+        ],
+        "id": "p_tr001",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      },
+      "p_tr012": {
+        "children": [
+          "c_tr013",
+          "c_tr014",
+          "c_tr01o"
+        ],
+        "id": "p_tr012",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      },
+      "p_tr01r": {
+        "children": [
+          "c_tr01s",
+          "c_tr01t",
+          "c_tr022"
+        ],
+        "id": "p_tr01r",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      }
+    },
+    "dataModels": [],
+    "designTokens": {
+      "colors": {
+        "accent": "#f59e0b",
+        "background": "#ffffff",
+        "muted": "#64748b",
+        "primary": "#0f766e",
+        "secondary": "#1e3a5f",
+        "surface": "#f8fafc",
+        "text": "#0f172a"
+      },
+      "fonts": {
+        "body": "Sarabun",
+        "heading": "Kanit"
+      },
+      "radius": "12px"
+    },
+    "integrations": [],
+    "name": "ระบบลงทะเบียนอบรม",
+    "pages": [
+      {
+        "id": "pg_tr1",
+        "name": "หน้าแรก",
+        "path": "/",
+        "rootId": "p_tr001",
+        "seo": {
+          "description": "ลงทะเบียนเข้าร่วมอบรมออนไลน์ได้ง่าย ๆ ภายในไม่กี่นาที",
+          "noindex": false,
+          "title": "ระบบลงทะเบียนอบรม"
+        }
+      },
+      {
+        "id": "pg_tr2",
+        "name": "หลักสูตร",
+        "path": "/courses",
+        "rootId": "p_tr012",
+        "seo": {
+          "description": "รายการหลักสูตรอบรมที่เปิดรับสมัคร",
+          "noindex": false,
+          "title": "หลักสูตรอบรมทั้งหมด"
+        }
+      },
+      {
+        "id": "pg_tr3",
+        "name": "ลงทะเบียน",
+        "path": "/register",
+        "rootId": "p_tr01r",
+        "seo": {
+          "description": "ลงทะเบียนเข้าร่วมอบรม",
+          "noindex": false,
+          "title": "ลงทะเบียนอบรม"
+        }
+      }
+    ],
+    "permissions": [],
+    "projectId": "template",
+    "routes": [],
+    "schemaVersion": 1,
+    "seo": {
+      "description": "ลงทะเบียนเข้าร่วมอบรมออนไลน์",
+      "lang": "th",
+      "siteName": "ระบบลงทะเบียนอบรม"
+    },
+    "settings": {
+      "homePageId": "pg_tr1",
+      "notFoundPageId": null
+    },
+    "workflows": []
+  },
+  "name": "ระบบลงทะเบียนอบรม",
+  "slug": "training-registration",
+  "sortOrder": 1
+}

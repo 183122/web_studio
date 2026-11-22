@@ -1,0 +1,38 @@
+import type { AppDefinition } from '../src/types.ts';
+
+/** Deterministic document (fixed ids) used by tests and parity fixtures. */
+export function sampleDoc(): AppDefinition {
+  return {
+    schemaVersion: 1,
+    projectId: '01JTESTPROJECT0000000000000',
+    name: 'ทดสอบ',
+    pages: [
+      { id: 'pg_home', name: 'หน้าแรก', path: '/', rootId: 'p_home', seo: { title: 'หน้าแรก', description: '', noindex: false } },
+      { id: 'pg_about', name: 'เกี่ยวกับ', path: '/about', rootId: 'p_about', seo: { title: 'เกี่ยวกับเรา', description: 'ข้อมูล', noindex: false } },
+    ],
+    routes: [],
+    components: {
+      p_home: { id: 'p_home', type: 'Page', props: {}, styles: {}, children: ['c_section'] },
+      c_section: { id: 'c_section', type: 'Section', props: { tag: 'section', anchorId: '', backgroundImage: '' }, styles: { base: { padding: '64px 24px' } }, children: ['c_heading', 'c_text', 'c_box'] },
+      c_heading: { id: 'c_heading', type: 'Heading', props: { text: 'สวัสดี', level: 'h1' }, styles: { base: { fontSize: '40px' }, mobile: { fontSize: '28px' } }, children: [] },
+      c_text: { id: 'c_text', type: 'Text', props: { text: 'ยินดีต้อนรับ\nบรรทัดสอง' }, styles: {}, children: [] },
+      c_box: { id: 'c_box', type: 'Container', props: {}, styles: { base: { display: 'flex', gap: '16px' } }, children: ['c_btn'] },
+      c_btn: { id: 'c_btn', type: 'Button', props: { label: 'สมัคร', href: '/register', variant: 'primary', newTab: false }, styles: {}, children: [] },
+      p_about: { id: 'p_about', type: 'Page', props: {}, styles: {}, children: ['c_img'] },
+      c_img: { id: 'c_img', type: 'Image', props: { src: 'asset:01HZZZZZZZZZZZZZZZZZZZZZZZ', alt: 'ทีมงาน' }, styles: { base: { width: '100%' } }, children: [] },
+    },
+    designTokens: {
+      colors: { primary: '#0f766e', secondary: '#1e3a5f', accent: '#f59e0b', background: '#ffffff', surface: '#f8fafc', text: '#0f172a', muted: '#64748b' },
+      fonts: { heading: 'Kanit', body: 'Sarabun' },
+      radius: '12px',
+    },
+    dataModels: [],
+    permissions: [],
+    actions: [],
+    workflows: [],
+    integrations: [],
+    assets: ['01HZZZZZZZZZZZZZZZZZZZZZZZ'],
+    seo: { siteName: 'ทดสอบ', description: '', lang: 'th' },
+    settings: { homePageId: 'pg_home', notFoundPageId: null },
+  };
+}

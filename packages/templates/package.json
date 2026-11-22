@@ -1,0 +1,13 @@
+{
+  "name": "@studio/templates",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --experimental-strip-types build.ts",
+    "test": "node --experimental-strip-types build.ts --check"
+  },
+  "dependencies": {
+    "@studio/app-schema": "0.1.0"
+  }
+}

@@ -1,0 +1,1013 @@
+{
+  "category": "business",
+  "description": "หน้าเดียวสำหรับธุรกิจ: จุดเด่น บริการ แพ็กเกจราคา และช่องทางติดต่อ",
+  "document": {
+    "actions": [],
+    "assets": [],
+    "components": {
+      "c_bz002": {
+        "children": [],
+        "id": "c_bz002",
+        "props": {
+          "brand": "ธุรกิจของคุณ",
+          "links": [
+            {
+              "href": "#features",
+              "label": "บริการ"
+            },
+            {
+              "href": "#pricing",
+              "label": "ราคา"
+            },
+            {
+              "href": "#contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_bz003": {
+        "children": [
+          "c_bz004"
+        ],
+        "id": "c_bz003",
+        "name": "Hero",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "padding": "112px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_bz004": {
+        "children": [
+          "c_bz005",
+          "c_bz006",
+          "c_bz007"
+        ],
+        "id": "c_bz004",
+        "props": {},
+        "styles": {
+          "base": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz005": {
+        "children": [],
+        "id": "c_bz005",
+        "props": {
+          "level": "h1",
+          "text": "ยกระดับธุรกิจของคุณด้วยบริการที่ใช่"
+        },
+        "styles": {
+          "base": {
+            "color": "#ffffff",
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3,
+            "textAlign": "center"
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz006": {
+        "children": [],
+        "id": "c_bz006",
+        "props": {
+          "text": "เราช่วยธุรกิจขนาดเล็กเพิ่มยอดขาย ลดต้นทุน และเข้าถึงลูกค้าใหม่ได้เร็วขึ้น"
+        },
+        "styles": {
+          "base": {
+            "color": "#cbd5e1",
+            "fontSize": "19px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_bz007": {
+        "children": [
+          "c_bz008",
+          "c_bz009"
+        ],
+        "id": "c_bz007",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px",
+            "justifyContent": "center"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz008": {
+        "children": [],
+        "id": "c_bz008",
+        "props": {
+          "href": "#pricing",
+          "label": "เริ่มต้นใช้งาน",
+          "newTab": false,
+          "variant": "primary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz009": {
+        "children": [],
+        "id": "c_bz009",
+        "props": {
+          "href": "#contact",
+          "label": "ปรึกษาฟรี",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz00a": {
+        "children": [
+          "c_bz00b"
+        ],
+        "id": "c_bz00a",
+        "name": "Features",
+        "props": {
+          "anchorId": "features",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_bz00b": {
+        "children": [
+          "c_bz00c",
+          "c_bz00d"
+        ],
+        "id": "c_bz00b",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz00c": {
+        "children": [],
+        "id": "c_bz00c",
+        "props": {
+          "level": "h2",
+          "text": "บริการของเรา"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3,
+            "textAlign": "center"
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00d": {
+        "children": [
+          "c_bz00e",
+          "c_bz00h",
+          "c_bz00k"
+        ],
+        "id": "c_bz00d",
+        "props": {},
+        "styles": {
+          "base": {
+            "columns": 3,
+            "display": "grid",
+            "gap": "24px"
+          },
+          "mobile": {
+            "columns": 1
+          },
+          "tablet": {
+            "columns": 2
+          }
+        },
+        "type": "Columns"
+      },
+      "c_bz00e": {
+        "children": [
+          "c_bz00f",
+          "c_bz00g"
+        ],
+        "id": "c_bz00e",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_bz00f": {
+        "children": [],
+        "id": "c_bz00f",
+        "props": {
+          "level": "h3",
+          "text": "การตลาดออนไลน์"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00g": {
+        "children": [],
+        "id": "c_bz00g",
+        "props": {
+          "text": "วางกลยุทธ์และจัดการโฆษณาให้ตรงกลุ่มเป้าหมาย"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_bz00h": {
+        "children": [
+          "c_bz00i",
+          "c_bz00j"
+        ],
+        "id": "c_bz00h",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_bz00i": {
+        "children": [],
+        "id": "c_bz00i",
+        "props": {
+          "level": "h3",
+          "text": "ระบบหลังบ้าน"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00j": {
+        "children": [],
+        "id": "c_bz00j",
+        "props": {
+          "text": "จัดการคำสั่งซื้อ ลูกค้า และสต็อกในที่เดียว"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_bz00k": {
+        "children": [
+          "c_bz00l",
+          "c_bz00m"
+        ],
+        "id": "c_bz00k",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_bz00l": {
+        "children": [],
+        "id": "c_bz00l",
+        "props": {
+          "level": "h3",
+          "text": "รายงานเชิงลึก"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00m": {
+        "children": [],
+        "id": "c_bz00m",
+        "props": {
+          "text": "ติดตามผลลัพธ์ด้วยแดชบอร์ดที่เข้าใจง่าย"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_bz00n": {
+        "children": [
+          "c_bz00o"
+        ],
+        "id": "c_bz00n",
+        "name": "Pricing",
+        "props": {
+          "anchorId": "pricing",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_bz00o": {
+        "children": [
+          "c_bz00p",
+          "c_bz00q"
+        ],
+        "id": "c_bz00o",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz00p": {
+        "children": [],
+        "id": "c_bz00p",
+        "props": {
+          "level": "h2",
+          "text": "แพ็กเกจราคา"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3,
+            "textAlign": "center"
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00q": {
+        "children": [
+          "c_bz00r",
+          "c_bz00w",
+          "c_bz011"
+        ],
+        "id": "c_bz00q",
+        "props": {},
+        "styles": {
+          "base": {
+            "columns": 3,
+            "display": "grid",
+            "gap": "24px"
+          },
+          "mobile": {
+            "columns": 1
+          },
+          "tablet": {
+            "columns": 2
+          }
+        },
+        "type": "Columns"
+      },
+      "c_bz00r": {
+        "children": [
+          "c_bz00s",
+          "c_bz00t",
+          "c_bz00u",
+          "c_bz00v"
+        ],
+        "id": "c_bz00r",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_bz00s": {
+        "children": [],
+        "id": "c_bz00s",
+        "props": {
+          "level": "h3",
+          "text": "เริ่มต้น"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00t": {
+        "children": [],
+        "id": "c_bz00t",
+        "props": {
+          "level": "h2",
+          "text": "฿990/เดือน"
+        },
+        "styles": {
+          "base": {
+            "color": "$primary",
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00u": {
+        "children": [],
+        "id": "c_bz00u",
+        "props": {
+          "items": [
+            "เว็บไซต์ 1 หน้า",
+            "อีเมลสนับสนุน"
+          ],
+          "ordered": false
+        },
+        "styles": {
+          "base": {
+            "lineHeight": 1.8
+          }
+        },
+        "type": "List"
+      },
+      "c_bz00v": {
+        "children": [],
+        "id": "c_bz00v",
+        "props": {
+          "href": "#contact",
+          "label": "เลือกแพ็กเกจนี้",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz00w": {
+        "children": [
+          "c_bz00x",
+          "c_bz00y",
+          "c_bz00z",
+          "c_bz010"
+        ],
+        "id": "c_bz00w",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_bz00x": {
+        "children": [],
+        "id": "c_bz00x",
+        "props": {
+          "level": "h3",
+          "text": "ธุรกิจ"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00y": {
+        "children": [],
+        "id": "c_bz00y",
+        "props": {
+          "level": "h2",
+          "text": "฿2,490/เดือน"
+        },
+        "styles": {
+          "base": {
+            "color": "$primary",
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz00z": {
+        "children": [],
+        "id": "c_bz00z",
+        "props": {
+          "items": [
+            "เว็บไซต์ไม่จำกัดหน้า",
+            "ระบบหลังบ้าน",
+            "สนับสนุนทางโทรศัพท์"
+          ],
+          "ordered": false
+        },
+        "styles": {
+          "base": {
+            "lineHeight": 1.8
+          }
+        },
+        "type": "List"
+      },
+      "c_bz010": {
+        "children": [],
+        "id": "c_bz010",
+        "props": {
+          "href": "#contact",
+          "label": "เลือกแพ็กเกจนี้",
+          "newTab": false,
+          "variant": "primary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz011": {
+        "children": [
+          "c_bz012",
+          "c_bz013",
+          "c_bz014",
+          "c_bz015"
+        ],
+        "id": "c_bz011",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_bz012": {
+        "children": [],
+        "id": "c_bz012",
+        "props": {
+          "level": "h3",
+          "text": "องค์กร"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz013": {
+        "children": [],
+        "id": "c_bz013",
+        "props": {
+          "level": "h2",
+          "text": "ติดต่อฝ่ายขาย"
+        },
+        "styles": {
+          "base": {
+            "color": "$primary",
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz014": {
+        "children": [],
+        "id": "c_bz014",
+        "props": {
+          "items": [
+            "ปรับแต่งตามต้องการ",
+            "ผู้ดูแลเฉพาะ",
+            "SLA"
+          ],
+          "ordered": false
+        },
+        "styles": {
+          "base": {
+            "lineHeight": 1.8
+          }
+        },
+        "type": "List"
+      },
+      "c_bz015": {
+        "children": [],
+        "id": "c_bz015",
+        "props": {
+          "href": "#contact",
+          "label": "เลือกแพ็กเกจนี้",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz016": {
+        "children": [
+          "c_bz017"
+        ],
+        "id": "c_bz016",
+        "name": "Contact",
+        "props": {
+          "anchorId": "contact",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_bz017": {
+        "children": [
+          "c_bz018",
+          "c_bz019",
+          "c_bz01a"
+        ],
+        "id": "c_bz017",
+        "props": {},
+        "styles": {
+          "base": {
+            "alignItems": "center",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "760px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz018": {
+        "children": [],
+        "id": "c_bz018",
+        "props": {
+          "level": "h2",
+          "text": "พร้อมเริ่มต้นแล้วหรือยัง?"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3,
+            "textAlign": "center"
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_bz019": {
+        "children": [],
+        "id": "c_bz019",
+        "props": {
+          "text": "ติดต่อทีมงานของเราเพื่อรับคำปรึกษาฟรี"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_bz01a": {
+        "children": [
+          "c_bz01b",
+          "c_bz01c"
+        ],
+        "id": "c_bz01a",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px",
+            "justifyContent": "center"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz01b": {
+        "children": [],
+        "id": "c_bz01b",
+        "props": {
+          "href": "mailto:hello@business.example.com",
+          "label": "ส่งอีเมล",
+          "newTab": false,
+          "variant": "primary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz01c": {
+        "children": [],
+        "id": "c_bz01c",
+        "props": {
+          "href": "tel:020000000",
+          "label": "โทร 02-000-0000",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_bz01d": {
+        "children": [
+          "c_bz01e"
+        ],
+        "id": "c_bz01d",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_bz01e": {
+        "children": [
+          "c_bz01f"
+        ],
+        "id": "c_bz01e",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_bz01f": {
+        "children": [],
+        "id": "c_bz01f",
+        "props": {
+          "text": "© ธุรกิจของคุณ — สร้างด้วย AI Studio Cloud"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "p_bz001": {
+        "children": [
+          "c_bz002",
+          "c_bz003",
+          "c_bz00a",
+          "c_bz00n",
+          "c_bz016",
+          "c_bz01d"
+        ],
+        "id": "p_bz001",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      }
+    },
+    "dataModels": [],
+    "designTokens": {
+      "colors": {
+        "accent": "#f97316",
+        "background": "#ffffff",
+        "muted": "#64748b",
+        "primary": "#0f766e",
+        "secondary": "#0b1f33",
+        "surface": "#f8fafc",
+        "text": "#0f172a"
+      },
+      "fonts": {
+        "body": "Noto Sans Thai",
+        "heading": "Kanit"
+      },
+      "radius": "16px"
+    },
+    "integrations": [],
+    "name": "ธุรกิจของคุณ",
+    "pages": [
+      {
+        "id": "pg_bz1",
+        "name": "หน้าแรก",
+        "path": "/",
+        "rootId": "p_bz001",
+        "seo": {
+          "description": "Landing page สำหรับธุรกิจขนาดเล็ก",
+          "noindex": false,
+          "title": "ธุรกิจของคุณ — โซลูชันที่ช่วยให้เติบโต"
+        }
+      }
+    ],
+    "permissions": [],
+    "projectId": "template",
+    "routes": [],
+    "schemaVersion": 1,
+    "seo": {
+      "description": "Landing page สำหรับธุรกิจขนาดเล็ก",
+      "lang": "th",
+      "siteName": "ธุรกิจของคุณ"
+    },
+    "settings": {
+      "homePageId": "pg_bz1",
+      "notFoundPageId": null
+    },
+    "workflows": []
+  },
+  "name": "Landing page ธุรกิจ",
+  "slug": "business-landing",
+  "sortOrder": 3
+}

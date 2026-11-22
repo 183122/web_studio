@@ -1,0 +1,1573 @@
+{
+  "category": "education",
+  "description": "เว็บไซต์สถานศึกษา: หน้าแรก เกี่ยวกับโรงเรียน ข่าวสาร และติดต่อ",
+  "document": {
+    "actions": [],
+    "assets": [],
+    "components": {
+      "c_sc002": {
+        "children": [],
+        "id": "c_sc002",
+        "props": {
+          "brand": "โรงเรียนตัวอย่างวิทยา",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/about",
+              "label": "เกี่ยวกับโรงเรียน"
+            },
+            {
+              "href": "/news",
+              "label": "ข่าวสาร"
+            },
+            {
+              "href": "/contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_sc003": {
+        "children": [
+          "c_sc004"
+        ],
+        "id": "c_sc003",
+        "name": "Hero",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$primary",
+            "padding": "96px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc004": {
+        "children": [
+          "c_sc005",
+          "c_sc006",
+          "c_sc007"
+        ],
+        "id": "c_sc004",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc005": {
+        "children": [],
+        "id": "c_sc005",
+        "props": {
+          "level": "h1",
+          "text": "ยินดีต้อนรับสู่โรงเรียนตัวอย่างวิทยา"
+        },
+        "styles": {
+          "base": {
+            "color": "#ffffff",
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc006": {
+        "children": [],
+        "id": "c_sc006",
+        "props": {
+          "text": "มุ่งพัฒนาผู้เรียนให้มีความรู้คู่คุณธรรม พร้อมก้าวสู่โลกอนาคต"
+        },
+        "styles": {
+          "base": {
+            "color": "#dbeafe",
+            "fontSize": "19px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc007": {
+        "children": [
+          "c_sc008",
+          "c_sc009"
+        ],
+        "id": "c_sc007",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc008": {
+        "children": [],
+        "id": "c_sc008",
+        "props": {
+          "href": "/about",
+          "label": "รู้จักโรงเรียน",
+          "newTab": false,
+          "variant": "secondary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_sc009": {
+        "children": [],
+        "id": "c_sc009",
+        "props": {
+          "href": "/news",
+          "label": "ข่าวประชาสัมพันธ์",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_sc00a": {
+        "children": [
+          "c_sc00b"
+        ],
+        "id": "c_sc00a",
+        "name": "News",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc00b": {
+        "children": [
+          "c_sc00c",
+          "c_sc00d",
+          "c_sc00q"
+        ],
+        "id": "c_sc00b",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc00c": {
+        "children": [],
+        "id": "c_sc00c",
+        "props": {
+          "level": "h2",
+          "text": "ข่าวประชาสัมพันธ์ล่าสุด"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "32px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "26px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc00d": {
+        "children": [
+          "c_sc00e",
+          "c_sc00i",
+          "c_sc00m"
+        ],
+        "id": "c_sc00d",
+        "props": {},
+        "styles": {
+          "base": {
+            "columns": 3,
+            "display": "grid",
+            "gap": "24px"
+          },
+          "mobile": {
+            "columns": 1
+          },
+          "tablet": {
+            "columns": 2
+          }
+        },
+        "type": "Columns"
+      },
+      "c_sc00e": {
+        "children": [
+          "c_sc00f",
+          "c_sc00g",
+          "c_sc00h"
+        ],
+        "id": "c_sc00e",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc00f": {
+        "children": [],
+        "id": "c_sc00f",
+        "props": {
+          "text": "1 มีนาคม"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00g": {
+        "children": [],
+        "id": "c_sc00g",
+        "props": {
+          "level": "h3",
+          "text": "เปิดรับสมัครนักเรียนใหม่"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc00h": {
+        "children": [],
+        "id": "c_sc00h",
+        "props": {
+          "text": "รับสมัครนักเรียนชั้น ม.1 และ ม.4 ปีการศึกษาใหม่"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00i": {
+        "children": [
+          "c_sc00j",
+          "c_sc00k",
+          "c_sc00l"
+        ],
+        "id": "c_sc00i",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc00j": {
+        "children": [],
+        "id": "c_sc00j",
+        "props": {
+          "text": "18 สิงหาคม"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00k": {
+        "children": [],
+        "id": "c_sc00k",
+        "props": {
+          "level": "h3",
+          "text": "กิจกรรมวันวิทยาศาสตร์"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc00l": {
+        "children": [],
+        "id": "c_sc00l",
+        "props": {
+          "text": "ขอเชิญผู้ปกครองร่วมชมนิทรรศการผลงานนักเรียน"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00m": {
+        "children": [
+          "c_sc00n",
+          "c_sc00o",
+          "c_sc00p"
+        ],
+        "id": "c_sc00m",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc00n": {
+        "children": [],
+        "id": "c_sc00n",
+        "props": {
+          "text": "5 มิถุนายน"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00o": {
+        "children": [],
+        "id": "c_sc00o",
+        "props": {
+          "level": "h3",
+          "text": "ประชุมผู้ปกครอง"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc00p": {
+        "children": [],
+        "id": "c_sc00p",
+        "props": {
+          "text": "ประชุมผู้ปกครองนักเรียนประจำภาคเรียนที่ 1"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00q": {
+        "children": [
+          "c_sc00r"
+        ],
+        "id": "c_sc00q",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc00r": {
+        "children": [],
+        "id": "c_sc00r",
+        "props": {
+          "href": "/news",
+          "label": "ดูข่าวทั้งหมด",
+          "newTab": false,
+          "variant": "link"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_sc00s": {
+        "children": [
+          "c_sc00t"
+        ],
+        "id": "c_sc00s",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc00t": {
+        "children": [
+          "c_sc00u"
+        ],
+        "id": "c_sc00t",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc00u": {
+        "children": [],
+        "id": "c_sc00u",
+        "props": {
+          "text": "© โรงเรียนตัวอย่างวิทยา"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc00w": {
+        "children": [],
+        "id": "c_sc00w",
+        "props": {
+          "brand": "โรงเรียนตัวอย่างวิทยา",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/about",
+              "label": "เกี่ยวกับโรงเรียน"
+            },
+            {
+              "href": "/news",
+              "label": "ข่าวสาร"
+            },
+            {
+              "href": "/contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_sc00x": {
+        "children": [
+          "c_sc00y"
+        ],
+        "id": "c_sc00x",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc00y": {
+        "children": [
+          "c_sc00z",
+          "c_sc010",
+          "c_sc011",
+          "c_sc012",
+          "c_sc013"
+        ],
+        "id": "c_sc00y",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc00z": {
+        "children": [],
+        "id": "c_sc00z",
+        "props": {
+          "level": "h1",
+          "text": "เกี่ยวกับโรงเรียน"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc010": {
+        "children": [],
+        "id": "c_sc010",
+        "props": {
+          "level": "h3",
+          "text": "วิสัยทัศน์"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc011": {
+        "children": [],
+        "id": "c_sc011",
+        "props": {
+          "text": "ผู้เรียนมีคุณภาพตามมาตรฐานสากล มีทักษะการคิด และดำรงชีวิตอย่างมีความสุข"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc012": {
+        "children": [],
+        "id": "c_sc012",
+        "props": {
+          "level": "h3",
+          "text": "พันธกิจ"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc013": {
+        "children": [],
+        "id": "c_sc013",
+        "props": {
+          "items": [
+            "จัดการเรียนรู้ที่เน้นผู้เรียนเป็นสำคัญ",
+            "ส่งเสริมการใช้เทคโนโลยีในการเรียนรู้",
+            "ปลูกฝังคุณธรรมจริยธรรมและความเป็นพลเมือง"
+          ],
+          "ordered": false
+        },
+        "styles": {
+          "base": {
+            "lineHeight": 1.8
+          }
+        },
+        "type": "List"
+      },
+      "c_sc014": {
+        "children": [
+          "c_sc015"
+        ],
+        "id": "c_sc014",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc015": {
+        "children": [
+          "c_sc016"
+        ],
+        "id": "c_sc015",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc016": {
+        "children": [],
+        "id": "c_sc016",
+        "props": {
+          "text": "© โรงเรียนตัวอย่างวิทยา"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc018": {
+        "children": [],
+        "id": "c_sc018",
+        "props": {
+          "brand": "โรงเรียนตัวอย่างวิทยา",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/about",
+              "label": "เกี่ยวกับโรงเรียน"
+            },
+            {
+              "href": "/news",
+              "label": "ข่าวสาร"
+            },
+            {
+              "href": "/contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_sc019": {
+        "children": [
+          "c_sc01a"
+        ],
+        "id": "c_sc019",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc01a": {
+        "children": [
+          "c_sc01b",
+          "c_sc01c"
+        ],
+        "id": "c_sc01a",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc01b": {
+        "children": [],
+        "id": "c_sc01b",
+        "props": {
+          "level": "h1",
+          "text": "ข่าวสารและกิจกรรม"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc01c": {
+        "children": [
+          "c_sc01d",
+          "c_sc01h",
+          "c_sc01l",
+          "c_sc01p"
+        ],
+        "id": "c_sc01c",
+        "props": {},
+        "styles": {
+          "base": {
+            "columns": 2,
+            "display": "grid",
+            "gap": "24px"
+          },
+          "mobile": {
+            "columns": 1
+          },
+          "tablet": {
+            "columns": 2
+          }
+        },
+        "type": "Columns"
+      },
+      "c_sc01d": {
+        "children": [
+          "c_sc01e",
+          "c_sc01f",
+          "c_sc01g"
+        ],
+        "id": "c_sc01d",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc01e": {
+        "children": [],
+        "id": "c_sc01e",
+        "props": {
+          "text": "1 มีนาคม"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01f": {
+        "children": [],
+        "id": "c_sc01f",
+        "props": {
+          "level": "h3",
+          "text": "เปิดรับสมัครนักเรียนใหม่"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc01g": {
+        "children": [],
+        "id": "c_sc01g",
+        "props": {
+          "text": "รับสมัครนักเรียนชั้น ม.1 และ ม.4 ตั้งแต่วันนี้ถึง 31 มีนาคม"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01h": {
+        "children": [
+          "c_sc01i",
+          "c_sc01j",
+          "c_sc01k"
+        ],
+        "id": "c_sc01h",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc01i": {
+        "children": [],
+        "id": "c_sc01i",
+        "props": {
+          "text": "18 สิงหาคม"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01j": {
+        "children": [],
+        "id": "c_sc01j",
+        "props": {
+          "level": "h3",
+          "text": "กิจกรรมวันวิทยาศาสตร์"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc01k": {
+        "children": [],
+        "id": "c_sc01k",
+        "props": {
+          "text": "นิทรรศการและการแข่งขันทักษะวิทยาศาสตร์"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01l": {
+        "children": [
+          "c_sc01m",
+          "c_sc01n",
+          "c_sc01o"
+        ],
+        "id": "c_sc01l",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc01m": {
+        "children": [],
+        "id": "c_sc01m",
+        "props": {
+          "text": "5 มิถุนายน"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01n": {
+        "children": [],
+        "id": "c_sc01n",
+        "props": {
+          "level": "h3",
+          "text": "ประชุมผู้ปกครอง"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc01o": {
+        "children": [],
+        "id": "c_sc01o",
+        "props": {
+          "text": "ชี้แจงแนวทางการจัดการเรียนการสอน"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01p": {
+        "children": [
+          "c_sc01q",
+          "c_sc01r",
+          "c_sc01s"
+        ],
+        "id": "c_sc01p",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "borderRadius": "$radius",
+            "boxShadow": "sm",
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "12px",
+            "padding": "24px"
+          }
+        },
+        "type": "Card"
+      },
+      "c_sc01q": {
+        "children": [],
+        "id": "c_sc01q",
+        "props": {
+          "text": "20 พฤศจิกายน"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01r": {
+        "children": [],
+        "id": "c_sc01r",
+        "props": {
+          "level": "h3",
+          "text": "ทัศนศึกษาประจำปี"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "22px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "20px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc01s": {
+        "children": [],
+        "id": "c_sc01s",
+        "props": {
+          "text": "นักเรียนทุกระดับชั้นร่วมทัศนศึกษาแหล่งเรียนรู้"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01t": {
+        "children": [
+          "c_sc01u"
+        ],
+        "id": "c_sc01t",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc01u": {
+        "children": [
+          "c_sc01v"
+        ],
+        "id": "c_sc01u",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc01v": {
+        "children": [],
+        "id": "c_sc01v",
+        "props": {
+          "text": "© โรงเรียนตัวอย่างวิทยา"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc01x": {
+        "children": [],
+        "id": "c_sc01x",
+        "props": {
+          "brand": "โรงเรียนตัวอย่างวิทยา",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/about",
+              "label": "เกี่ยวกับโรงเรียน"
+            },
+            {
+              "href": "/news",
+              "label": "ข่าวสาร"
+            },
+            {
+              "href": "/contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_sc01y": {
+        "children": [
+          "c_sc01z"
+        ],
+        "id": "c_sc01y",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc01z": {
+        "children": [
+          "c_sc020",
+          "c_sc021",
+          "c_sc022",
+          "c_sc023"
+        ],
+        "id": "c_sc01z",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "880px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc020": {
+        "children": [],
+        "id": "c_sc020",
+        "props": {
+          "level": "h1",
+          "text": "ติดต่อโรงเรียน"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_sc021": {
+        "children": [],
+        "id": "c_sc021",
+        "props": {
+          "text": "99 ถนนการศึกษา ตำบลตัวอย่าง อำเภอเมือง จังหวัดตัวอย่าง 10000"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc022": {
+        "children": [],
+        "id": "c_sc022",
+        "props": {
+          "text": "โทรศัพท์: 02-000-0000\nอีเมล: info@school.example.com"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_sc023": {
+        "children": [
+          "c_sc024",
+          "c_sc025"
+        ],
+        "id": "c_sc023",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "row",
+            "flexWrap": "wrap",
+            "gap": "12px"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc024": {
+        "children": [],
+        "id": "c_sc024",
+        "props": {
+          "href": "tel:020000000",
+          "label": "โทรหาเรา",
+          "newTab": false,
+          "variant": "primary"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_sc025": {
+        "children": [],
+        "id": "c_sc025",
+        "props": {
+          "href": "mailto:info@school.example.com",
+          "label": "ส่งอีเมล",
+          "newTab": false,
+          "variant": "outline"
+        },
+        "styles": {},
+        "type": "Button"
+      },
+      "c_sc026": {
+        "children": [
+          "c_sc027"
+        ],
+        "id": "c_sc026",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_sc027": {
+        "children": [
+          "c_sc028"
+        ],
+        "id": "c_sc027",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_sc028": {
+        "children": [],
+        "id": "c_sc028",
+        "props": {
+          "text": "© โรงเรียนตัวอย่างวิทยา"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "p_sc001": {
+        "children": [
+          "c_sc002",
+          "c_sc003",
+          "c_sc00a",
+          "c_sc00s"
+        ],
+        "id": "p_sc001",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      },
+      "p_sc00v": {
+        "children": [
+          "c_sc00w",
+          "c_sc00x",
+          "c_sc014"
+        ],
+        "id": "p_sc00v",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      },
+      "p_sc017": {
+        "children": [
+          "c_sc018",
+          "c_sc019",
+          "c_sc01t"
+        ],
+        "id": "p_sc017",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      },
+      "p_sc01w": {
+        "children": [
+          "c_sc01x",
+          "c_sc01y",
+          "c_sc026"
+        ],
+        "id": "p_sc01w",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
+      }
+    },
+    "dataModels": [],
+    "designTokens": {
+      "colors": {
+        "accent": "#facc15",
+        "background": "#ffffff",
+        "muted": "#64748b",
+        "primary": "#1d4ed8",
+        "secondary": "#1e3a8a",
+        "surface": "#f8fafc",
+        "text": "#0f172a"
+      },
+      "fonts": {
+        "body": "Sarabun",
+        "heading": "Prompt"
+      },
+      "radius": "12px"
+    },
+    "integrations": [],
+    "name": "โรงเรียนตัวอย่างวิทยา",
+    "pages": [
+      {
+        "id": "pg_sc1",
+        "name": "หน้าแรก",
+        "path": "/",
+        "rootId": "p_sc001",
+        "seo": {
+          "description": "เว็บไซต์ทางการของโรงเรียนตัวอย่างวิทยา",
+          "noindex": false,
+          "title": "โรงเรียนตัวอย่างวิทยา"
+        }
+      },
+      {
+        "id": "pg_sc2",
+        "name": "เกี่ยวกับโรงเรียน",
+        "path": "/about",
+        "rootId": "p_sc00v",
+        "seo": {
+          "description": "ประวัติ วิสัยทัศน์ และพันธกิจ",
+          "noindex": false,
+          "title": "เกี่ยวกับโรงเรียน"
+        }
+      },
+      {
+        "id": "pg_sc3",
+        "name": "ข่าวสาร",
+        "path": "/news",
+        "rootId": "p_sc017",
+        "seo": {
+          "description": "ข่าวสารและกิจกรรมของโรงเรียน",
+          "noindex": false,
+          "title": "ข่าวสารโรงเรียน"
+        }
+      },
+      {
+        "id": "pg_sc4",
+        "name": "ติดต่อ",
+        "path": "/contact",
+        "rootId": "p_sc01w",
+        "seo": {
+          "description": "ที่อยู่และช่องทางการติดต่อ",
+          "noindex": false,
+          "title": "ติดต่อโรงเรียน"
+        }
+      }
+    ],
+    "permissions": [],
+    "projectId": "template",
+    "routes": [],
+    "schemaVersion": 1,
+    "seo": {
+      "description": "เว็บไซต์ทางการของโรงเรียนตัวอย่างวิทยา",
+      "lang": "th",
+      "siteName": "โรงเรียนตัวอย่างวิทยา"
+    },
+    "settings": {
+      "homePageId": "pg_sc1",
+      "notFoundPageId": null
+    },
+    "workflows": []
+  },
+  "name": "เว็บไซต์โรงเรียน",
+  "slug": "school-website",
+  "sortOrder": 2
+}
