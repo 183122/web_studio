@@ -9,10 +9,12 @@ use App\Jobs\PublishRelease;
 use App\Models\AppDefinition;
 use App\Models\Asset;
 use App\Models\Deployment;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Release;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\UsageMeter;
 use App\Support\ApiException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -37,6 +39,14 @@ class PublishService
         }
         if (config('studio.publishing.require_verified_email') && ! $user->hasVerifiedEmail()) {
             throw ApiException::unprocessable('email_unverified', 'กรุณายืนยันอีเมลก่อนเผยแพร่เว็บไซต์');
+        }
+        $org = Organization::query()->with('plan')->findOrFail($project->organization_id);
+        if ($org->isSuspended()) {
+            throw ApiException::conflict('organization_suspended', 'องค์กรนี้ถูกระงับการใช้งาน จึงเผยแพร่ไม่ได้');
+        }
+        $build = app(UsageMeter::class)->status($org, 'build_seconds');
+        if ($build['used'] >= $build['limit']) {
+            throw ApiException::quota('นาทีการเผยแพร่ต่อเดือน', $build['limit']);
         }
         if ($this->domains->subdomainOf($project) === null) {
             throw ApiException::unprocessable('subdomain_required', 'กรุณาตั้งชื่อโดเมนย่อยก่อนเผยแพร่');
@@ -83,6 +93,7 @@ class PublishService
             return;
         }
         $deployment->update(['status' => 'running', 'started_at' => now()]);
+        $startedAt = microtime(true);
         $project = Project::query()->findOrFail($deployment->project_id);
         $release = Release::query()->findOrFail($deployment->release_id);
         $switched = false;
@@ -203,6 +214,7 @@ class PublishService
             $deployment->update(['status' => 'failed', 'error_code' => $code, 'error_message' => $message, 'finished_at' => now()]);
             $this->audit->record('deploy.failed', $project, ['error' => $code], null, null, $deployment->created_by);
         }
+        app(UsageMeter::class)->add($project->organization_id, 'build_seconds', max(1, (int) ceil(microtime(true) - $startedAt)));
     }
 
     public function rollback(Project $project, Release $release, User $user): Deployment

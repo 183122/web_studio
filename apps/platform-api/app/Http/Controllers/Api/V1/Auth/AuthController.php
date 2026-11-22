@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Domain\Account\TwoFactor;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\WorkspaceMember;
 use App\Services\AuditLogger;
 use App\Services\TenantProvisioner;
+use App\Support\ApiException;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,6 +38,8 @@ class AuthController extends Controller
                 'email' => mb_strtolower($data['email']),
                 'password' => $data['password'],
             ]);
+            // PDPA consent record: which versions of the terms/privacy notice were accepted, and when.
+            $user->forceFill(['terms_version' => config('studio.legal.terms_version'), 'privacy_version' => config('studio.legal.privacy_version'), 'consented_at' => now()])->save();
             $org = $provisioner->provision($user, $data['organizationName'] ?? null);
             $this->audit->record('auth.registered', $user, [], $org->id, null, $user->id);
 
@@ -57,14 +61,46 @@ class AuthController extends Controller
             'remember' => ['sometimes', 'boolean'],
         ]);
 
-        if (! Auth::guard('web')->attempt(['email' => mb_strtolower($data['email']), 'password' => $data['password']], (bool) ($data['remember'] ?? false))) {
+        $guard = Auth::guard('web');
+        if (! $guard->validate(['email' => mb_strtolower($data['email']), 'password' => $data['password']])) {
             $this->audit->record('auth.login_failed', null, ['email_hash' => hash('sha256', mb_strtolower($data['email']))]);
             throw ValidationException::withMessages(['email' => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง']);
         }
+        $user = User::query()->where('email', mb_strtolower($data['email']))->firstOrFail();
+        if (TwoFactor::enabled($user)) {
+            // Password OK but not logged in yet: a second factor is required within 5 minutes.
+            $request->session()->regenerate();
+            $request->session()->put('2fa.pending', ['user_id' => $user->id, 'remember' => (bool) ($data['remember'] ?? false), 'expires' => now()->addMinutes(5)->timestamp]);
+
+            return response()->json(['data' => ['twoFactorRequired' => true]]);
+        }
+        $guard->login($user, (bool) ($data['remember'] ?? false));
         $request->session()->regenerate();
-        $user = $request->user();
         $user->forceFill(['last_login_at' => now()])->save();
         $this->audit->record('auth.login', $user, [], null, null, $user->id);
+
+        return (new UserResource($user))->response();
+    }
+
+    /** Second step of login for accounts with 2FA: TOTP code or a one-time recovery code. */
+    public function twoFactorChallenge(Request $request): JsonResponse
+    {
+        $data = $request->validate(['code' => ['nullable', 'string', 'max:10'], 'recoveryCode' => ['nullable', 'string', 'max:20']]);
+        $pending = $request->session()->get('2fa.pending');
+        if (! is_array($pending) || $pending['expires'] < now()->timestamp) {
+            $request->session()->forget('2fa.pending');
+            throw new ApiException(422, 'two_factor_expired', 'หมดเวลายืนยันตัวตน กรุณาเข้าสู่ระบบใหม่');
+        }
+        $user = User::query()->findOrFail($pending['user_id']);
+        if (! TwoFactor::check($user, $data['code'] ?? null, $data['recoveryCode'] ?? null)) {
+            $this->audit->record('auth.two_factor_failed', $user, [], null, null, $user->id);
+            throw ValidationException::withMessages(['code' => 'รหัสยืนยันไม่ถูกต้อง']);
+        }
+        $request->session()->forget('2fa.pending');
+        Auth::guard('web')->login($user, $pending['remember']);
+        $request->session()->regenerate();
+        $user->forceFill(['last_login_at' => now()])->save();
+        $this->audit->record('auth.login', $user, ['two_factor' => isset($data['recoveryCode']) ? 'recovery_code' : 'totp'], null, null, $user->id);
 
         return (new UserResource($user))->response();
     }

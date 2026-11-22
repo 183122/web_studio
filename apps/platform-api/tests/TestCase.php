@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\Plan;
 use App\Models\Project;
 use App\Models\Template;
 use App\Models\User;
@@ -38,6 +39,13 @@ abstract class TestCase extends BaseTestCase
         $workspace = $org->workspaces()->firstOrFail();
 
         return [$user, $workspace];
+    }
+
+    /** Moves the organization of $this->ws (or the given workspace) to a plan. */
+    protected function onPlan(string $code, ?Workspace $workspace = null): void
+    {
+        $workspace ??= $this->ws;
+        $workspace->organization->forceFill(['plan_id' => Plan::query()->where('code', $code)->value('id')])->save();
     }
 
     protected function addMember(Workspace $workspace, string $role): User

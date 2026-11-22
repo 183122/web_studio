@@ -3,7 +3,7 @@
 > เอกสารนี้คือ "จุดเริ่มต้น" สำหรับการพัฒนารอบถัดไป: อ่านสถานะ → ดู backlog ใน `docs/ROADMAP.md` → ทำ Phase ถัดไปเป็น vertical slice
 > หลักการ: ไม่อ้างว่าฟีเจอร์ทำงานถ้ายังไม่มีโค้ดและเทสต์จริง
 
-## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 5)
+## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 6)
 
 | Phase | ขอบเขต | สถานะ |
 |---|---|---|
@@ -13,10 +13,10 @@
 | 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ✅ เสร็จ (Claude + โหมดออฟไลน์; OpenAI/Gemini ยังไม่ทำ, ยังไม่ได้ทดสอบกับ API จริง — ดูข้อจำกัด) |
 | 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ✅ เสร็จ (ยังไม่ได้ทดสอบกับ DNS/ACME จริงและยังไม่ deploy production — ดูข้อจำกัด) |
 | 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ✅ เสร็จ (ทดสอบกับ Google จำลอง ยังไม่ได้ทดสอบกับ Google จริง — ดูข้อจำกัด) |
-| 6 | Billing, entitlements/metering, super admin, privacy, hardening | ⏳ ถัดไป (มี plans/entitlements พื้นฐานแล้ว) |
-| 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ |
+| 6 | Billing, entitlements/metering, super admin, privacy, hardening | ✅ เสร็จ (billing โหมดทดสอบ — การเปิดใช้ผู้ให้บริการชำระเงินจริงต้องได้รับอนุมัติ) |
+| 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ ถัดไป |
 
-ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J7 อยู่ใน Phase 6; J4/J5 ยังไม่ได้ทดสอบกับ Google จริง)
+ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J1–J10 มีเทสต์แล้ว แต่ Google, DNS/ACME และผู้ให้บริการชำระเงิน ยังไม่ได้ทดสอบกับระบบจริง และยังไม่ได้ deploy)
 
 ## Phase 0–1: สิ่งที่ส่งมอบ
 
@@ -44,6 +44,18 @@
 - Autosave (debounce, batch, idempotency, backoff), conflict banner (รวมการแก้ไข/โหลดใหม่), beforeunload guard
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
+
+## Phase 6: สิ่งที่ส่งมอบ (2026-11-22)
+
+- **การเรียกเก็บเงิน** (`/app/billing`): แพ็กเกจ Free / Pro ฿490 / Business ฿1,490 ต่อเดือน (+VAT 7%) · ชำระผ่านผู้ให้บริการทดสอบ (หน้าชำระเงินจำลอง; ระบบปฏิเสธเมื่อ APP_ENV=production) · แพ็กเกจเปลี่ยนเฉพาะเมื่อได้รับ webhook ที่ตรวจลายเซ็นแล้วเท่านั้น (HMAC + กันส่งซ้ำ 5 นาที + idempotent + ตรวจยอดเงิน) · ใบแจ้งหนี้/ใบกำกับภาษีพิมพ์ได้ เลขที่ `INV-ปี-ลำดับ` ไม่ข้ามเลข · ทดลองใช้ 14 วันครั้งเดียว · ยกเลิกเมื่อสิ้นรอบ · ต่ออายุอัตโนมัติ · ตัดเงินไม่ผ่านลองใหม่ 1/3/7 วัน แล้วปรับเป็น Free โดยไม่ลบข้อมูล
+- **Metering**: นับคำขอเว็บไซต์, แบนด์วิดท์, นาทีการเผยแพร่, เครดิต AI แบบ atomic · อีเมลเตือนที่ 80%/100% · เว็บไซต์หยุดชั่วคราวเมื่อเกิน 150% · โควตาสมาชิกและโดเมนของตัวเองตามแพ็กเกจ
+- **ผู้ดูแลแพลตฟอร์ม** (`/app/admin`): รายการองค์กร, เปลี่ยนแพ็กเกจ/เพิ่มเครดิต (ต้องระบุเหตุผล บันทึก audit), ระงับองค์กร (เว็บไซต์ออฟไลน์ เผยแพร่ไม่ได้ ข้อมูลยังอยู่), รายงานการละเมิดจากสาธารณะ (`/report-abuse`) · **สิทธิ์ฝ่ายสนับสนุน** ต้องให้เจ้าขององค์กรอนุมัติ อ่านอย่างเดียว มีเวลาจำกัด เพิกถอนได้ ไม่เห็นข้อมูลการเงิน
+- **ทีมและความปลอดภัย** (`/app/team`): เชิญสมาชิกทางอีเมล (ผูกกับอีเมลที่เชิญ หมดอายุ 7 วัน จำกัดตามแพ็กเกจ), เปลี่ยนบทบาท/นำออก, สลับ Workspace, 2FA (TOTP + QR + รหัสกู้คืน 10 รหัส), รายการอุปกรณ์ที่เข้าสู่ระบบและสั่งออกจากระบบ
+- **PDPA**: บันทึกความยินยอม (เวอร์ชันข้อกำหนด/นโยบาย), ยินยอมรับข่าวสารแบบเลือกเอง, ดาวน์โหลดข้อมูลส่วนบุคคล, ลบบัญชี (ทำให้ระบุตัวตนไม่ได้ทันที องค์กรที่เป็นเจ้าของคนเดียวลบถาวรหลัง 30 วัน), เจ้าของแอปส่งออก/ลบข้อมูลผู้ใช้ปลายทางได้, ลบข้อมูลตามระยะเวลาเก็บรักษาทุกวัน
+- **Audit log กันแก้ไข**: hash chain + `php artisan studio:audit:verify` (ตรวจทุกวัน + metric)
+- **Observability**: `X-Request-Id` ทุกคำขอ และ `error.requestId` ในข้อความผิดพลาด, health ตรวจ DB/cache/storage + scheduler heartbeat, `/api/internal/metrics` (ต้องตั้ง `METRICS_TOKEN`), log แบบ JSON, CI สแกนความลับ (gitleaks) + SAST (Semgrep), runbooks ใน `docs/runbooks/`
+- **แก้บั๊ก**: ลิงก์ GET ที่เปิดตรงหรือบุ๊กมาร์ก (ใบกำกับภาษี, ดาวน์โหลด, ส่งออกข้อมูล) เคยได้ 401 แม้ล็อกอินอยู่; วันหมดอายุคำเชิญเคยใช้นาฬิการะบบแทนนาฬิกาของแอป
+- เอกสาร: ADR-0013, threat model (B-1…O-1), OpenAPI 0.6.0
 
 ## Phase 5: สิ่งที่ส่งมอบ (2026-11-22)
 
@@ -100,15 +112,15 @@
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **166/166 ผ่าน** (1,250 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **166/166 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **198/198 ผ่าน** (1,542 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **198/198 ผ่าน** |
 | Vitest app-schema / renderer / studio / runtime | `npm test` | **80/80, 10/10, 9/9, 4/4 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
 | Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **15/15 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
+| Playwright E2E | `npm run test:e2e` | **18/18 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
 
-E2E ที่ครอบคลุม: J4 (Sheets นำเข้า/ส่งออก/ยกเลิกการเชื่อมต่อ), J5 (Drive + การเพิกถอน + webhook ที่ตรวจลายเซ็น), J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
+E2E ที่ครอบคลุม: J7 (อัปเกรด → ชำระเงินจำลอง → webhook → โควตาเพิ่ม → ใบกำกับภาษี), บัตรถูกปฏิเสธ, 2FA, J4 (Sheets นำเข้า/ส่งออก/ยกเลิกการเชื่อมต่อ), J5 (Drive + การเพิกถอน + webhook ที่ตรวจลายเซ็น), J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
 
 ## ข้อจำกัดที่ทราบ (Known limitations)
 0. **AI ยังไม่ได้ทดสอบกับ Claude API จริง** — สภาพแวดล้อมนี้ไม่มี API key; เส้นทางเรียก SDK ทดสอบผ่าน fake HTTP transport (ตรวจรูปแบบคำขอ, การแปลงผลลัพธ์, ข้อผิดพลาด) · ต้องตั้ง `ANTHROPIC_API_KEY` (หรือ BYOK) แล้วทดลองจริงก่อนเปิดใช้ · OpenAI/Gemini adapter ยังไม่ทำ
@@ -116,6 +128,8 @@ E2E ที่ครอบคลุม: J4 (Sheets นำเข้า/ส่ง�
 2. **ClamAV** adapter ยังไม่ได้ทดสอบกับ clamd จริง; ถ้าไม่ตั้งค่า สถานะไฟล์คือ `not_scanned`
 3. **บัญชีผู้ใช้ของแอป**: มีสมัคร/เข้าสู่ระบบแล้ว แต่ยังไม่มีรีเซ็ตรหัสผ่าน/ยืนยันอีเมลของผู้ใช้ปลายทาง และสิทธิ์แบบ "เฉพาะข้อมูลของตัวเอง"
 9. **การเผยแพร่ยังไม่ได้ทดสอบกับ DNS/ACME จริง** — ตรวจ DNS/TLS ผ่าน interface (ทดสอบด้วย fake และไฟล์ static ใน E2E); `infra/edge/Caddyfile` และ nginx tenant server เป็น reference ที่ยังไม่ได้รันจริง · การแก้ DNS และ deploy production ต้องได้รับอนุมัติก่อน
+12. **Billing อยู่ในโหมดทดสอบ** — ยังไม่มี adapter ของผู้ให้บริการชำระเงินจริง (ต้องได้รับอนุมัติก่อนเปิดใช้), รูปแบบใบกำกับภาษีต้องให้นักบัญชีตรวจ, ไม่มี proration และหน้าจัดการบัตร
+13. CI security scans (gitleaks/Semgrep) ถูกเพิ่มใน workflow แต่ยังไม่ได้รันจริง (ไม่มี GitHub Actions run ในสภาพแวดล้อมนี้); ยังไม่มี DAST, passkeys, UI โอนความเป็นเจ้าของ
 11. **Google ยังไม่ได้ทดสอบกับของจริง** — ไม่มีการเข้าถึง Google จากสภาพแวดล้อมนี้; โค้ดทดสอบกับ Google จำลองที่ทำตาม API จริง · ก่อนเปิดใช้ต้องทำตาม `docs/runbooks/google-oauth-review.md` (รวมการขอ verify scope `spreadsheets` กับ Google) · ยังไม่มี Google Picker (ลิงก์ชีตด้วย URL, โฟลเดอร์ Drive ต้องสร้างผ่านระบบ)
 10. หน้าเว็บที่เผยแพร่เรนเดอร์ฝั่ง client (server ส่ง title/description ให้ search engine แล้ว แต่เนื้อหายังไม่ SSR), ยังไม่มี sitemap.xml/robots.txt ต่อเว็บไซต์
 4. **ฟิลด์ไฟล์/อัปโหลด และความสัมพันธ์ระหว่างตาราง** ยังไม่มี (backlog)
@@ -126,6 +140,7 @@ E2E ที่ครอบคลุม: J4 (Sheets นำเข้า/ส่ง�
 
 ## วิธีทำงานต่อ (สำหรับรอบถัดไป)
 1. อ่าน `docs/ROADMAP.md` → Phase 2 backlog
-2. Phase 6 (SaaS & hardening): billing adapter + webhooks (HMAC, idempotency — ใช้แนวทางเดียวกับ webhooks ขาออก), metering, super admin, PDPA; การเปิดใช้ billing ต้องได้รับอนุมัติก่อน
-3. runtime: build `npm run build:runtime` ก่อนรัน API (E2E ทำให้อัตโนมัติ)
-4. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้
+2. ก่อนใช้งานจริง: ทดสอบกับ Google/DNS จริง, เลือกและอนุมัติผู้ให้บริการชำระเงิน, ทำ restore drill และ DAST ตาม `docs/runbooks/`
+3. Phase 7: template marketplace, real-time collaboration, code export, sandboxed custom code (ต้อง security review ก่อน)
+4. runtime: build `npm run build:runtime` ก่อนรัน API (E2E ทำให้อัตโนมัติ)
+5. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้

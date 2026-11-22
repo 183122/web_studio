@@ -54,14 +54,16 @@
 - [ ] Deferred: workflow action "call webhook / send to connector", SMS, custom provider adapters; SMTP settings UI (mail is configured via env)
 - [ ] Deferred: file fields in data models (attachments are record-level for now)
 
-## Phase 6 — SaaS & hardening
-- [ ] Billing provider adapter (Thai-compatible), webhooks (HMAC, replay protection, idempotency), dunning, invoices, downgrade policy
-- [ ] Metering (AI tokens, build seconds, storage, bandwidth, requests) with atomic reserve/commit
-- [ ] Super admin, support impersonation with approval + audit, abuse flags
-- [ ] Workspace invitations/switcher, 2FA/passkeys, session management UI
-- [ ] PDPA: consent records, export/delete, retention schedules; audit log hash chain
-- [ ] Observability (tracing, metrics, error monitoring), SAST/DAST in CI, backup/restore drills, runbooks
-- [ ] Journey: J7
+## Phase 6 — SaaS & hardening ✅ (2026-11-22)
+- [x] Billing provider adapter + sandbox provider (refused in production), HMAC webhooks with replay protection and idempotency, invoices with 7% VAT and tax-invoice numbering, trials, cancellation, dunning (1/3/7 days), downgrade that keeps data
+- [x] Metering (site requests, bandwidth, publish minutes, AI credits incl. admin grants) with atomic counters, warnings, soft/hard limits; seats and custom-domain limits
+- [x] Super admin console, owner-approved read-only support access, abuse reports and suspension
+- [x] Workspace invitations/switcher, TOTP 2FA + recovery codes, session management
+- [x] PDPA: consent records, export, erasure with grace-period purge, end-user export/erase, retention schedule; audit log hash chain + verifier
+- [x] Observability: request ids, readiness health, Prometheus metrics, JSON logs; CI SAST + secret scanning; runbooks (backup/restore, incident, deploy/rollback, billing reconciliation, domains)
+- [x] Journey: J7 (UI: checkout → webhook → quota; PHPUnit: renewal failure → dunning → downgrade)
+- [ ] Needs approval: real payment provider adapter (e.g. a Thai-compatible gateway) + live activation; accountant review of the tax-invoice format
+- [ ] Deferred: proration, card management UI, passkeys/WebAuthn, organization ownership transfer UI, DAST against staging, WORM export of the audit chain head, error-monitoring SaaS integration
 
 ## Phase 7
 - [ ] Template marketplace (moderation, licensing), real-time collaboration, full code export, sandboxed custom code (after security review)

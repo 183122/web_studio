@@ -10,6 +10,12 @@ import Dashboard from './pages/Dashboard.tsx';
 const Editor = lazy(() => import('./editor/Editor.tsx'));
 const Preview = lazy(() => import('./pages/Preview.tsx'));
 const DataAdmin = lazy(() => import('./pages/DataAdmin.tsx'));
+const Team = lazy(() => import('./pages/Team.tsx'));
+const AcceptInvite = lazy(() => import('./pages/AcceptInvite.tsx'));
+const AdminConsole = lazy(() => import('./pages/AdminConsole.tsx'));
+const ReportAbuse = lazy(() => import('./pages/ReportAbuse.tsx'));
+const Billing = lazy(() => import('./pages/Billing.tsx'));
+const TestCheckout = lazy(() => import('./pages/TestCheckout.tsx'));
 const Integrations = lazy(() => import('./pages/Integrations.tsx'));
 const AdminSettings = lazy(() => import('./pages/AdminSettings.tsx'));
 const SharePreview = lazy(() => import('./pages/SharePreview.tsx'));
@@ -26,6 +32,7 @@ const router = createBrowserRouter([
   },
   { path: '/reset-password', element: <ResetPassword /> },
   { path: '/verify-email', element: <VerifyEmailResult /> },
+  { path: '/report-abuse', element: <Suspense fallback={<FullPageSpinner />}><ReportAbuse /></Suspense> },
   { path: '/share/:token', element: <Suspense fallback={<FullPageSpinner />}><SharePreview /></Suspense> },
   {
     element: <RequireAuth />,
@@ -33,7 +40,12 @@ const router = createBrowserRouter([
       { path: '/app', element: <Dashboard /> },
       { path: '/app/projects/:projectId', element: <Suspense fallback={<FullPageSpinner />}><Editor /></Suspense> },
       { path: '/app/projects/:projectId/data', element: <Suspense fallback={<FullPageSpinner />}><DataAdmin /></Suspense> },
+      { path: '/app/billing', element: <Suspense fallback={<FullPageSpinner />}><Billing /></Suspense> },
+      { path: '/billing/test-checkout/:ref', element: <Suspense fallback={<FullPageSpinner />}><TestCheckout /></Suspense> },
       { path: '/app/integrations', element: <Suspense fallback={<FullPageSpinner />}><Integrations /></Suspense> },
+      { path: '/app/team', element: <Suspense fallback={<FullPageSpinner />}><Team /></Suspense> },
+      { path: '/invite/:token', element: <Suspense fallback={<FullPageSpinner />}><AcceptInvite /></Suspense> },
+      { path: '/app/admin', element: <Suspense fallback={<FullPageSpinner />}><AdminConsole /></Suspense> },
       { path: '/app/admin/settings', element: <Suspense fallback={<FullPageSpinner />}><AdminSettings /></Suspense> },
       { path: '/app/projects/:projectId/preview', element: <Suspense fallback={<FullPageSpinner />}><Preview /></Suspense> },
     ],

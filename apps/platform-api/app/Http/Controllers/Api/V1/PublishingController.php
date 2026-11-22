@@ -9,6 +9,7 @@ use App\Domain\Schema\DocumentCodec;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\RuntimeController;
 use App\Models\AppDefinition;
+use App\Models\AppRecord;
 use App\Models\AppUser;
 use App\Models\Asset;
 use App\Models\Deployment;
@@ -21,6 +22,7 @@ use App\Services\AuditLogger;
 use App\Support\ApiException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -245,5 +247,42 @@ class PublishingController extends Controller
         $audit->record('app_user.updated', $project, ['app_user_id' => $user->id] + $data);
 
         return response()->json(['data' => ['id' => $user->id, 'role' => $user->role, 'status' => $user->status]]);
+    }
+
+    /** PDPA requests from end users of a published app: export and erase (handled by the app owner). */
+    public function exportAppUser(Project $project, string $id, AuditLogger $audit): JsonResponse
+    {
+        $this->authorize('manage', $project);
+        $u = AppUser::query()->where('project_id', $project->id)->whereKey($id)->firstOr(fn () => throw new ApiException(404, 'not_found', 'ไม่พบผู้ใช้'));
+        $records = AppRecord::query()->where('project_id', $project->id)->where('app_user_id', $u->id)->get()
+            ->map(fn ($r) => ['id' => $r->id, 'modelId' => $r->model_id, 'environment' => $r->environment, 'data' => $r->values(), 'createdAt' => $r->created_at?->toIso8601String()]);
+        $audit->record('app_user.data_exported', $project, ['app_user_id' => $u->id]);
+
+        return response()->json([
+            'account' => ['name' => $u->name, 'email' => $u->email, 'role' => $u->role, 'createdAt' => $u->created_at?->toIso8601String(), 'lastLoginAt' => $u->last_login_at?->toIso8601String()],
+            'records' => $records,
+        ], 200, ['Content-Disposition' => 'attachment; filename="app-user-'.$u->id.'.json"'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+
+    public function deleteAppUser(Request $request, Project $project, string $id, AppUserAuth $auth, AuditLogger $audit): JsonResponse
+    {
+        $this->authorize('manage', $project);
+        $deleteRecords = $request->boolean('deleteRecords');
+        $u = AppUser::query()->where('project_id', $project->id)->whereKey($id)->firstOr(fn () => throw new ApiException(404, 'not_found', 'ไม่พบผู้ใช้'));
+        DB::transaction(function () use ($u, $project, $deleteRecords, $auth) {
+            $auth->revokeAll($u);
+            $q = AppRecord::query()->where('project_id', $project->id)->where('app_user_id', $u->id);
+            if ($deleteRecords) {
+                $ids = (clone $q)->pluck('id');
+                DB::table('app_record_unique_keys')->whereIn('record_id', $ids)->delete();
+                $q->delete();
+            } else {
+                $q->update(['app_user_id' => null]); // records stay with the app owner, unlinked from the person
+            }
+            $u->delete();
+        });
+        $audit->record('app_user.deleted', $project, ['app_user_id' => $id, 'records_deleted' => $deleteRecords]);
+
+        return response()->json(['data' => ['ok' => true]]);
     }
 }

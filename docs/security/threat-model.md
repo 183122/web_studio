@@ -102,9 +102,25 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | I-11 | Webhook spoofing/replay at receivers | HMAC-SHA256 over timestamp + body, event id for idempotency, secret shown once (encrypted at rest) | ✅ |
 | I-12 | Fake Google endpoint in production | `GOOGLE_FAKE_BASE` refused when `APP_ENV=production` | ✅ |
 
+### Phase 6 additions (SaaS & hardening)
+| # | Threat | Control | Status |
+|---|---|---|---|
+| B-1 | Fake "payment success" (redirect tampering) | plans change only on verified webhooks; return page only polls | ✅ `BillingTest` |
+| B-2 | Forged / replayed / duplicated provider webhooks | HMAC + 5-min window, unique event ids, amount/currency match | ✅ |
+| B-3 | Free upgrades via the sandbox provider | test provider refused in production; real provider needs approval | ✅ |
+| B-4 | Usage races beyond quota | atomic counters; countable limits checked under org lock | ✅ |
+| B-5 | Destructive downgrade | plan change only; data kept; new usage blocked | ✅ J7 |
+| S-4 | Operator overreach | support access needs org approval, read-only, expiring, revocable, audited; no billing access | ✅ `PlatformAdminTest` |
+| S-5 | Abusive tenant content | public reports, suspension (sites offline, publishing/checkout blocked), data kept for owners | ✅ |
+| S-6 | Account takeover | TOTP 2FA with replay protection, hashed recovery codes, session revoke, password confirmation for sensitive changes | ✅ `AccountSecurityTest` |
+| S-7 | Invitation hijack | hashed single-use token, 7-day expiry, bound to invited e-mail, seat limits | ✅ |
+| P-12 | PDPA rights not honoured | consent record, export, erasure (anonymize + purge after 30 d), end-user export/erase by app owners, retention schedule | ✅ `PrivacyAuditTest` |
+| P-13 | Audit log tampering | hash chain over canonical snapshots, locked chain head, daily verify + metric | ✅ |
+| O-1 | Blind operations | request ids, readiness, metrics, JSON logs, runbooks | ✅ (alert wiring is deployment-specific) |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
 - Google: complete OAuth verification for the sensitive `spreadsheets` scope and run `docs/runbooks/google-oauth-review.md` against real Google before enabling for customers.
 - Published sites: set `PLATFORM_BASE_DOMAIN`/`PLATFORM_CNAME_TARGET`/`PLATFORM_HOSTS`, run the edge with on-demand TLS + `ask`, and keep `STUDIO_DNS_DRIVER=system`, `STUDIO_TLS_CHECK=probe` (the `static`/`assume` drivers are for local/E2E only). Use a separate registrable domain for tenant sites (not a subdomain of the studio) so cookies can never be shared.
-- DAST, SAST and dependency scanning in CI: `npm audit` and `composer audit` run now; SAST/DAST tools are added in Phase 6.
-- Audit log tamper-evidence (hash chain) and retention policy: Phase 6.
+- SAST (Semgrep), secret scanning (gitleaks) and dependency audits run in CI (not executed in this environment); DAST (e.g. OWASP ZAP against staging) still to be scheduled.
+- Audit hash chain detects tampering inside the database; protecting against a privileged DB attacker who rewrites the whole chain needs periodic export of the chain head to write-once storage (WORM) — not yet automated.

@@ -17,6 +17,11 @@ class Organization extends Model
 
     protected $fillable = ['name', 'slug', 'plan_id', 'owner_id'];
 
+    public function isSuspended(): bool
+    {
+        return $this->status === 'suspended';
+    }
+
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);

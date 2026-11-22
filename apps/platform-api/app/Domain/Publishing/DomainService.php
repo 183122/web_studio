@@ -3,8 +3,10 @@
 namespace App\Domain\Publishing;
 
 use App\Models\Domain;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Services\AuditLogger;
+use App\Services\EntitlementService;
 use App\Support\ApiException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
@@ -87,6 +89,7 @@ class DomainService
         if (Domain::query()->where('project_id', $project->id)->where('type', 'custom')->whereNull('released_at')->count() >= 5) {
             throw ApiException::unprocessable('too_many_domains', 'เพิ่มโดเมนได้สูงสุด 5 โดเมนต่อโปรเจกต์');
         }
+        app(EntitlementService::class)->assertCanAddCustomDomain(Organization::query()->with('plan')->findOrFail($project->organization_id));
         try {
             $domain = Domain::create([
                 'organization_id' => $project->organization_id,

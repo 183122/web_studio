@@ -41,3 +41,14 @@ export async function waitSaved(page: Page) {
 export function inspector(page: Page) {
   return page.getByRole('complementary', { name: 'แผงคุณสมบัติ' });
 }
+
+/** Upgrades the current organization through the billing page and the sandbox checkout (webhook-confirmed). */
+export async function upgradeTo(page: Page, plan: 'Pro' | 'Business', outcome: RegExp = /ชำระด้วยบัตรทดสอบ \(สำเร็จ\)/) {
+  await page.goto('/app/billing');
+  await page.getByRole('button', { name: `อัปเกรดเป็น ${plan}` }).click();
+  await expect(page).toHaveURL(/\/billing\/test-checkout\/cs_test_/);
+  await expect(page.getByText('หน้าชำระเงินจำลอง (โหมดทดสอบ)')).toBeVisible();
+  await page.getByRole('button', { name: outcome }).click();
+  await expect(page).toHaveURL(/\/app\/billing/);
+  await expect(page.getByTestId('current-plan')).toHaveText(plan);
+}

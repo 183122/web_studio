@@ -13,6 +13,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  security:
+    name: Security scans (secrets + SAST)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Secret scanning (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: SAST (Semgrep — PHP, TypeScript/React, secrets, OWASP Top 10)
+        run: |
+          pip install semgrep==1.95.0
+          semgrep scan --error --metrics=off \
+            --config p/php --config p/typescript --config p/react --config p/secrets --config p/owasp-top-ten \
+            --exclude 'apps/platform-api/vendor' --exclude 'node_modules' --exclude '**/generated/**' --exclude 'tests/e2e/fake-google'
+
   typescript:
     name: TypeScript packages + studio
     runs-on: ubuntu-24.04

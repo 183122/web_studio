@@ -15,12 +15,13 @@ const SECRET = ['GOCSPX', 'e2eTestSecretValue1234567890'].join('-');
 
 test('platform admin configures the Google OAuth client; others cannot see the settings', async ({ page }) => {
   const email = await register(page, 'ผู้ดูแลระบบ');
-  await expect(page.getByRole('link', { name: 'ตั้งค่าระบบ' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'ผู้ดูแลระบบ' })).toHaveCount(0);
   await page.goto('/app/admin/settings');
   await expect(page.getByText('ไม่พบหน้าที่ต้องการ')).toBeVisible();
 
   grantPlatformAdmin(email);
   await page.goto('/app');
+  await page.getByRole('link', { name: 'ผู้ดูแลระบบ' }).click();
   await page.getByRole('link', { name: 'ตั้งค่าระบบ' }).click();
   await expect(page.getByTestId('google-status')).toHaveText('ยังไม่ได้ตั้งค่า');
   await expect(page.getByText('Authorized redirect URI', { exact: true })).toBeVisible();

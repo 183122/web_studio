@@ -3,6 +3,7 @@
 namespace App\Domain\Publishing;
 
 use App\Models\Domain;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Release;
 
@@ -26,6 +27,9 @@ class SiteResolver
         $project = Project::query()->find($domain->project_id);
         if ($project === null || $project->live_release_id === null) {
             return null;
+        }
+        if (Organization::query()->whereKey($project->organization_id)->value('status') === 'suspended') {
+            return null; // abuse suspension: sites offline (data kept)
         }
         $release = Release::query()->find($project->live_release_id);
         if ($release === null || $release->status !== 'ready') {

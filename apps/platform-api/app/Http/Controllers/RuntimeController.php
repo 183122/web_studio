@@ -12,6 +12,7 @@ use App\Domain\Publishing\SiteResolver;
 use App\Domain\Schema\DocumentCodec;
 use App\Domain\Schema\Upcaster;
 use App\Models\Asset;
+use App\Services\UsageMeter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -55,6 +56,9 @@ class RuntimeController extends Controller
         $site = $this->sites->resolve($host);
         if ($site === null) {
             return $this->html(404, 'ไม่พบเว็บไซต์', '<main style="font-family:system-ui;padding:4rem;text-align:center"><h1>404</h1><p>ไม่พบเว็บไซต์นี้ หรือยังไม่ได้เผยแพร่</p></main>', null, true);
+        }
+        if ($blocked = $this->meter($site)) {
+            return $blocked;
         }
         $doc = Upcaster::upcast(DocumentCodec::decode($site['release']->document));
         $route = '/'.ltrim((string) $path, '/');
@@ -114,11 +118,29 @@ class RuntimeController extends Controller
         abort_if($site === null || ! in_array($asset, $site['release']->manifest['assets'] ?? [], true), 404);
         $file = Asset::query()->where('workspace_id', $site['project']->workspace_id)->whereKey($asset)->first();
         abort_if($file === null || ! $file->isServable() || ! Storage::disk($file->disk)->exists($file->path), 404);
+        if ($blocked = $this->meter($site)) {
+            return $blocked;
+        }
+        $body = Storage::disk($file->disk)->get($file->path);
+        app(UsageMeter::class)->add($site['project']->organization_id, 'bandwidth_bytes', strlen($body));
 
-        return response(Storage::disk($file->disk)->get($file->path), 200, [
+        return response($body, 200, [
             'Content-Type' => $file->mime, 'X-Content-Type-Options' => 'nosniff',
             'Content-Security-Policy' => "default-src 'none'; sandbox", 'Cache-Control' => 'public, max-age=86400',
         ]);
+    }
+
+    /** Counts the request; past the hard limit the site pauses (503) until the next period or an upgrade. */
+    private function meter(array $site): ?Response
+    {
+        $orgId = $site['project']->organization_id;
+        $meter = app(UsageMeter::class);
+        if ($meter->overHardLimit($orgId, 'runtime_requests')) {
+            return $this->html(503, 'หยุดให้บริการชั่วคราว', '<main style="font-family:system-ui;padding:4rem;text-align:center"><h1>หยุดให้บริการชั่วคราว</h1><p>เว็บไซต์นี้ใช้งานเกินโควตาของแพ็กเกจเดือนนี้ เจ้าของเว็บไซต์สามารถอัปเกรดแพ็กเกจเพื่อเปิดใช้งานต่อได้ทันที</p></main>', null, true);
+        }
+        $meter->add($orgId, 'runtime_requests');
+
+        return null;
     }
 
     // ---------------------------------------------------------------- runtime API (middleware: ResolveSite)

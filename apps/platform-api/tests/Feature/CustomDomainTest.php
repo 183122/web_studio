@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Domain\Publishing\DnsResolver;
 use App\Domain\Publishing\TlsProbe;
 use App\Models\Domain;
+use App\Models\Plan;
 
 class FakeDns implements DnsResolver
 {
@@ -55,6 +56,7 @@ class CustomDomainTest extends DataTestCase
         $this->app->instance(DnsResolver::class, $this->dns);
         $this->app->instance(TlsProbe::class, $this->tls);
         config(['studio.publishing.require_verified_email' => false]);
+        $this->onPlan('pro'); // custom domains are a paid feature
         $this->actingAs($this->owner)->putJson("/api/v1/projects/{$this->project->id}/subdomain", ['slug' => 'shop'])->assertOk();
         $this->actingAs($this->owner)->postJson("/api/v1/projects/{$this->project->id}/publish")->assertStatus(202);
     }
@@ -106,6 +108,7 @@ class CustomDomainTest extends DataTestCase
         $token = Domain::query()->find($id)->verification_token;
 
         [$other, $otherWs] = $this->tenant('Other');
+        $otherWs->organization->forceFill(['plan_id' => Plan::query()->where('code', 'pro')->value('id')])->save();
         $otherProject = $this->project($other, $otherWs);
         $this->actingAs($other)->postJson("/api/v1/projects/{$otherProject->id}/domains", ['hostname' => 'shop.example.com'])
             ->assertStatus(409)->assertJsonPath('error.code', 'hostname_taken');

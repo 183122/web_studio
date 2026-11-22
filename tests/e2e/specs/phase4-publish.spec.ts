@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { expect, test, type Page } from '@playwright/test';
-import { createProject, inspector, register, waitSaved } from './helpers.ts';
+import { createProject, inspector, register, upgradeTo, waitSaved } from './helpers.ts';
 
 // Chromium resolves every *.localhost name to loopback, so published sites are reachable on the API port.
 const SITE_PORT = 8001;
@@ -124,6 +124,9 @@ test('J6: custom domain is served only after DNS verification', async ({ page, c
   await register(page);
   await createProject(page, 'ร้านค้าโดเมนเอง', 'blank');
   await waitSaved(page);
+  const editorUrl = page.url();
+  await upgradeTo(page, 'Pro'); // custom domains are a paid feature
+  await page.goto(editorUrl);
   const slug = `e2e-${uid()}`;
   const host = `www-${uid()}.localhost`;
 

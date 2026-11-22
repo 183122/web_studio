@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -51,6 +52,15 @@ return [
     */
 
     'channels' => [
+
+        // Structured logs for log aggregation (LOG_CHANNEL=json); include request_id context.
+        'json' => [
+            'driver' => 'monolog',
+            'handler' => StreamHandler::class,
+            'formatter' => JsonFormatter::class,
+            'with' => ['stream' => 'php://stderr'],
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
 
         'stack' => [
             'driver' => 'stack',

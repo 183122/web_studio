@@ -5,6 +5,7 @@ namespace App\Domain\Ai;
 use App\Models\AiRequest;
 use App\Models\Organization;
 use App\Services\EntitlementService;
+use App\Services\UsageMeter;
 use App\Support\ApiException;
 
 /**
@@ -17,7 +18,8 @@ class AiCredits
 
     public function limit(Organization $org): int
     {
-        return $this->entitlements->limit($org, 'ai_credits_monthly');
+        // Plan allowance + credits granted by platform admins for this month (audited adjustments).
+        return $this->entitlements->limit($org, 'ai_credits_monthly') + app(UsageMeter::class)->value($org->id, 'ai_credit_bonus');
     }
 
     public function used(Organization $org): int

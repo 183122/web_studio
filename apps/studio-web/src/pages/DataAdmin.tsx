@@ -443,7 +443,7 @@ function AppUsersTab({ projectId, canEdit }: { projectId: string; canEdit: boole
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-slate-600 dark:bg-navy-900 dark:text-slate-300"><tr><th className="px-3 py-2">ชื่อ</th><th className="px-3">อีเมล</th><th className="px-3">บทบาท</th><th className="px-3">สถานะ</th><th className="px-3">เข้าสู่ระบบล่าสุด</th></tr></thead>
+        <thead className="bg-slate-50 text-slate-600 dark:bg-navy-900 dark:text-slate-300"><tr><th className="px-3 py-2">ชื่อ</th><th className="px-3">อีเมล</th><th className="px-3">บทบาท</th><th className="px-3">สถานะ</th><th className="px-3">เข้าสู่ระบบล่าสุด</th><th className="px-3">PDPA</th></tr></thead>
         <tbody>
           {users.data.map((u) => (
             <tr key={u.id} className="border-t border-slate-100 dark:border-slate-800">
@@ -461,6 +461,14 @@ function AppUsersTab({ projectId, canEdit }: { projectId: string; canEdit: boole
                 </label>
               </td>
               <td className="px-3 text-slate-500">{u.lastLoginAt ? formatDate(u.lastLoginAt) : '—'}</td>
+              <td className="px-3">
+                <a className="text-brand-700 underline" href={`/api/v1/projects/${projectId}/app-users/${u.id}/export`}>ส่งออก</a>
+                {canEdit ? <button type="button" className="ml-3 text-red-700 underline" onClick={() => {
+                  if (!window.confirm(`ลบบัญชี ${u.email}? (คำขอลบข้อมูลตาม PDPA)`)) return;
+                  const withRecords = window.confirm('ลบข้อมูลที่ผู้ใช้นี้ส่งไว้ด้วยหรือไม่? (ยกเลิก = เก็บข้อมูลไว้แต่ไม่ผูกกับบุคคล)');
+                  api(`/projects/${projectId}/app-users/${u.id}${withRecords ? '?deleteRecords=1' : ''}`, { method: 'DELETE' }).then(() => { toast.success('ลบแล้ว'); qc.invalidateQueries({ queryKey: key }); }, (e) => toast.error(errorMessage(e)));
+                }}>ลบ</button> : null}
+              </td>
             </tr>
           ))}
         </tbody>

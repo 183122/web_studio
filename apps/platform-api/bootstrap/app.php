@@ -2,6 +2,8 @@
 
 use App\Domain\Integrations\Google\GoogleApiException;
 use App\Domain\Schema\SchemaException;
+use App\Http\Middleware\DirectNavigationIsFrontend;
+use App\Http\Middleware\RequestId;
 use App\Http\Middleware\SecurityHeaders;
 use App\Support\ApiException;
 use Illuminate\Auth\AuthenticationException;
@@ -17,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 $error = static fn (int $status, string $code, string $message, array $details = []) => response()->json(
-    ['error' => array_filter(['code' => $code, 'message' => $message, 'details' => $details ?: null], fn ($v) => $v !== null)],
+    ['error' => array_filter(['code' => $code, 'message' => $message, 'details' => $details ?: null, 'requestId' => request()?->attributes->get('request_id')], fn ($v) => $v !== null)],
     $status,
 );
 
@@ -32,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->trustProxies(at: env('TRUSTED_PROXIES') ? explode(',', (string) env('TRUSTED_PROXIES')) : null);
         $middleware->append(SecurityHeaders::class);
+        $middleware->prepend(RequestId::class);
+        $middleware->prependToGroup('api', DirectNavigationIsFrontend::class);
         // The API never redirects guests (there is no server-side login page): it answers 401 JSON.
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : rtrim((string) config('studio.frontend_url'), '/').'/login');
     })

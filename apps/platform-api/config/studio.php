@@ -74,6 +74,39 @@ return [
         'allow_private' => (bool) env('STUDIO_EGRESS_ALLOW_PRIVATE', false),
     ],
 
+    // M03 billing. Only the `test` provider exists; it is refused when APP_ENV=production.
+    // Activating a real provider requires explicit approval (spec §0) and its own adapter + secrets.
+    'billing' => [
+        'provider' => env('BILLING_PROVIDER', 'test'),
+        'webhook_secret' => env('BILLING_WEBHOOK_SECRET', env('APP_KEY')),
+        'webhook_tolerance_seconds' => 300,
+        'vat_rate_bp' => 700,
+        'dunning_days' => [1, 3, 7],
+        'free_plan' => 'free',
+        'seller' => [
+            'name' => env('BILLING_SELLER_NAME', 'AI Studio Cloud (ตัวอย่าง — ตั้งค่า BILLING_SELLER_*)'),
+            'tax_id' => env('BILLING_SELLER_TAX_ID', ''),
+            'address' => env('BILLING_SELLER_ADDRESS', ''),
+        ],
+    ],
+
+    // PDPA: versions of the legal documents users consent to; retention periods (days).
+    'legal' => [
+        'terms_version' => env('LEGAL_TERMS_VERSION', '2026-11'),
+        'privacy_version' => env('LEGAL_PRIVACY_VERSION', '2026-11'),
+    ],
+    'retention' => [
+        'ai_requests_days' => (int) env('RETENTION_AI_REQUESTS_DAYS', 180),
+        'webhook_deliveries_days' => (int) env('RETENTION_WEBHOOK_DELIVERIES_DAYS', 30),
+        'sync_jobs_days' => (int) env('RETENTION_SYNC_JOBS_DAYS', 90),
+        'app_audit_days' => (int) env('RETENTION_APP_AUDIT_DAYS', 365),
+        'billing_events_days' => (int) env('RETENTION_BILLING_EVENTS_DAYS', 730),
+        'deleted_accounts_grace_days' => (int) env('RETENTION_DELETED_ACCOUNT_GRACE_DAYS', 30),
+    ],
+
+    // Prometheus metrics endpoint (/api/internal/metrics); disabled when empty.
+    'metrics_token' => (string) env('METRICS_TOKEN', ''),
+
     'register_per_hour' => (int) env('STUDIO_REGISTER_PER_HOUR', 10),
 
     // Default plan code assigned to new organizations (see PlanSeeder).

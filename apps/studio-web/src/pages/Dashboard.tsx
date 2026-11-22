@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { DropdownMenu } from 'radix-ui';
 import {
-  Archive, ArchiveRestore, Copy, LayoutTemplate, LogOut, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Star, Trash2, FolderKanban, MailWarning, Settings, Plug,
+  Archive, ArchiveRestore, Copy, LayoutTemplate, LogOut, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Star, Trash2, FolderKanban, MailWarning, Settings, Plug, CreditCard, Users,
 } from 'lucide-react';
 import { PageRenderer } from '@studio/renderer';
 import { api, errorMessage, type Envelope } from '../lib/api.ts';
-import { useAuthActions, useCurrentWorkspace, useMe } from '../lib/auth.tsx';
+import { selectWorkspace, useAuthActions, useCurrentWorkspace, useMe, useWorkspaces } from '../lib/auth.tsx';
 import { useProjectMutation, useProjects, useTemplate, useTemplates, useWorkspace, type ProjectFilters } from '../lib/queries.ts';
 import type { Project } from '../lib/types.ts';
 import { Button } from '../components/ui/Button.tsx';
@@ -33,6 +34,9 @@ function useDebounced<T>(value: T, ms: number): T {
 export default function Dashboard() {
   const me = useMe().data!;
   const ws = useCurrentWorkspace();
+  const workspaces = useWorkspaces();
+  const qc = useQueryClient();
+  const [, setWsTick] = useState(0);
   const summary = useWorkspace(ws?.id);
   const { logout } = useAuthActions();
   const navigate = useNavigate();
@@ -63,19 +67,32 @@ export default function Dashboard() {
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur dark:border-slate-800 dark:bg-navy-950/85">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
           <Logo />
-          <span className="hidden truncate text-sm text-slate-500 sm:inline">/ {ws.organization?.name} · {ws.name}</span>
+          {workspaces.length > 1 ? (
+            <label className="hidden items-center gap-1 text-sm text-slate-500 sm:flex">
+              <span className="sr-only">เลือก Workspace</span>
+              <select aria-label="เลือก Workspace" className="field-input h-8 w-auto py-0" value={ws.id} onChange={(e) => { selectWorkspace(e.target.value); qc.invalidateQueries(); window.scrollTo(0, 0); setWsTick((t) => t + 1); }}>
+                {workspaces.map((w) => <option key={w.id} value={w.id}>{w.organization.name} · {w.name}</option>)}
+              </select>
+            </label>
+          ) : <span className="hidden truncate text-sm text-slate-500 sm:inline">/ {ws.organization?.name} · {ws.name}</span>}
           <div className="ml-auto flex items-center gap-2">
             {summary.data ? (
               <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600 md:inline dark:bg-navy-800 dark:text-slate-300">
                 แผน {summary.data.organization.plan?.name ?? '-'} · โปรเจกต์ {summary.data.usage.projects.used}/{summary.data.usage.projects.limit} · พื้นที่ {formatBytes(summary.data.usage.storage_bytes.used)}/{formatBytes(summary.data.usage.storage_bytes.limit)}
               </span>
             ) : null}
+            <Link to="/app/team" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
+              <Users className="h-4 w-4" /> ทีมและความปลอดภัย
+            </Link>
+            <Link to="/app/billing" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
+              <CreditCard className="h-4 w-4" /> แพ็กเกจ
+            </Link>
             <Link to="/app/integrations" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
               <Plug className="h-4 w-4" /> การเชื่อมต่อ
             </Link>
             {me.user.isPlatformAdmin ? (
-              <Link to="/app/admin/settings" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
-                <Settings className="h-4 w-4" /> ตั้งค่าระบบ
+              <Link to="/app/admin" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
+                <Settings className="h-4 w-4" /> ผู้ดูแลระบบ
               </Link>
             ) : null}
             <ThemeToggle />

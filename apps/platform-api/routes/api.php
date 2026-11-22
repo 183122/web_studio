@@ -7,18 +7,25 @@ use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
+use App\Http\Controllers\Api\V1\Auth\PrivacyController;
+use App\Http\Controllers\Api\V1\Auth\SecurityController;
+use App\Http\Controllers\Api\V1\BillingController;
 use App\Http\Controllers\Api\V1\DataController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Integrations\DriveController;
 use App\Http\Controllers\Api\V1\Integrations\GoogleConnectionController;
 use App\Http\Controllers\Api\V1\Integrations\SheetSyncController;
 use App\Http\Controllers\Api\V1\Integrations\WebhookController;
+use App\Http\Controllers\Api\V1\MetricsController;
+use App\Http\Controllers\Api\V1\PlatformAdminController;
 use App\Http\Controllers\Api\V1\PlatformSettingsController;
 use App\Http\Controllers\Api\V1\PreviewRuntimeController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PublishingController;
 use App\Http\Controllers\Api\V1\RevisionController;
 use App\Http\Controllers\Api\V1\SchemaController;
+use App\Http\Controllers\Api\V1\SupportGrantController;
+use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\TemplateController;
 use App\Http\Controllers\Api\V1\WorkflowController;
 use App\Http\Controllers\Api\V1\WorkspaceController;
@@ -41,6 +48,8 @@ Route::prefix('runtime/v1')->middleware([ResolveSite::class, 'throttle:runtime']
     Route::post('auth/logout', [RuntimeController::class, 'logout']);
 });
 
+Route::get('internal/metrics', MetricsController::class)->middleware('throttle:60,1');
+
 // Edge on-demand TLS authorisation (Caddy `ask`).
 Route::get('internal/tls/ask', [PublishingController::class, 'tlsAsk'])->middleware('throttle:120,1');
 
@@ -49,6 +58,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
+        Route::post('two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])->middleware('throttle:login');
         Route::post('forgot-password', [PasswordController::class, 'forgot'])->middleware('throttle:password');
         Route::post('reset-password', [PasswordController::class, 'reset'])->middleware('throttle:password');
         Route::get('email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
@@ -57,6 +67,17 @@ Route::prefix('v1')->group(function () {
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('logout', [AuthController::class, 'logout']);
             Route::get('me', [AuthController::class, 'me']);
+            Route::post('two-factor', [SecurityController::class, 'setupTwoFactor'])->middleware('throttle:10,1');
+            Route::post('two-factor/confirm', [SecurityController::class, 'confirmTwoFactor'])->middleware('throttle:10,1');
+            Route::post('two-factor/disable', [SecurityController::class, 'disableTwoFactor'])->middleware('throttle:10,1');
+            Route::post('two-factor/recovery-codes', [SecurityController::class, 'regenerateRecoveryCodes'])->middleware('throttle:10,1');
+            Route::get('sessions', [SecurityController::class, 'sessions']);
+            Route::get('privacy/consent', [PrivacyController::class, 'consent']);
+            Route::put('privacy/consent', [PrivacyController::class, 'updateConsent']);
+            Route::get('privacy/export', [PrivacyController::class, 'export'])->middleware('throttle:5,1');
+            Route::post('privacy/delete-account', [PrivacyController::class, 'deleteAccount'])->middleware('throttle:5,1');
+            Route::delete('sessions/{id}', [SecurityController::class, 'revokeSession']);
+            Route::post('sessions/logout-others', [SecurityController::class, 'logoutOtherSessions'])->middleware('throttle:10,1');
             Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])->middleware('throttle:6,1');
         });
     });
@@ -64,6 +85,11 @@ Route::prefix('v1')->group(function () {
     // Signed, short-lived asset URLs (no session needed; signature is the capability).
     Route::get('assets/{asset}/content', [AssetController::class, 'content'])
         ->middleware('signed:relative')->name('assets.content');
+
+    Route::post('abuse-reports', [SupportGrantController::class, 'reportAbuse'])->middleware('throttle:5,1');
+
+    // Payment provider webhooks (signature-verified, idempotent; no session).
+    Route::post('billing/webhooks/{provider}', [BillingController::class, 'webhook'])->middleware('throttle:120,1');
 
     Route::get('preview-links/{token}', [PublishingController::class, 'showPreviewLink'])->middleware('throttle:60,1');
 
@@ -130,7 +156,39 @@ Route::prefix('v1')->group(function () {
             Route::get('settings/google-oauth', [PlatformSettingsController::class, 'showGoogle']);
             Route::put('settings/google-oauth', [PlatformSettingsController::class, 'updateGoogle'])->middleware('throttle:10,1');
             Route::delete('settings/google-oauth', [PlatformSettingsController::class, 'deleteGoogle'])->middleware('throttle:10,1');
+            Route::get('organizations', [PlatformAdminController::class, 'organizations']);
+            Route::get('organizations/{organization}', [PlatformAdminController::class, 'organization']);
+            Route::post('organizations/{organization}/plan', [PlatformAdminController::class, 'setPlan']);
+            Route::post('organizations/{organization}/credits', [PlatformAdminController::class, 'grantCredits']);
+            Route::post('organizations/{organization}/suspension', [PlatformAdminController::class, 'suspend']);
+            Route::post('organizations/{organization}/support-requests', [PlatformAdminController::class, 'requestSupport']);
+            Route::get('abuse-reports', [PlatformAdminController::class, 'abuseReports']);
+            Route::post('abuse-reports/{id}', [PlatformAdminController::class, 'resolveAbuse']);
         });
+
+        // ---- Team ----
+        Route::get('workspaces/{workspace}/members', [TeamController::class, 'members']);
+        Route::post('workspaces/{workspace}/invitations', [TeamController::class, 'invite'])->middleware('throttle:20,1');
+        Route::delete('workspaces/{workspace}/invitations/{id}', [TeamController::class, 'revokeInvitation']);
+        Route::patch('workspaces/{workspace}/members/{userId}', [TeamController::class, 'updateMember']);
+        Route::delete('workspaces/{workspace}/members/{userId}', [TeamController::class, 'removeMember']);
+        Route::get('invitations/{token}', [TeamController::class, 'showInvitation'])->middleware('throttle:30,1');
+        Route::post('invitations/{token}/accept', [TeamController::class, 'acceptInvitation'])->middleware('throttle:30,1');
+
+        // ---- Support access decided by the organization ----
+        Route::get('organizations/{organization}/support-requests', [SupportGrantController::class, 'index']);
+        Route::post('organizations/{organization}/support-requests/{id}', [SupportGrantController::class, 'decide']);
+
+        // ---- Billing (M03) ----
+        Route::get('organizations/{organization}/billing', [BillingController::class, 'show']);
+        Route::put('organizations/{organization}/billing/profile', [BillingController::class, 'updateProfile']);
+        Route::post('organizations/{organization}/billing/checkout', [BillingController::class, 'checkout'])->middleware('throttle:10,1');
+        Route::post('organizations/{organization}/billing/trial', [BillingController::class, 'trial']);
+        Route::post('organizations/{organization}/billing/cancel', [BillingController::class, 'cancel']);
+        Route::get('organizations/{organization}/invoices/{id}', [BillingController::class, 'showInvoice']);
+        Route::get('organizations/{organization}/invoices/{id}/print', [BillingController::class, 'printInvoice']);
+        Route::get('billing/test-checkout/{ref}', [BillingController::class, 'testCheckout']);
+        Route::post('billing/test-checkout/{ref}/complete', [BillingController::class, 'testCheckoutComplete'])->middleware('throttle:20,1');
 
         // ---- Integrations (M22–M25) ----
         Route::get('workspaces/{workspace}/integrations/google', [GoogleConnectionController::class, 'show']);
@@ -177,6 +235,8 @@ Route::prefix('v1')->group(function () {
         Route::delete('projects/{project}/preview-links/{id}', [PublishingController::class, 'revokePreviewLink']);
         Route::get('projects/{project}/app-users', [PublishingController::class, 'appUsers']);
         Route::patch('projects/{project}/app-users/{id}', [PublishingController::class, 'updateAppUser']);
+        Route::get('projects/{project}/app-users/{id}/export', [PublishingController::class, 'exportAppUser']);
+        Route::delete('projects/{project}/app-users/{id}', [PublishingController::class, 'deleteAppUser']);
 
         // ---- AI (M13–M15) ----
         Route::get('projects/{project}/ai/status', [AiController::class, 'status']);

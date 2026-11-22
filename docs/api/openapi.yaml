@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: AI Studio Cloud — Platform API
-  version: 0.5.0
+  version: 0.6.0
   description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN`
     (obtain via `GET /sanctum/csrf-cookie`).
 
@@ -26,6 +26,11 @@ info:
     rate_limited (503), transient (503), not_configured, not_connected, scope_missing).
     Webhook requests carry `X-Studio-Event`, `X-Studio-Event-Id`, `X-Studio-Delivery`,
     `X-Studio-Signature: t=<unix>,v1=<hex HMAC-SHA256(secret, "<t>.<raw body>")>`.
+
+
+    Phase 6: every response carries `X-Request-Id`; error bodies include `error.requestId`.
+    Operator metrics: `GET /api/internal/metrics` (Bearer METRICS_TOKEN, Prometheus
+    text).
 
     '
 servers:
@@ -243,9 +248,14 @@ paths:
           $ref: '#/components/responses/Error'
   /workspaces/{workspace}/members:
     get:
-      summary: Members and roles
+      summary: Members and pending invitations
       parameters:
-      - $ref: '#/components/parameters/workspace'
+      - &id015
+        name: workspace
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '200':
           description: OK
@@ -1573,3 +1583,386 @@ paths:
       responses:
         '202':
           description: Accepted (queued)
+  /organizations/{organization}/billing:
+    get:
+      summary: Plans, subscription, usage, tax profile, invoices (owner/admin/billing_admin)
+      parameters:
+      - &id014
+        name: organization
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/billing/profile:
+    put:
+      summary: Tax invoice buyer details {legalName, taxId(13 digits), branch, address,
+        email}
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/billing/checkout:
+    post:
+      summary: Start hosted checkout {plan} → {url, invoice}. 503 billing_not_activated
+        in production until a real provider is approved
+      parameters:
+      - *id014
+      responses:
+        '201':
+          description: Created
+  /organizations/{organization}/billing/trial:
+    post:
+      summary: Start the one-time trial {plan}
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/billing/cancel:
+    post:
+      summary: Cancel at period end; {resume:true} undoes
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/invoices/{id}:
+    get:
+      summary: Invoice status (poll after checkout)
+      parameters:
+      - *id014
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/invoices/{id}/print:
+    get:
+      summary: Printable invoice / tax invoice (HTML)
+      parameters:
+      - *id014
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /billing/webhooks/{provider}:
+    post:
+      summary: 'Provider webhook: X-Billing-Signature t=<unix>,v1=<HMAC-SHA256(secret,"t.body")>,
+        5-min replay window, idempotent by event id'
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      security: []
+  /billing/test-checkout/{ref}:
+    get:
+      summary: Sandbox hosted checkout data (test provider only)
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /billing/test-checkout/{ref}/complete:
+    post:
+      summary: 'Sandbox payer decision {outcome: success|success_decline_renewals|decline}
+        → signed webhook'
+      parameters:
+      - name: ref
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /auth/two-factor-challenge:
+    post:
+      summary: Second login step {code} or {recoveryCode} after login returned {twoFactorRequired:true}
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/two-factor:
+    post:
+      summary: Start TOTP enrolment {password} → {secret, otpauthUri}
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/two-factor/confirm:
+    post:
+      summary: Confirm enrolment {code} → {recoveryCodes} (shown once)
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/two-factor/disable:
+    post:
+      summary: Disable 2FA {password}
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/two-factor/recovery-codes:
+    post:
+      summary: Regenerate recovery codes {password}
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/sessions:
+    get:
+      summary: Active sessions (hashed ids)
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/sessions/{id}:
+    delete:
+      summary: Revoke another session
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /auth/sessions/logout-others:
+    post:
+      summary: Revoke all other sessions {password}
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/privacy/consent:
+    get:
+      summary: Consent record
+      parameters: []
+      responses:
+        '200':
+          description: OK
+    put:
+      summary: '{marketing:boolean, acceptCurrent?:true}'
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/privacy/export:
+    get:
+      summary: Personal data export (JSON download)
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /auth/privacy/delete-account:
+    post:
+      summary: Erasure {password, confirm:"DELETE"}; owned single-member orgs purged
+        after 30 days
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /workspaces/{workspace}/invitations:
+    post:
+      summary: Invite {email, role} (workspace admin; seat-limited)
+      parameters:
+      - *id015
+      responses:
+        '201':
+          description: Created
+  /workspaces/{workspace}/invitations/{id}:
+    delete:
+      summary: Revoke invitation
+      parameters:
+      - *id015
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /workspaces/{workspace}/members/{userId}:
+    patch:
+      summary: Change role (last admin protected)
+      parameters:
+      - *id015
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Remove member
+      parameters:
+      - *id015
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /invitations/{token}:
+    get:
+      summary: Invitation details for the signed-in user
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /invitations/{token}/accept:
+    post:
+      summary: Accept (e-mail must match the signed-in account)
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/support-requests:
+    get:
+      summary: Support access requests (org owner/admin)
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/support-requests/{id}:
+    post:
+      summary: '{decision: approve|deny|revoke}'
+      parameters:
+      - *id014
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /abuse-reports:
+    post:
+      summary: Public abuse report {url, category, details, email?}
+      parameters: []
+      responses:
+        '201':
+          description: Created
+      security: []
+  /admin/organizations:
+    get:
+      summary: 'Platform admin: organizations (?search, ?status=suspended)'
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /admin/organizations/{organization}:
+    get:
+      summary: 'Platform admin: organization detail'
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /admin/organizations/{organization}/plan:
+    post:
+      summary: '{plan, reason}'
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /admin/organizations/{organization}/credits:
+    post:
+      summary: Grant AI credits this month {credits, reason}
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /admin/organizations/{organization}/suspension:
+    post:
+      summary: '{suspend:boolean, reason}'
+      parameters:
+      - *id014
+      responses:
+        '200':
+          description: OK
+  /admin/organizations/{organization}/support-requests:
+    post:
+      summary: Request read-only access {reason, minutes 30|60|120|240}
+      parameters:
+      - *id014
+      responses:
+        '201':
+          description: Created
+  /admin/abuse-reports:
+    get:
+      summary: Abuse reports (?status=open)
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /admin/abuse-reports/{id}:
+    post:
+      summary: '{status: actioned|dismissed, resolution}'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/app-users/{id}/export:
+    get:
+      summary: PDPA export of an app end user
+      parameters:
+      - name: project
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK

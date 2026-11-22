@@ -9,7 +9,7 @@ class Plan extends Model
 {
     use HasUlids;
 
-    protected $fillable = ['code', 'name', 'entitlements', 'price_minor', 'currency', 'is_active'];
+    protected $fillable = ['code', 'name', 'entitlements', 'price_minor', 'currency', 'is_active', 'trial_days', 'sort'];
 
     protected function casts(): array
     {

@@ -34,12 +34,32 @@ export function useAuthActions() {
   };
 }
 
-/** The first workspace the user can access (workspace switcher arrives with M02 invitations). */
-export function useCurrentWorkspace() {
+const WS_KEY = 'studio-workspace-id';
+
+/** All workspaces the user can access, across organizations. */
+export function useWorkspaces() {
   const me = useMe().data;
-  const org = me?.organizations[0];
-  const ws = org?.workspaces[0];
-  return ws ? { ...ws, organization: org } : null;
+  return (me?.organizations ?? []).flatMap((org) => org.workspaces.map((ws) => ({ ...ws, organization: org })));
+}
+
+/** The workspace chosen in the switcher (remembered per browser), else the first one. */
+export function useCurrentWorkspace() {
+  const all = useWorkspaces();
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(WS_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+  return all.find((w) => w.id === stored) ?? all[0] ?? null;
+}
+
+export function selectWorkspace(id: string) {
+  try {
+    localStorage.setItem(WS_KEY, id);
+  } catch {
+    /* storage unavailable */
+  }
 }
 
 export function RequireAuth() {

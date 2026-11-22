@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0] — 2026-11-22 — Phase 6
+### Added
+- Billing (test mode): plans Free/Pro/Business, checkout via a sandbox provider, signed + idempotent webhooks, invoices with 7% VAT and tax-invoice numbers, trials, cancellation, dunning and data-preserving downgrade; billing page.
+- Metering and quota enforcement for site traffic, publish minutes, AI credits, seats and custom domains, with usage warnings.
+- Platform admin console (organizations, plan/credit adjustments with reasons, suspension, abuse reports) and organization-approved read-only support access.
+- Team & security: invitations, workspace switcher, TOTP 2FA with recovery codes, session management.
+- PDPA: consent records, personal data export, account deletion, end-user export/erase, retention schedule; tamper-evident audit log hash chain.
+- Request ids, readiness health, Prometheus metrics, JSON logs, CI security scans, operational runbooks.
+### Fixed
+- Bookmarked/typed GET links to the API (invoice print, downloads, exports) returned 401 for signed-in users.
+- Invitation expiry used the system clock instead of the application clock.
+
 ## [0.5.0] — 2026-11-22 — Phase 5
 ### Added
 - Google connection per workspace (OAuth + PKCE, least-privilege features, encrypted tokens, refresh, revoke/disconnect) and an Integrations page.

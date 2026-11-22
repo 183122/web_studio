@@ -17,7 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = ['name', 'email', 'password', 'locale'];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'];
 
     protected function casts(): array
     {
@@ -25,6 +25,11 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'is_platform_admin' => 'boolean',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted',
+            'two_factor_confirmed_at' => 'datetime',
+            'consented_at' => 'datetime',
+            'marketing_consent_at' => 'datetime',
             'password' => 'hashed',
             'is_super_admin' => 'boolean',
         ];
@@ -48,6 +53,18 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('user_id', $this->id)
             ->first();
 
-        return $row?->role;
+        if ($row !== null) {
+            return $row->role;
+        }
+
+        // Approved, unexpired support access → read-only view of that organization's workspaces.
+        if ($this->is_platform_admin) {
+            $orgId = Workspace::query()->whereKey($workspaceId)->value('organization_id');
+            if ($orgId && SupportGrant::activeFor($this->id, $orgId)) {
+                return 'viewer';
+            }
+        }
+
+        return null;
     }
 }

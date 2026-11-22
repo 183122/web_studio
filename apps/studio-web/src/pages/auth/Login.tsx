@@ -23,21 +23,32 @@ export default function Login() {
   const { refresh } = useAuthActions();
   const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, formState } = useForm<Values>({ resolver: zodResolver(schema) });
+  const [twoFactor, setTwoFactor] = useState(false);
+
+  const finish = async () => {
+    await ensureCsrf(true);
+    await refresh();
+    navigate(safeNext(params.get('next')), { replace: true });
+  };
 
   const onSubmit = async (values: Values) => {
     setError(null);
     try {
       await ensureCsrf(true);
-      await api('/auth/login', { method: 'POST', body: values });
-      await ensureCsrf(true);
-      await refresh();
-      navigate(safeNext(params.get('next')), { replace: true });
+      const res = await api<{ data?: { twoFactorRequired?: boolean } }>('/auth/login', { method: 'POST', body: values });
+      if (res.data?.twoFactorRequired) {
+        setTwoFactor(true);
+        return;
+      }
+      await finish();
     } catch (e) {
       if (e instanceof ApiError && e.status === 429) setError('พยายามเข้าสู่ระบบบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่');
       else if (e instanceof ApiError && e.fields.email) setError(e.fields.email[0]);
       else setError(e instanceof Error ? e.message : 'เข้าสู่ระบบไม่สำเร็จ');
     }
   };
+
+  if (twoFactor) return <TwoFactorStep onDone={finish} onRestart={() => setTwoFactor(false)} />;
 
   return (
     <AuthLayout title="เข้าสู่ระบบ" subtitle="สร้างเว็บไซต์และแอปด้วย AI และการลากวาง">
@@ -62,6 +73,40 @@ export default function Login() {
             สมัครใช้งานฟรี
           </Link>
         </p>
+      </form>
+    </AuthLayout>
+  );
+}
+
+/** Second login step for accounts with two-factor authentication. */
+function TwoFactorStep({ onDone, onRestart }: { onDone: () => Promise<void>; onRestart: () => void }) {
+  const [useRecovery, setUseRecovery] = useState(false);
+  const [value, setValue] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await api('/auth/two-factor-challenge', { method: 'POST', body: useRecovery ? { recoveryCode: value.trim() } : { code: value.trim() } });
+      await onDone();
+    } catch (e) {
+      if (e instanceof ApiError && e.code === 'two_factor_expired') { setError(e.message); setTimeout(onRestart, 1500); }
+      else if (e instanceof ApiError && e.status === 429) setError('ลองบ่อยเกินไป กรุณารอสักครู่');
+      else setError('รหัสไม่ถูกต้อง');
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <AuthLayout title="ยืนยันตัวตนสองขั้นตอน" subtitle={useRecovery ? 'กรอกรหัสกู้คืนที่บันทึกไว้ (ใช้ได้ครั้งเดียว)' : 'กรอกรหัส 6 หลักจากแอปยืนยันตัวตนในโทรศัพท์'}>
+      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); void submit(); }} noValidate>
+        {error ? <ErrorState message={error} /> : null}
+        <Field label={useRecovery ? 'รหัสกู้คืน' : 'รหัสยืนยัน'} value={value} onChange={(e) => setValue(e.target.value)} autoComplete="one-time-code" inputMode={useRecovery ? 'text' : 'numeric'} autoFocus />
+        <Button type="submit" className="w-full justify-center" loading={busy} disabled={!value.trim()}>ยืนยัน</Button>
+        <button type="button" className="w-full text-center text-sm text-brand-700 hover:underline" onClick={() => { setUseRecovery(!useRecovery); setValue(''); }}>
+          {useRecovery ? 'ใช้รหัสจากแอปยืนยันตัวตน' : 'ไม่มีโทรศัพท์? ใช้รหัสกู้คืน'}
+        </button>
       </form>
     </AuthLayout>
   );

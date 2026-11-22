@@ -5,6 +5,7 @@ export interface User {
   emailVerified: boolean;
   locale: string;
   isPlatformAdmin: boolean;
+  twoFactorEnabled: boolean;
 }
 
 export type WorkspaceRole = 'admin' | 'editor' | 'developer' | 'viewer';

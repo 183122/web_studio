@@ -1,0 +1,10 @@
+# Test fixtures contain obviously fake credentials (e.g. "test-client-secret-value-123").
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake values used only by automated tests"
+paths = [
+  '''apps/platform-api/tests/''',
+  '''tests/e2e/''',
+]
