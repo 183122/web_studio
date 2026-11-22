@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0] — 2026-11-22 — Phase 4
+### Added
+- Publishing: immutable releases, 8-step pipeline with automatic revert, rollback, unpublish, deployment log in the studio.
+- Published-site runtime (`apps/runtime-web`) served per Host with SEO metadata, real 404s, redirects, strict CSP and release-scoped assets.
+- Production data environment, end-user sign-up/login for generated apps, app-user management, preview/production switch in the data admin.
+- Platform subdomains (reserved names, cooldown), custom domains with TXT/CNAME verification, certificate status and scheduled re-checks, on-demand TLS `ask` endpoint, Caddy/nginx reference config.
+- Expiring, revocable share links for drafts.
+
 ## [0.3.0] — 2026-11-22 — Phase 3
 ### Added
 - AI gateway: Claude Opus 5.5 via the official Anthropic PHP SDK with structured outputs and refusal fallback; offline template planner as fallback; BYOK, consent, redacted logs, monthly AI credits.

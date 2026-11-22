@@ -3,20 +3,20 @@
 > เอกสารนี้คือ "จุดเริ่มต้น" สำหรับการพัฒนารอบถัดไป: อ่านสถานะ → ดู backlog ใน `docs/ROADMAP.md` → ทำ Phase ถัดไปเป็น vertical slice
 > หลักการ: ไม่อ้างว่าฟีเจอร์ทำงานถ้ายังไม่มีโค้ดและเทสต์จริง
 
-## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 3)
+## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 4)
 
 | Phase | ขอบเขต | สถานะ |
 |---|---|---|
 | 0 | ADR, threat model, monorepo, Docker, CI, migrations, seed, auth, tenancy tests | ✅ เสร็จ (Docker image ยังไม่ได้ build ทดสอบในสภาพแวดล้อมนี้ — ดู "ข้อจำกัด") |
 | 1 | Project dashboard, canonical schema, pages, drag & drop, inspector, assets, responsive preview, save/revisions, templates | ✅ เสร็จ |
-| 2 | Data model designer, CRUD, generated admin, app RBAC, forms, workflows, REST API | ✅ เสร็จ (บัญชีผู้ใช้ของแอปที่สร้าง ย้ายไป Phase 4 — ดูข้อจำกัด) |
+| 2 | Data model designer, CRUD, generated admin, app RBAC, forms, workflows, REST API | ✅ เสร็จ (บัญชีผู้ใช้ของแอปส่งมอบใน Phase 4) |
 | 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ✅ เสร็จ (Claude + โหมดออฟไลน์; OpenAI/Gemini ยังไม่ทำ, ยังไม่ได้ทดสอบกับ API จริง — ดูข้อจำกัด) |
-| 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ⏳ ถัดไป |
-| 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ⏳ |
+| 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ✅ เสร็จ (ยังไม่ได้ทดสอบกับ DNS/ACME จริงและยังไม่ deploy production — ดูข้อจำกัด) |
+| 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ⏳ ถัดไป |
 | 6 | Billing, entitlements/metering, super admin, privacy, hardening | ⏳ (มี plans/entitlements พื้นฐานแล้ว) |
 | 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ |
 
-ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J4–J7, J9 อยู่ใน phase ถัดไป)
+ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J4, J5, J7 อยู่ใน phase ถัดไป)
 
 ## Phase 0–1: สิ่งที่ส่งมอบ
 
@@ -45,6 +45,17 @@
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
 
+## Phase 4: สิ่งที่ส่งมอบ (2026-11-22)
+
+- **Release & pipeline** (`app/Domain/Publishing/PublishService.php`): ตรึง revision ที่บันทึกแล้วเป็น release ที่แก้ไขไม่ได้ → validate → security scan (รูปถูกลบ/ไม่ผ่านสแกน = ล้มเหลว, ลิงก์เสีย/สิทธิ์อ่านสาธารณะ = คำเตือน) → manifest → stage → smoke test → สลับแบบ atomic (compare-and-set) → health check (ล้มเหลว = คืนค่าอัตโนมัติ) · rollback, หยุดเผยแพร่ · คิว `build`, ทีละ 1 deployment ต่อโปรเจกต์ · ต้องยืนยันอีเมลก่อนเผยแพร่
+- **Runtime** (`RuntimeController` + `apps/runtime-web`): Laravel แยกเว็บไซต์จาก Host → ส่ง HTML (title/description/robots ต่อหน้า, 404 จริง, redirects, CSP เข้มงวด) + เอกสาร release เป็น JSON ที่ไม่ถูก execute → React runtime เรนเดอร์ด้วย `@studio/renderer` โหมด live · ตัด workflows/projectId ออกจากเอกสารสาธารณะ · รูปผ่าน `/_assets/{id}` เฉพาะที่อยู่ใน manifest
+- **ข้อมูลจริง (production)**: ฟอร์มบนเว็บไซต์จริงบันทึกลง environment `production` ตาม schema/สิทธิ์ของ release · workflows รันจาก release · หน้า "ข้อมูล" สลับ preview/production ได้ (ค้นหา, แก้ไข, ส่งออก/นำเข้า CSV, ประวัติ)
+- **บัญชีผู้ใช้ของแอป**: สมัคร/เข้าสู่ระบบบนเว็บไซต์ที่เผยแพร่ (แถบบัญชีแสดงเมื่อสิทธิ์ให้ member/admin), cookie `__site_session` HttpOnly + host-only + SameSite=Lax, token hash, ผูกกับโปรเจกต์, ระงับ/เปลี่ยนบทบาทแล้ว session ถูกเพิกถอนทันที · แท็บ "ผู้ใช้แอป" ในหน้า ข้อมูล · คำขอเขียนต้องมี `X-Runtime-Request` (กัน CSRF)
+- **โดเมน**: โดเมนย่อย `<slug>.PLATFORM_BASE_DOMAIN` (ชื่อสงวน, ห้ามซ้ำ, พัก 30 วันก่อนให้องค์กรอื่นใช้) · โดเมนของตัวเอง: คำแนะนำ TXT + CNAME/ALIAS, ตรวจความเป็นเจ้าของ + การชี้ + ใบรับรองก่อนให้บริการ, ตรวจซ้ำทุก 10 นาที (`studio:domains:check`), ลบแล้วเพิ่มใหม่ต้องยืนยันใหม่ · `GET /api/internal/tls/ask` สำหรับ on-demand TLS · `infra/edge/Caddyfile` + nginx แยก server ของ studio กับเว็บไซต์ลูกค้า
+- **ลิงก์แชร์ฉบับร่าง** (`/share/:token`): หมดอายุ 1–30 วัน, ยกเลิกได้, noindex, ฟอร์มปิดใช้งาน
+- **Studio**: ปุ่ม "เผยแพร่" → dialog (โดเมนย่อย, สถานะ + log ทีละขั้น, ประวัติ release + ย้อนกลับ, หยุดเผยแพร่, โดเมนของตัวเอง, ลิงก์แชร์)
+- เอกสาร: ADR-0011, threat model (P-1…P-11), OpenAPI 0.4.0, `.env.example`
+
 ## Phase 3: สิ่งที่ส่งมอบ (2026-11-22)
 
 - **AI gateway** (`app/Domain/Ai`): Claude Opus 5.5 ผ่าน Anthropic PHP SDK อย่างเป็นทางการ (structured outputs, effort `medium`, server-side refusal fallback), แปลงข้อผิดพลาดเป็นข้อความที่ทำต่อได้, BYOK เข้ารหัสต่อองค์กร, ต้องได้รับความยินยอมก่อนส่งข้อความออกภายนอก, เก็บ prompt แบบปิดบังข้อมูลส่วนบุคคล, เครดิต AI รายเดือนตามแผน (จองก่อน → ตัดตามจริง), คิว `ai` แยก, จำกัด 6 ครั้ง/นาที/ผู้ใช้
@@ -71,21 +82,23 @@
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **117/117 ผ่าน** (688 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **117/117 ผ่าน** |
-| Vitest app-schema / renderer / studio | `npm test` | **80/80, 10/10, 9/9 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **135/135 ผ่าน** (916 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **135/135 ผ่าน** |
+| Vitest app-schema / renderer / studio / runtime | `npm test` | **80/80, 10/10, 9/9, 4/4 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
 | Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **10/10 ผ่าน** |
+| Playwright E2E | `npm run test:e2e` | **12/12 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
 
-E2E ที่ครอบคลุม: J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
+E2E ที่ครอบคลุม: J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
 
 ## ข้อจำกัดที่ทราบ (Known limitations)
 0. **AI ยังไม่ได้ทดสอบกับ Claude API จริง** — สภาพแวดล้อมนี้ไม่มี API key; เส้นทางเรียก SDK ทดสอบผ่าน fake HTTP transport (ตรวจรูปแบบคำขอ, การแปลงผลลัพธ์, ข้อผิดพลาด) · ต้องตั้ง `ANTHROPIC_API_KEY` (หรือ BYOK) แล้วทดลองจริงก่อนเปิดใช้ · OpenAI/Gemini adapter ยังไม่ทำ
 1. **Docker images** (`infra/docker/*`) และ CI workflow ยังไม่ได้ build/รันจริง (ไม่มี Docker daemon / ยังไม่มีรัน GitHub Actions)
 2. **ClamAV** adapter ยังไม่ได้ทดสอบกับ clamd จริง; ถ้าไม่ตั้งค่า สถานะไฟล์คือ `not_scanned`
-3. **บัญชีผู้ใช้ของแอปที่สร้าง** (สมัคร/เข้าสู่ระบบในแอป, member session, สิทธิ์แบบ "ของตัวเอง") ยังไม่มี — บทบาท member/admin ตอนนี้ใช้ได้ผ่านการจำลองบทบาทใน preview และ API key; จะทำพร้อม runtime ใน Phase 4
+3. **บัญชีผู้ใช้ของแอป**: มีสมัคร/เข้าสู่ระบบแล้ว แต่ยังไม่มีรีเซ็ตรหัสผ่าน/ยืนยันอีเมลของผู้ใช้ปลายทาง และสิทธิ์แบบ "เฉพาะข้อมูลของตัวเอง"
+9. **การเผยแพร่ยังไม่ได้ทดสอบกับ DNS/ACME จริง** — ตรวจ DNS/TLS ผ่าน interface (ทดสอบด้วย fake และไฟล์ static ใน E2E); `infra/edge/Caddyfile` และ nginx tenant server เป็น reference ที่ยังไม่ได้รันจริง · การแก้ DNS และ deploy production ต้องได้รับอนุมัติก่อน
+10. หน้าเว็บที่เผยแพร่เรนเดอร์ฝั่ง client (server ส่ง title/description ให้ search engine แล้ว แต่เนื้อหายังไม่ SSR), ยังไม่มี sitemap.xml/robots.txt ต่อเว็บไซต์
 4. **ฟิลด์ไฟล์/อัปโหลด และความสัมพันธ์ระหว่างตาราง** ยังไม่มี (backlog)
 5. CAPTCHA ยังไม่มี (มี honeypot + เวลากรอกขั้นต่ำ + rate limit)
 6. การค้นหาใช้ LIKE บน JSON — เหมาะกับข้อมูลระดับหมื่นแถวต่อตาราง; ข้อมูลใหญ่กว่านี้ต้องเพิ่ม materialized index (Phase 6)
@@ -94,5 +107,6 @@ E2E ที่ครอบคลุม: J1 (ขอบเขต Phase 1), J2 (ค�
 
 ## วิธีทำงานต่อ (สำหรับรอบถัดไป)
 1. อ่าน `docs/ROADMAP.md` → Phase 2 backlog
-2. Phase 3 (AI): ตัวสร้างต้องส่งออกเป็น typed commands เท่านั้น (รวม `model.upsert`/`permission.set`/`workflow.upsert`) แล้วผ่าน validator เดียวกัน; ถ้าต้องเปลี่ยน schema ให้ออก v3 + upcaster + fixtures
-3. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้
+2. Phase 5 (Integrations): Google OAuth (PKCE, encrypted refresh tokens) → Sheets mapping/sync ผ่าน RecordService เท่านั้น (environment preview/production), connectors REST/webhook ต้องผ่าน SSRF allowlist; ต้องตั้ง OAuth client ผ่าน environment secrets (ห้ามใส่ในโค้ด/แชท)
+3. runtime: build `npm run build:runtime` ก่อนรัน API (E2E ทำให้อัตโนมัติ)
+4. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้

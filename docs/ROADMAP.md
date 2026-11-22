@@ -15,7 +15,7 @@
 - [x] M19 REST API: per-model endpoints with hashed, scoped, revocable API keys, rate limit, pagination
 - [x] Showcase template: registration form → records → confirmation e-mail workflow → admin-only registrant list
 - [x] Journeys: J2 (without AI), J3
-- [ ] Deferred: app end-user accounts (sign-up/login inside generated apps, "member" sessions, row-level "own" rules) → with the published runtime in Phase 4
+- [x] App end-user accounts → delivered in Phase 4 (row-level "own" rules still deferred)
 - [ ] Deferred: file/upload fields and relations between models → Phase 2.5 backlog (needs per-record file ACL and relation integrity rules)
 - [ ] Deferred: CAPTCHA adapter (honeypot + timing + rate limit are in place)
 
@@ -31,13 +31,16 @@
 - [ ] Deferred: live verification against the real Claude API (no key in this environment — SDK path tested with a fake transport)
 - [ ] Deferred: streaming progress for long generations, image/brand-asset understanding, AI-generated sample data
 
-## Phase 4 — Publishing & domains
-- [ ] App end-user accounts and member sessions for generated apps (from Phase 2)
-- [ ] `apps/runtime-web` using `packages/renderer` in `live` mode; immutable release manifests; publish pipeline (freeze → validate → scan → artifact → stage → smoke → switch → health); rollback; unpublish
-- [ ] Slug reservation (system names blocked), wildcard routing with validated Host, trusted proxies only
-- [ ] M26 shareable preview links with expiry; M28 custom domains (TXT/CNAME verification, provider abstraction, certificate status, removal/reassignment with revalidation)
-- [ ] Require verified e-mail to publish
-- [ ] Journeys: J1 (full), J6, J9
+## Phase 4 — Publishing & domains ✅ (2026-11-22)
+- [x] App end-user accounts and member sessions for generated apps (from Phase 2); app-user admin
+- [x] `apps/runtime-web` using `packages/renderer` in `live` mode; immutable release manifests; publish pipeline (freeze → validate → scan → manifest → stage → smoke → switch → health); rollback; unpublish
+- [x] Slug reservation (system names blocked, cooldown), Host-based routing with validated Host, trusted proxies only
+- [x] M26 shareable preview links with expiry; M28 custom domains (TXT/CNAME verification, DNS/TLS provider abstraction, certificate status, removal/reassignment with revalidation, scheduled re-check)
+- [x] Require verified e-mail to publish
+- [x] Journeys: J1 (full), J6, J9 (+ J8 for published hosts)
+- [ ] Deferred: server-side rendering of page content for crawlers (title/description are server-rendered now), sitemap.xml/robots.txt per site, CDN/static pre-render
+- [ ] Deferred: real DNS + ACME issuance verified against a live edge (needs approval for DNS changes and production deployment)
+- [ ] Deferred: row-level "own records" rules, password reset/e-mail verification for end users, CAPTCHA
 
 ## Phase 5 — Integrations
 - [ ] Google OAuth (least privilege, PKCE, encrypted refresh tokens, revoke), Sheets mapping/import/sync with conflict policy + DLQ, Drive picker/attachments

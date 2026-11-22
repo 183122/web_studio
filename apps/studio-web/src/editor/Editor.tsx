@@ -5,7 +5,7 @@ import {
   DndContext, DragOverlay, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type DragMoveEvent, type DragStartEvent,
 } from '@dnd-kit/core';
 import {
-  AlertTriangle, ArrowLeft, Database, Sparkles, Table2, Zap, Blocks, CheckCircle2, CloudUpload, Eye, FileStack, History, Image as ImageIcon, Laptop, Layers, Loader2, Monitor, Palette, Redo2, Smartphone, Tablet, Undo2, ZoomIn, ZoomOut,
+  AlertTriangle, ArrowLeft, Database, Sparkles, Table2, Zap, Blocks, CheckCircle2, CloudUpload, Eye, FileStack, History, Image as ImageIcon, Globe, Laptop, Layers, Loader2, Monitor, Palette, Redo2, Smartphone, Tablet, Undo2, ZoomIn, ZoomOut,
 } from 'lucide-react';
 import { createNode, type AppCommand } from '@studio/app-schema';
 import { getComponentDefinition, type Breakpoint } from '@studio/component-registry';
@@ -30,6 +30,7 @@ import { VersionsPanel } from './panels/VersionsPanel.tsx';
 import { DatabasePanel } from './panels/DatabasePanel.tsx';
 import { WorkflowsPanel } from './panels/WorkflowsPanel.tsx';
 import { AiPanel } from './panels/AiPanel.tsx';
+import { PublishDialog } from './publish/PublishDialog.tsx';
 
 const PANELS: Array<{ id: PanelId; label: string; icon: typeof Layers }> = [
   { id: 'ai', label: 'AI', icon: Sparkles },
@@ -177,7 +178,9 @@ function TopBar({ projectName }: { projectName: string }) {
   const setZoom = useEditor((s) => s.setZoom);
   const canUndo = useEditor((s) => s.past.length > 0);
   const canRedo = useEditor((s) => s.future.length > 0);
+  const saveState = useEditor((s) => s.saveState);
   const page = doc.pages.find((p) => p.id === pageId);
+  const [publishOpen, setPublishOpen] = useState(false);
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-navy-900">
@@ -214,6 +217,8 @@ function TopBar({ projectName }: { projectName: string }) {
       <Link to={`/app/projects/${projectId}/preview?page=${encodeURIComponent(page?.path ?? '/')}`} target="_blank" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-300 px-3 text-sm hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-navy-800">
         <Laptop className="h-4 w-4" /> ดูตัวอย่าง
       </Link>
+      <Button size="sm" onClick={() => setPublishOpen(true)}><Globe className="h-4 w-4" /> เผยแพร่</Button>
+      {publishOpen ? <PublishDialog projectId={projectId} open={publishOpen} onOpenChange={setPublishOpen} unsaved={saveState !== 'saved' && saveState !== 'readonly'} /> : null}
     </header>
   );
 }

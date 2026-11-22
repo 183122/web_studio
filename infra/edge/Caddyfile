@@ -1,0 +1,25 @@
+# Edge TLS for published sites (reference configuration — not applied anywhere automatically).
+# Certificates are issued on demand, but only for hostnames the platform confirms it serves:
+# Caddy calls the `ask` endpoint, which returns 200 only for active platform subdomains and
+# custom domains whose ownership (TXT) and routing (CNAME/ALIAS) were verified.
+# Production rollout and DNS changes require explicit approval (see docs/ROADMAP.md).
+{
+	on_demand_tls {
+		ask http://web:8080/api/internal/tls/ask
+	}
+}
+
+# Studio (static certificate for the studio hostname).
+studio.example.com {
+	reverse_proxy web:8080
+}
+
+# Every published site.
+https:// {
+	tls {
+		on_demand
+	}
+	reverse_proxy web:8080 {
+		header_up Host {host}
+	}
+}

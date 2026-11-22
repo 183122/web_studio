@@ -26,7 +26,8 @@ export default defineConfig({
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } }],
   webServer: [
     {
-      command: `rm -f ${db} && touch ${db} && DB_CONNECTION=sqlite DB_DATABASE=${db} php artisan migrate:fresh --seed --force && DB_CONNECTION=sqlite DB_DATABASE=${db} SESSION_DRIVER=database QUEUE_CONNECTION=sync MAIL_MAILER=log STUDIO_REGISTER_PER_HOUR=500 ANTHROPIC_API_KEY= PHP_CLI_SERVER_WORKERS=4 php artisan serve --host=127.0.0.1 --port=8001`,
+      // The published-site runtime bundle is served by Laravel from public/runtime.
+      command: `(cd ${root} && npm run build -w apps/runtime-web) && rm -f ${db} && touch ${db} && DB_CONNECTION=sqlite DB_DATABASE=${db} php artisan migrate:fresh --seed --force && DB_CONNECTION=sqlite DB_DATABASE=${db} SESSION_DRIVER=database QUEUE_CONNECTION=sync MAIL_MAILER=log STUDIO_REGISTER_PER_HOUR=500 ANTHROPIC_API_KEY= STUDIO_PUBLISH_REQUIRE_VERIFIED_EMAIL=false STUDIO_DNS_DRIVER=static STUDIO_DNS_STATIC_FILE=${api}/database/e2e-dns.json STUDIO_TLS_CHECK=assume PHP_CLI_SERVER_WORKERS=4 php artisan serve --host=127.0.0.1 --port=8001`,
       cwd: api,
       url: 'http://127.0.0.1:8001/api/health',
       reuseExistingServer: false,

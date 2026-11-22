@@ -14,7 +14,7 @@ class AppRecord extends Model
 {
     use HasUlids, SoftDeletes;
 
-    protected $fillable = ['project_id', 'environment', 'model_id', 'data', 'version', 'source', 'created_by'];
+    protected $fillable = ['project_id', 'environment', 'model_id', 'data', 'version', 'source', 'created_by', 'app_user_id'];
 
     protected function casts(): array
     {

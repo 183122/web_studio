@@ -3,6 +3,12 @@
 namespace App\Providers;
 
 use App\Domain\Ai\AiProviderFactory;
+use App\Domain\Publishing\AssumeTlsProbe;
+use App\Domain\Publishing\DnsResolver;
+use App\Domain\Publishing\SocketTlsProbe;
+use App\Domain\Publishing\StaticDnsResolver;
+use App\Domain\Publishing\SystemDnsResolver;
+use App\Domain\Publishing\TlsProbe;
 use App\Services\Scanning\ClamAvScanner;
 use App\Services\Scanning\MalwareScanner;
 use App\Services\Scanning\NullScanner;
@@ -21,6 +27,12 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(AiProviderFactory::class);
+        $this->app->bind(DnsResolver::class, fn () => config('studio.publishing.dns_driver') === 'static'
+            ? new StaticDnsResolver((string) config('studio.publishing.dns_static_file'))
+            : new SystemDnsResolver);
+        $this->app->bind(TlsProbe::class, fn () => config('studio.publishing.tls_check') === 'assume'
+            ? new AssumeTlsProbe
+            : new SocketTlsProbe);
         $this->app->singleton(MalwareScanner::class, function () {
             $cfg = config('studio.assets.clamav');
 
@@ -60,6 +72,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('uploads', fn (Request $r) => Limit::perMinute(30)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('form-submit', fn (Request $r) => Limit::perMinute(10)->by($r->ip().'|'.(is_object($r->route('project')) ? $r->route('project')->id : (string) $r->route('project'))));
         RateLimiter::for('app-api', fn (Request $r) => Limit::perMinute(120)->by((string) ($r->bearerToken() ? substr($r->bearerToken(), 0, 16) : $r->ip())));
+        RateLimiter::for('runtime', fn (Request $r) => Limit::perMinute(300)->by($r->getHost().'|'.$r->ip()));
+        RateLimiter::for('runtime-form', fn (Request $r) => Limit::perMinute(10)->by($r->getHost().'|'.$r->ip()));
+        RateLimiter::for('runtime-auth', fn (Request $r) => Limit::perMinute(10)->by($r->getHost().'|'.$r->ip()));
         RateLimiter::for('ai', fn (Request $r) => Limit::perMinute(6)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('login', fn (Request $r) => [
             Limit::perMinute(5)->by(mb_strtolower((string) $r->input('email')).'|'.$r->ip()),

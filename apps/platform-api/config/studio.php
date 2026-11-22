@@ -50,6 +50,24 @@ return [
         'proposal_ttl_hours' => 24,
     ],
 
+    'publishing' => [
+        // Published sites live at <slug>.<base_domain>. Wildcard DNS + TLS for it are configured once.
+        'base_domain' => strtolower((string) env('PLATFORM_BASE_DOMAIN', 'sites.localhost')),
+        // Target customers point their CNAME at (an edge that terminates TLS for verified hosts).
+        'cname_target' => strtolower((string) env('PLATFORM_CNAME_TARGET', 'edge.sites.localhost')),
+        // Hosts that serve the Studio/API, never a tenant site.
+        'platform_hosts' => array_values(array_filter(array_map('trim', explode(',', (string) env('PLATFORM_HOSTS', 'localhost,127.0.0.1'))))),
+        'reserved_slugs' => ['www', 'api', 'app', 'admin', 'studio', 'mail', 'smtp', 'ftp', 'cdn', 'static', 'assets', 'preview', 'edge', 'status', 'help', 'support', 'docs', 'blog', 'billing', 'auth', 'login', 'ns1', 'ns2', 'root', 'test', 'dev', 'staging'],
+        'slug_cooldown_days' => (int) env('PLATFORM_SLUG_COOLDOWN_DAYS', 30),
+        // DNS resolver for custom-domain checks: "system" (dns_get_record) or "static" (records from a JSON file, for local E2E).
+        'dns_driver' => env('STUDIO_DNS_DRIVER', 'system'),
+        'dns_static_file' => env('STUDIO_DNS_STATIC_FILE'),
+        // How "certificate active" is determined: "probe" (TLS handshake to the host) or "assume" (local/dev).
+        'tls_check' => env('STUDIO_TLS_CHECK', 'probe'),
+        'require_verified_email' => (bool) env('STUDIO_PUBLISH_REQUIRE_VERIFIED_EMAIL', true),
+        'preview_link_max_days' => 30,
+    ],
+
     // Sign-ups per IP per hour (abuse protection). Raised only for automated E2E runs.
     'register_per_hour' => (int) env('STUDIO_REGISTER_PER_HOUR', 10),
 

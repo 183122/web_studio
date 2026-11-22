@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tabs } from 'radix-ui';
-import { ArrowLeft, Download, KeyRound, Plus, Trash2, Upload, Database, History, Workflow as WorkflowIcon, Copy } from 'lucide-react';
+import { ArrowLeft, Download, KeyRound, Plus, Trash2, Upload, Database, History, Workflow as WorkflowIcon, Copy, Users as UsersIcon } from 'lucide-react';
 import type { DataModel } from '@studio/app-schema';
 import { api, ApiError, errorMessage, type Envelope } from '../lib/api.ts';
 import { useProject, type SchemaHead } from '../lib/queries.ts';
@@ -30,6 +30,8 @@ export default function DataAdmin() {
   const models = schema.data?.document.dataModels ?? [];
   const model = models.find((m) => m.id === params.get('model')) ?? models[0];
   const canEdit = project.data?.role !== 'viewer';
+  const env: DataEnv = params.get('env') === 'production' ? 'production' : 'preview';
+  const setEnv = (e: DataEnv) => setParams({ ...Object.fromEntries(params), env: e });
 
   if (project.error || schema.error) return <div className="p-8"><ErrorState message={errorMessage(project.error ?? schema.error)} /></div>;
   if (!project.data || !schema.data) return <FullPageSpinner />;
@@ -39,7 +41,12 @@ export default function DataAdmin() {
       <header className="flex h-14 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-navy-900">
         <Link to={`/app/projects/${projectId}`} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm hover:bg-slate-100 dark:hover:bg-navy-800"><ArrowLeft className="h-4 w-4" /> ตัวแก้ไข</Link>
         <h1 className="truncate font-semibold">{project.data.name} · ข้อมูล</h1>
-        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-800">สภาพแวดล้อม: ดูตัวอย่าง (preview)</span>
+        <div role="radiogroup" aria-label="สภาพแวดล้อมข้อมูล" className="flex rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-navy-800">
+          {([['preview', 'ข้อมูลทดลอง (preview)'], ['production', 'ข้อมูลจริง (เว็บไซต์ที่เผยแพร่)']] as const).map(([id, label]) => (
+            <button key={id} type="button" role="radio" aria-checked={env === id} onClick={() => setEnv(id)}
+              className={`rounded-md px-2.5 py-1 ${env === id ? (id === 'production' ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white') : 'text-slate-600 dark:text-slate-300'}`}>{label}</button>
+          ))}
+        </div>
         <span className="ml-auto" />
         <ThemeToggle />
       </header>
@@ -51,7 +58,7 @@ export default function DataAdmin() {
         <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6">
           <div role="tablist" aria-label="ตารางข้อมูล" className="mb-4 flex flex-wrap gap-2">
             {models.map((m) => (
-              <button key={m.id} role="tab" type="button" aria-selected={m.id === model?.id} onClick={() => setParams({ model: m.id })}
+              <button key={m.id} role="tab" type="button" aria-selected={m.id === model?.id} onClick={() => setParams({ model: m.id, env })}
                 className={`rounded-lg px-3 py-1.5 text-sm ${m.id === model?.id ? 'bg-brand-700 text-white' : 'border border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-navy-800'}`}>
                 {m.label} <span className="opacity-70">({m.name})</span>
               </button>
@@ -60,7 +67,7 @@ export default function DataAdmin() {
           {model ? (
             <Tabs.Root defaultValue="records">
               <Tabs.List className="mb-4 flex gap-1 border-b border-slate-200 text-sm dark:border-slate-800">
-                {[['records', 'ข้อมูล', Database], ['audit', 'ประวัติการแก้ไข', History], ['runs', 'Workflow runs', WorkflowIcon], ['keys', 'API keys', KeyRound]].map(([v, label, Icon]) => {
+                {[['records', 'ข้อมูล', Database], ['audit', 'ประวัติการแก้ไข', History], ['runs', 'Workflow runs', WorkflowIcon], ['keys', 'API keys', KeyRound], ['users', 'ผู้ใช้แอป', UsersIcon]].map(([v, label, Icon]) => {
                   const I = Icon as typeof Database;
                   return (
                     <Tabs.Trigger key={v as string} value={v as string} className="inline-flex items-center gap-1.5 px-3 py-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-600 data-[state=active]:font-medium">
@@ -69,9 +76,10 @@ export default function DataAdmin() {
                   );
                 })}
               </Tabs.List>
-              <Tabs.Content value="records"><RecordsTab key={model.id} projectId={projectId} model={model} canEdit={canEdit} /></Tabs.Content>
-              <Tabs.Content value="audit"><AuditTab projectId={projectId} model={model} /></Tabs.Content>
+              <Tabs.Content value="records"><RecordsTab key={`${model.id}-${env}`} projectId={projectId} model={model} canEdit={canEdit} env={env} /></Tabs.Content>
+              <Tabs.Content value="audit"><AuditTab projectId={projectId} model={model} env={env} /></Tabs.Content>
               <Tabs.Content value="runs"><RunsTab projectId={projectId} /></Tabs.Content>
+              <Tabs.Content value="users"><AppUsersTab projectId={projectId} canEdit={canEdit} /></Tabs.Content>
               <Tabs.Content value="keys"><KeysTab projectId={projectId} canEdit={canEdit} models={models} /></Tabs.Content>
             </Tabs.Root>
           ) : null}
@@ -90,7 +98,11 @@ function useDebounced<T>(v: T, ms = 300): T {
   return d;
 }
 
-function RecordsTab({ projectId, model, canEdit }: { projectId: string; model: DataModel; canEdit: boolean }) {
+type DataEnv = 'preview' | 'production';
+/** Appends ?env=production for the live site's data; preview is the server default. */
+const withEnv = (url: string, env: DataEnv) => (env === 'production' ? `${url}${url.includes('?') ? '&' : '?'}env=production` : url);
+
+function RecordsTab({ projectId, model, canEdit, env }: { projectId: string; model: DataModel; canEdit: boolean; env: DataEnv }) {
   const qc = useQueryClient();
   const base = `/projects/${projectId}/data/${model.id}`;
   const [searchInput, setSearchInput] = useState('');
@@ -104,14 +116,14 @@ function RecordsTab({ projectId, model, canEdit }: { projectId: string; model: D
   const filterable = model.fields.filter((f) => f.type === 'select' || f.type === 'boolean');
   const columns = model.fields.slice(0, 8);
 
-  const key = ['records', projectId, model.id, { search, filters, sort, page }];
+  const key = ['records', projectId, model.id, { search, filters, sort, page, env }];
   const list = useQuery({
     queryKey: key,
     queryFn: async () => {
       const q = new URLSearchParams({ page: String(page), perPage: '20', sort: sort.field, dir: sort.dir });
       if (search) q.set('search', search);
       for (const [k, v] of Object.entries(filters)) if (v) q.set(`filter[${k}]`, v);
-      return api<{ data: RecordRow[]; meta: ListMeta }>(`${base}/records?${q}`);
+      return api<{ data: RecordRow[]; meta: ListMeta }>(withEnv(`${base}/records?${q}`, env));
     },
     placeholderData: keepPreviousData,
   });
@@ -139,7 +151,7 @@ function RecordsTab({ projectId, model, canEdit }: { projectId: string; model: D
           <Button variant="danger" size="sm" onClick={async () => {
             if (!window.confirm(`ลบ ${selected.size} รายการ?`)) return;
             try {
-              const r = await api<Envelope<{ deleted: number }>>(`${base}/records/bulk-delete`, { method: 'POST', body: { ids: [...selected] } });
+              const r = await api<Envelope<{ deleted: number }>>(withEnv(`${base}/records/bulk-delete`, env), { method: 'POST', body: { ids: [...selected] } });
               toast.success(`ลบ ${r.data.deleted} รายการแล้ว`);
               refresh();
             } catch (e) {
@@ -147,7 +159,7 @@ function RecordsTab({ projectId, model, canEdit }: { projectId: string; model: D
             }
           }}><Trash2 className="h-4 w-4" /> ลบที่เลือก ({selected.size})</Button>
         ) : null}
-        <a href={`/api/v1${base}/export`} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-300 px-3 text-sm hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-navy-800"><Download className="h-4 w-4" /> ส่งออก CSV</a>
+        <a href={withEnv(`/api/v1${base}/export`, env)} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-300 px-3 text-sm hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-navy-800"><Download className="h-4 w-4" /> ส่งออก CSV</a>
         {canEdit ? <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}><Upload className="h-4 w-4" /> นำเข้า CSV</Button> : null}
         {canEdit ? <Button size="sm" onClick={() => setEditing('new')}><Plus className="h-4 w-4" /> เพิ่มข้อมูล</Button> : null}
       </div>
@@ -197,13 +209,13 @@ function RecordsTab({ projectId, model, canEdit }: { projectId: string; model: D
       ) : null}
       <p className="mt-2 text-xs text-slate-500">ทั้งหมด {list.data?.meta.total ?? 0} รายการ</p>
 
-      {editing ? <RecordDialog base={base} model={model} record={editing === 'new' ? null : editing} canEdit={canEdit} onClose={() => setEditing(null)} onSaved={refresh} /> : null}
-      <ImportDialog open={importOpen} onOpenChange={setImportOpen} base={base} onDone={refresh} />
+      {editing ? <RecordDialog env={env} base={base} model={model} record={editing === 'new' ? null : editing} canEdit={canEdit} onClose={() => setEditing(null)} onSaved={refresh} /> : null}
+      <ImportDialog env={env} open={importOpen} onOpenChange={setImportOpen} base={base} onDone={refresh} />
     </section>
   );
 }
 
-function RecordDialog({ base, model, record, canEdit, onClose, onSaved }: { base: string; model: DataModel; record: RecordRow | null; canEdit: boolean; onClose: () => void; onSaved: () => void }) {
+function RecordDialog({ env, base, model, record, canEdit, onClose, onSaved }: { env: DataEnv; base: string; model: DataModel; record: RecordRow | null; canEdit: boolean; onClose: () => void; onSaved: () => void }) {
   const [values, setValues] = useState<Record<string, unknown>>(() => ({ ...(record?.data ?? {}) }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -211,8 +223,8 @@ function RecordDialog({ base, model, record, canEdit, onClose, onSaved }: { base
     setBusy(true);
     setErrors({});
     try {
-      if (record) await api(`${base}/records/${record.id}`, { method: 'PATCH', body: { data: values, version: record.version } });
-      else await api(`${base}/records`, { method: 'POST', body: { data: values } });
+      if (record) await api(withEnv(`${base}/records/${record.id}`, env), { method: 'PATCH', body: { data: values, version: record.version } });
+      else await api(withEnv(`${base}/records`, env), { method: 'POST', body: { data: values } });
       toast.success('บันทึกแล้ว');
       onSaved();
       onClose();
@@ -239,7 +251,7 @@ function RecordDialog({ base, model, record, canEdit, onClose, onSaved }: { base
             <Button variant="danger" size="sm" onClick={async () => {
               if (!window.confirm('ลบข้อมูลนี้?')) return;
               try {
-                await api(`${base}/records/${record.id}`, { method: 'DELETE' });
+                await api(withEnv(`${base}/records/${record.id}`, env), { method: 'DELETE' });
                 toast.success('ลบแล้ว');
                 onSaved();
                 onClose();
@@ -258,7 +270,7 @@ function RecordDialog({ base, model, record, canEdit, onClose, onSaved }: { base
   );
 }
 
-function ImportDialog({ open, onOpenChange, base, onDone }: { open: boolean; onOpenChange: (o: boolean) => void; base: string; onDone: () => void }) {
+function ImportDialog({ env, open, onOpenChange, base, onDone }: { env: DataEnv; open: boolean; onOpenChange: (o: boolean) => void; base: string; onDone: () => void }) {
   const input = useRef<HTMLInputElement>(null);
   const [report, setReport] = useState<{ rows: number; created: number; dryRun: boolean; errors: Array<{ row: number; field: string; message: string }> } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -270,7 +282,7 @@ function ImportDialog({ open, onOpenChange, base, onDone }: { open: boolean; onO
     body.append('dryRun', dryRun ? '1' : '0');
     setBusy(true);
     try {
-      const r = await api<Envelope<NonNullable<typeof report>>>(`${base}/import`, { method: 'POST', body });
+      const r = await api<Envelope<NonNullable<typeof report>>>(withEnv(`${base}/import`, env), { method: 'POST', body });
       setReport(r.data);
       if (!dryRun) {
         toast.success(`นำเข้า ${r.data.created} รายการแล้ว`);
@@ -306,10 +318,10 @@ function ImportDialog({ open, onOpenChange, base, onDone }: { open: boolean; onO
   );
 }
 
-function AuditTab({ projectId, model }: { projectId: string; model: DataModel }) {
+function AuditTab({ projectId, model, env }: { projectId: string; model: DataModel; env: DataEnv }) {
   const q = useQuery({
     queryKey: ['data-audit', projectId, model.id],
-    queryFn: () => api<{ data: Array<{ id: number; recordId: string; action: string; actorType: string; changes: unknown; createdAt: string }> }>(`/projects/${projectId}/data/${model.id}/audit`),
+    queryFn: () => api<{ data: Array<{ id: number; recordId: string; action: string; actorType: string; changes: unknown; createdAt: string }> }>(withEnv(`/projects/${projectId}/data/${model.id}/audit`, env)),
   });
   if (q.isLoading) return <Spinner />;
   if (q.error) return <ErrorState message={errorMessage(q.error)} />;
@@ -406,6 +418,47 @@ function KeysTab({ projectId, canEdit, models }: { projectId: string; canEdit: b
           </ul>
         )}
       </div>
+    </div>
+  );
+}
+
+interface AppUserRow { id: string; name: string; email: string; role: 'member' | 'admin'; status: 'active' | 'disabled'; lastLoginAt: string | null; createdAt: string }
+
+/** End users who signed up on the published site (separate from studio accounts). */
+function AppUsersTab({ projectId, canEdit }: { projectId: string; canEdit: boolean }) {
+  const qc = useQueryClient();
+  const key = ['app-users', projectId];
+  const users = useQuery({ queryKey: key, queryFn: async () => (await api<Envelope<AppUserRow[]>>(`/projects/${projectId}/app-users`)).data });
+  const update = (id: string, body: Partial<Pick<AppUserRow, 'role' | 'status'>>) =>
+    api(`/projects/${projectId}/app-users/${id}`, { method: 'PATCH', body }).then(() => toast.success('บันทึกแล้ว'), (e) => toast.error(errorMessage(e))).finally(() => qc.invalidateQueries({ queryKey: key }));
+  if (users.isLoading) return <Spinner />;
+  if (users.error) return <ErrorState message={errorMessage(users.error)} />;
+  if (!users.data?.length) return <EmptyState icon={<UsersIcon className="h-10 w-10" />} title="ยังไม่มีผู้ใช้แอป" description="เมื่อผู้เยี่ยมชมสมัครสมาชิกบนเว็บไซต์ที่เผยแพร่ จะแสดงที่นี่ (ปุ่มสมัครแสดงเมื่อตั้งสิทธิ์ให้สมาชิก)" />;
+  return (
+    <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+      <table className="w-full text-left text-sm">
+        <thead className="bg-slate-50 text-slate-600 dark:bg-navy-900 dark:text-slate-300"><tr><th className="px-3 py-2">ชื่อ</th><th className="px-3">อีเมล</th><th className="px-3">บทบาท</th><th className="px-3">สถานะ</th><th className="px-3">เข้าสู่ระบบล่าสุด</th></tr></thead>
+        <tbody>
+          {users.data.map((u) => (
+            <tr key={u.id} className="border-t border-slate-100 dark:border-slate-800">
+              <td className="px-3 py-2">{u.name}</td>
+              <td className="px-3">{u.email}</td>
+              <td className="px-3">
+                <select aria-label={`บทบาทของ ${u.email}`} className="field-input h-8 w-auto py-0" disabled={!canEdit} value={u.role} onChange={(e) => update(u.id, { role: e.target.value as AppUserRow['role'] })}>
+                  <option value="member">สมาชิก</option><option value="admin">ผู้ดูแลแอป</option>
+                </select>
+              </td>
+              <td className="px-3">
+                <label className="inline-flex items-center gap-1.5">
+                  <input type="checkbox" disabled={!canEdit} checked={u.status === 'active'} onChange={(e) => update(u.id, { status: e.target.checked ? 'active' : 'disabled' })} />
+                  {u.status === 'active' ? 'ใช้งาน' : 'ระงับ'}
+                </label>
+              </td>
+              <td className="px-3 text-slate-500">{u.lastLoginAt ? formatDate(u.lastLoginAt) : '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

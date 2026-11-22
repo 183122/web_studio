@@ -26,3 +26,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /database/e2e.sqlite
+/database/e2e-dns.json

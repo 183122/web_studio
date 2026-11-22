@@ -41,6 +41,7 @@ class RecordService
                 'version' => 1,
                 'source' => $source,
                 'created_by' => $actor->userId,
+                'app_user_id' => $actor->appUserId,
             ]);
             $record->setValues($values);
             $record->save();

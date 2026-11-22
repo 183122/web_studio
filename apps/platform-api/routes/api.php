@@ -11,16 +11,32 @@ use App\Http\Controllers\Api\V1\DataController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\PreviewRuntimeController;
 use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\PublishingController;
 use App\Http\Controllers\Api\V1\RevisionController;
 use App\Http\Controllers\Api\V1\SchemaController;
 use App\Http\Controllers\Api\V1\TemplateController;
 use App\Http\Controllers\Api\V1\WorkflowController;
 use App\Http\Controllers\Api\V1\WorkspaceController;
+use App\Http\Controllers\RuntimeController;
 use App\Http\Middleware\AuthenticateAppApiKey;
 use App\Http\Middleware\Idempotency;
+use App\Http\Middleware\ResolveSite;
 use Illuminate\Support\Facades\Route;
 
 Route::get('health', HealthController::class)->name('health');
+
+// ---- Published-site runtime (Host → live release). No session/CORS; CSRF guarded by ResolveSite. ----
+Route::prefix('runtime/v1')->middleware([ResolveSite::class, 'throttle:runtime'])->group(function () {
+    Route::get('models/{modelId}/records', [RuntimeController::class, 'listRecords']);
+    Route::post('models/{modelId}/records', [RuntimeController::class, 'createRecord'])->middleware('throttle:runtime-form');
+    Route::get('auth/me', [RuntimeController::class, 'me']);
+    Route::post('auth/register', [RuntimeController::class, 'register'])->middleware('throttle:runtime-auth');
+    Route::post('auth/login', [RuntimeController::class, 'login'])->middleware('throttle:runtime-auth');
+    Route::post('auth/logout', [RuntimeController::class, 'logout']);
+});
+
+// Edge on-demand TLS authorisation (Caddy `ask`).
+Route::get('internal/tls/ask', [PublishingController::class, 'tlsAsk'])->middleware('throttle:120,1');
 
 Route::prefix('v1')->group(function () {
     // ---- Authentication (M01) ----
@@ -42,6 +58,8 @@ Route::prefix('v1')->group(function () {
     // Signed, short-lived asset URLs (no session needed; signature is the capability).
     Route::get('assets/{asset}/content', [AssetController::class, 'content'])
         ->middleware('signed:relative')->name('assets.content');
+
+    Route::get('preview-links/{token}', [PublishingController::class, 'showPreviewLink'])->middleware('throttle:60,1');
 
     Route::get('templates', [TemplateController::class, 'index']);
     Route::get('templates/{slug}', [TemplateController::class, 'show']);
@@ -100,6 +118,23 @@ Route::prefix('v1')->group(function () {
         // ---- Workflows (M20) ----
         Route::get('projects/{project}/workflow-runs', [WorkflowController::class, 'runs']);
         Route::post('projects/{project}/workflows/{workflowId}/dry-run', [WorkflowController::class, 'dryRun']);
+
+        // ---- Publishing, domains, preview links, app users (M26–M28) ----
+        Route::get('projects/{project}/publishing', [PublishingController::class, 'overview']);
+        Route::put('projects/{project}/subdomain', [PublishingController::class, 'setSubdomain']);
+        Route::post('projects/{project}/publish', [PublishingController::class, 'publish']);
+        Route::get('projects/{project}/deployments/{id}', [PublishingController::class, 'deployment']);
+        Route::post('projects/{project}/rollback', [PublishingController::class, 'rollback']);
+        Route::post('projects/{project}/unpublish', [PublishingController::class, 'unpublish']);
+        Route::post('projects/{project}/domains', [PublishingController::class, 'addDomain']);
+        Route::get('domains/{id}/status', [PublishingController::class, 'domainStatus']);
+        Route::post('domains/{id}/verify', [PublishingController::class, 'verifyDomain'])->middleware('throttle:20,1');
+        Route::delete('domains/{id}', [PublishingController::class, 'removeDomain']);
+        Route::get('projects/{project}/preview-links', [PublishingController::class, 'previewLinks']);
+        Route::post('projects/{project}/preview-links', [PublishingController::class, 'createPreviewLink']);
+        Route::delete('projects/{project}/preview-links/{id}', [PublishingController::class, 'revokePreviewLink']);
+        Route::get('projects/{project}/app-users', [PublishingController::class, 'appUsers']);
+        Route::patch('projects/{project}/app-users/{id}', [PublishingController::class, 'updateAppUser']);
 
         // ---- AI (M13–M15) ----
         Route::get('projects/{project}/ai/status', [AiController::class, 'status']);

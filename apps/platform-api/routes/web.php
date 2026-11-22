@@ -1,10 +1,8 @@
 <?php
 
+use App\Http\Controllers\RuntimeController;
 use Illuminate\Support\Facades\Route;
 
-// The platform API is consumed by the Studio SPA (apps/studio-web). The root only identifies the service.
-Route::get('/', fn () => response()->json([
-    'service' => 'ai-studio-cloud/platform-api',
-    'api' => '/api/v1',
-    'health' => '/api/health',
-]));
+// Platform hosts answer with a service description; any other Host is a published site.
+Route::get('/_assets/{asset}', [RuntimeController::class, 'asset'])->where('asset', '[0-9a-zA-Z]{26}');
+Route::get('/{path?}', [RuntimeController::class, 'page'])->where('path', '^(?!api/|up$|sanctum/|runtime/).*$');

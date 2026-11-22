@@ -15,7 +15,12 @@ class Project extends Model
 
     public const STATUSES = ['active', 'archived'];
 
-    protected $fillable = ['organization_id', 'workspace_id', 'name', 'slug', 'description', 'status', 'template_id', 'created_by'];
+    protected $fillable = ['organization_id', 'workspace_id', 'name', 'slug', 'description', 'status', 'template_id', 'created_by', 'live_release_id', 'published_at'];
+
+    protected function casts(): array
+    {
+        return ['published_at' => 'datetime'];
+    }
 
     public function workspace(): BelongsTo
     {
@@ -40,6 +45,11 @@ class Project extends Model
     public function definition(): HasOne
     {
         return $this->hasOne(AppDefinition::class);
+    }
+
+    public function liveRelease(): BelongsTo
+    {
+        return $this->belongsTo(Release::class, 'live_release_id');
     }
 
     public function revisions(): HasMany

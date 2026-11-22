@@ -64,7 +64,23 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | A-6 | Cost abuse | monthly credits (reserve/commit under lock), per-user rate limit, bounded repair loop, max tokens | ✅ |
 | A-7 | Provider outage blocks users | offline fallback provider, clearly labelled | ✅ |
 
+### Phase 4 additions (publishing & domains)
+| # | Threat | Control | Status |
+|---|---|---|---|
+| P-1 | Tenant code execution on published sites | release is data only (JSON block, `application/json`, HEX-escaped); renderer allowlist; strict CSP (`script-src 'self'`) | ✅ `PublishingTest` |
+| P-2 | Cross-site data access via Host spoofing | Host → active domain → exactly one project; platform hosts never resolve; studio API blocked on tenant hosts in nginx; `TRUSTED_PROXIES` only | ✅ J8 tests |
+| P-3 | Subdomain/custom-domain takeover | unique `active_hostname`; 30-day cooldown for released slugs; per-binding TXT token + routing + TLS before serving; scheduled re-check; TLS `ask` only for served hosts | ✅ `CustomDomainTest` |
+| P-4 | Broken publish takes site down | immutable releases, pipeline gates before switch, compare-and-set switch, health check with automatic revert, rollback | ✅ J9 |
+| P-5 | CSRF against end-user sessions | `X-Runtime-Request` header required for writes, no CORS, SameSite=Lax, host-only cookie | ✅ |
+| P-6 | Session theft / reuse across sites | HttpOnly host-only cookie, token hashed at rest, bound to project, revoked on disable/role change, 14-day expiry | ✅ |
+| P-7 | Account enumeration / brute force | generic errors, dummy-hash timing, 10/min per host+IP | ✅ |
+| P-8 | Leaking internal config (workflow recipients, ids) | public document strips workflows and projectId; share links likewise | ✅ |
+| P-9 | Asset exfiltration through site | `/_assets/{id}` serves only ids in the live release manifest of that host, `nosniff`, sandbox CSP | ✅ |
+| P-10 | Share-link leakage | 40-char random token, hash at rest, expiry, revoke, noindex, no data access | ✅ |
+| P-11 | Abuse hosting (phishing on our domain) | verified e-mail required to publish; reporting/abuse flags | ✅ / ⏳ Phase 6 |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
+- Published sites: set `PLATFORM_BASE_DOMAIN`/`PLATFORM_CNAME_TARGET`/`PLATFORM_HOSTS`, run the edge with on-demand TLS + `ask`, and keep `STUDIO_DNS_DRIVER=system`, `STUDIO_TLS_CHECK=probe` (the `static`/`assume` drivers are for local/E2E only). Use a separate registrable domain for tenant sites (not a subdomain of the studio) so cookies can never be shared.
 - DAST, SAST and dependency scanning in CI: `npm audit` and `composer audit` run now; SAST/DAST tools are added in Phase 6.
 - Audit log tamper-evidence (hash chain) and retention policy: Phase 6.

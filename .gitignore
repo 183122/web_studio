@@ -15,3 +15,6 @@ coverage/
 # Built templates are committed (imported by the API seeder)
 !packages/templates/dist/
 .env.docker
+
+# Runtime bundle is built from apps/runtime-web
+/apps/platform-api/public/runtime/

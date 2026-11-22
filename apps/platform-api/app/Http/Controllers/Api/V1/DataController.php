@@ -12,7 +12,9 @@ use App\Domain\Schema\StructuralValidator;
 use App\Http\Controllers\Controller;
 use App\Models\AppAuditLog;
 use App\Models\Project;
+use App\Models\Release;
 use App\Services\AuditLogger;
+use App\Support\ApiException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -26,11 +28,28 @@ class DataController extends Controller
 {
     public function __construct(private readonly RecordService $records) {}
 
+    /**
+     * `?env=production` works on the live site's data with the live release's schema;
+     * the default (preview) uses the current draft schema and preview data.
+     */
     private function ctx(Project $project, string $ability): DataContext
     {
         $this->authorize($ability, $project);
+        if ($this->env() === 'production') {
+            $release = $project->live_release_id ? Release::query()->find($project->live_release_id) : null;
+            if ($release === null) {
+                throw new ApiException(404, 'not_published', 'เว็บไซต์ยังไม่ได้เผยแพร่ จึงยังไม่มีข้อมูลจริง');
+            }
+
+            return DataContext::forRelease($project, $release);
+        }
 
         return DataContext::forProject($project);
+    }
+
+    private function env(): string
+    {
+        return request()->query('env') === 'production' ? 'production' : RecordService::ENV_PREVIEW;
     }
 
     private function actor(Request $request): Actor
@@ -52,7 +71,7 @@ class DataController extends Controller
         ]);
         $page = $this->records->list($ctx, $model, $this->actor($request), [
             'search' => $q['search'] ?? null, 'filters' => $q['filter'] ?? [], 'sort' => $q['sort'] ?? null, 'dir' => $q['dir'] ?? null, 'perPage' => $q['perPage'] ?? 20,
-        ]);
+        ], $this->env());
 
         return response()->json([
             'data' => array_map(fn ($r) => RecordService::present($r, $model), $page->items()),
@@ -65,7 +84,7 @@ class DataController extends Controller
         $ctx = $this->ctx($project, 'view');
         $model = $ctx->model($modelId);
 
-        return response()->json(['data' => RecordService::present($this->records->find($ctx, $model, $recordId), $model)]);
+        return response()->json(['data' => RecordService::present($this->records->find($ctx, $model, $recordId, $this->env()), $model)]);
     }
 
     public function store(Request $request, Project $project, string $modelId): JsonResponse
@@ -73,7 +92,7 @@ class DataController extends Controller
         $ctx = $this->ctx($project, 'manage');
         $model = $ctx->model($modelId);
         $data = $request->validate(['data' => ['required', 'array']]);
-        $record = $this->records->create($ctx, $model, $data['data'], $this->actor($request), 'studio');
+        $record = $this->records->create($ctx, $model, $data['data'], $this->actor($request), 'studio', $this->env());
 
         return response()->json(['data' => RecordService::present($record->fresh(), $model)], 201);
     }
@@ -83,7 +102,7 @@ class DataController extends Controller
         $ctx = $this->ctx($project, 'manage');
         $model = $ctx->model($modelId);
         $data = $request->validate(['data' => ['required', 'array'], 'version' => ['required', 'integer', 'min:1']]);
-        $record = $this->records->update($ctx, $model, $this->records->find($ctx, $model, $recordId), $data['data'], (int) $data['version'], $this->actor($request), 'studio');
+        $record = $this->records->update($ctx, $model, $this->records->find($ctx, $model, $recordId, $this->env()), $data['data'], (int) $data['version'], $this->actor($request), 'studio');
 
         return response()->json(['data' => RecordService::present($record->fresh(), $model)]);
     }
@@ -92,7 +111,7 @@ class DataController extends Controller
     {
         $ctx = $this->ctx($project, 'manage');
         $model = $ctx->model($modelId);
-        $this->records->delete($ctx, $model, $this->records->find($ctx, $model, $recordId), $this->actor($request));
+        $this->records->delete($ctx, $model, $this->records->find($ctx, $model, $recordId, $this->env()), $this->actor($request));
 
         return response()->json(['data' => ['ok' => true]]);
     }
@@ -102,7 +121,7 @@ class DataController extends Controller
         $ctx = $this->ctx($project, 'manage');
         $model = $ctx->model($modelId);
         $data = $request->validate(['ids' => ['required', 'array', 'min:1', 'max:500'], 'ids.*' => ['string', 'size:26']]);
-        $records = $this->records->scope($ctx, $model)->whereIn('id', $data['ids'])->get();
+        $records = $this->records->scope($ctx, $model, $this->env())->whereIn('id', $data['ids'])->get();
         foreach ($records as $record) {
             $this->records->delete($ctx, $model, $record, $this->actor($request));
         }
@@ -115,8 +134,8 @@ class DataController extends Controller
     {
         $ctx = $this->ctx($project, 'view');
         $model = $ctx->model($modelId);
-        $stream = $csv->export($ctx, $model);
-        app(AuditLogger::class)->record('data.exported', $project, ['model' => $model['name']]);
+        $stream = $csv->export($ctx, $model, $this->env());
+        app(AuditLogger::class)->record('data.exported', $project, ['model' => $model['name'], 'env' => $this->env()]);
 
         return response()->streamDownload(function () use ($stream) {
             fpassthru($stream);
@@ -129,7 +148,7 @@ class DataController extends Controller
         $ctx = $this->ctx($project, 'manage');
         $model = $ctx->model($modelId);
         $request->validate(['file' => ['required', 'file', 'max:2048', 'mimetypes:text/plain,text/csv,application/csv,application/vnd.ms-excel'], 'dryRun' => ['nullable', 'boolean']]);
-        $report = $csv->import($ctx, $model, $request->file('file')->getRealPath(), $this->actor($request), $request->boolean('dryRun'));
+        $report = $csv->import($ctx, $model, $request->file('file')->getRealPath(), $this->actor($request), $request->boolean('dryRun'), $this->env());
         if (! $report['dryRun'] && $report['created'] > 0) {
             app(AuditLogger::class)->record('data.imported', $project, ['model' => $model['name'], 'rows' => $report['created']]);
         }
@@ -166,7 +185,7 @@ class DataController extends Controller
     {
         $ctx = $this->ctx($project, 'view');
         $model = $ctx->model($modelId);
-        $logs = AppAuditLog::query()->where('project_id', $project->id)->where('model_id', $model['id'])->orderByDesc('id')->paginate(50);
+        $logs = AppAuditLog::query()->where('project_id', $project->id)->where('model_id', $model['id'])->where('environment', $this->env())->orderByDesc('id')->paginate(50);
 
         return response()->json([
             'data' => collect($logs->items())->map(fn (AppAuditLog $l) => [

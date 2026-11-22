@@ -1,12 +1,25 @@
 openapi: 3.1.0
 info:
   title: AI Studio Cloud — Platform API
-  version: 0.3.0
-  description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN` (obtain via `GET /sanctum/csrf-cookie`).
+  version: 0.4.0
+  description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN`
+    (obtain via `GET /sanctum/csrf-cookie`).
 
-    Responses: `{ "data": ... }` (paginated lists add `links` and `meta`). Errors: `{ "error": { "code", "message", "details"? } }`.
+    Responses: `{ "data": ... }` (paginated lists add `links` and `meta`). Errors:
+    `{ "error": { "code", "message", "details"? } }`.
 
-    Cross-tenant or missing resources return 404. Optional `Idempotency-Key` header on POST.
+    Cross-tenant or missing resources return 404. Optional `Idempotency-Key` header
+    on POST.
+
+
+    Phase 4: `?env=production` on `/projects/{project}/data/...` reads/writes the
+    live site''s data with the live release''s schema.
+
+    Published-site runtime API (served on each site''s own host, not under /api/v1):
+    `/api/runtime/v1/models/{modelId}/records` (GET/POST), `/api/runtime/v1/auth/{me,register,login,logout}`;
+    writes require header `X-Runtime-Request: 1`; end-user session cookie `__site_session`
+    (HttpOnly, host-only, SameSite=Lax). Edge TLS hook: `GET /api/internal/tls/ask?domain=`
+    → 200 only for served hostnames.
 
     '
 servers:
@@ -868,7 +881,8 @@ paths:
           description: OK
   /projects/{project}/ai/plan:
     post:
-      summary: Start planning from a description {prompt, consent} (queued on the ai queue)
+      summary: Start planning from a description {prompt, consent} (queued on the
+        ai queue)
       parameters:
       - *id004
       responses:
@@ -967,3 +981,214 @@ paths:
       responses:
         '200':
           description: OK
+  /projects/{project}/publishing:
+    get:
+      summary: 'Publishing overview: subdomain, live release, releases, deployments,
+        custom domains'
+      parameters:
+      - &id008
+        $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/subdomain:
+    put:
+      summary: Reserve/rename the platform subdomain (manage). 409 slug_taken | slug_cooling_down;
+        422 reserved_slug | invalid_slug
+      parameters:
+      - *id008
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slug: &id009
+                  type: string
+  /projects/{project}/publish:
+    post:
+      summary: Freeze the saved head revision into an immutable release and run the
+        publish pipeline (update). 422 email_unverified | subdomain_required; 409
+        deploy_in_progress
+      parameters:
+      - *id008
+      responses:
+        '202':
+          description: Accepted (deployment queued)
+  /projects/{project}/deployments/{id}:
+    get:
+      summary: Deployment status and step log
+      parameters:
+      - *id008
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/rollback:
+    post:
+      summary: Make an earlier ready release live again
+      parameters:
+      - *id008
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                releaseId: *id009
+  /projects/{project}/unpublish:
+    post:
+      summary: Take the site offline (data is kept)
+      parameters:
+      - *id008
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/domains:
+    post:
+      summary: Add a custom domain; returns TXT + CNAME/ALIAS instructions (max 5).
+        409 hostname_taken
+      parameters:
+      - *id008
+      responses:
+        '201':
+          description: Created
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hostname: *id009
+  /domains/{id}/status:
+    get:
+      summary: Custom domain status and last check results
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /domains/{id}/verify:
+    post:
+      summary: Re-run ownership (TXT), routing (CNAME/A) and certificate checks
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /domains/{id}:
+    delete:
+      summary: Remove a custom domain (re-adding requires new verification)
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/preview-links:
+    get:
+      summary: List share links
+      parameters:
+      - *id008
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create an expiring read-only share link (1–30 days); token shown once
+      parameters:
+      - *id008
+      responses:
+        '201':
+          description: Created
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                days:
+                  type: integer
+  /projects/{project}/preview-links/{id}:
+    delete:
+      summary: Revoke a share link
+      parameters:
+      - *id008
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /preview-links/{token}:
+    get:
+      summary: 'Public: read-only snapshot of a shared draft (noindex; workflows removed;
+        signed image URLs). Unknown/expired/revoked → 404'
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not found
+      security: []
+  /projects/{project}/app-users:
+    get:
+      summary: End users registered on the published site
+      parameters:
+      - *id008
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/app-users/{id}:
+    patch:
+      summary: Change role (member|admin) or status (active|disabled); revokes sessions
+      parameters:
+      - *id008
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role: *id009
+                status: *id009

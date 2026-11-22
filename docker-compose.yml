@@ -50,8 +50,24 @@ services:
       REDIS_HOST: redis
       CACHE_STORE: redis
       QUEUE_CONNECTION: redis
-    command: ["php", "artisan", "queue:work", "--queue=ai,email,default", "--tries=3", "--backoff=10", "--max-time=3600", "--timeout=620"]
+    command: ["php", "artisan", "queue:work", "--queue=build,ai,email,default", "--tries=3", "--backoff=10", "--max-time=3600", "--timeout=620"]
     volumes: [assets:/var/www/apps/platform-api/storage/app/tenant-assets]
+    depends_on: [api]
+
+  # Scheduled jobs (custom-domain re-verification every 10 minutes).
+  scheduler:
+    build: { context: ., dockerfile: infra/docker/api.Dockerfile }
+    env_file: [.env.docker]
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_DATABASE: studio
+      DB_USERNAME: studio
+      DB_PASSWORD: ${DB_PASSWORD:-studio-local}
+      REDIS_HOST: redis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+    command: ["php", "artisan", "schedule:work"]
     depends_on: [api]
 
   web:

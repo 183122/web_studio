@@ -17,12 +17,12 @@ class CsvService
     public function __construct(private readonly RecordService $records) {}
 
     /** @return resource */
-    public function export(DataContext $ctx, array $model)
+    public function export(DataContext $ctx, array $model, string $env = RecordService::ENV_PREVIEW)
     {
         $out = fopen('php://temp', 'w+');
         fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel shows Thai correctly
         fputcsv($out, array_merge(['id'], array_column($model['fields'], 'name'), ['created_at', 'updated_at']), escape: '');
-        $this->records->scope($ctx, $model)->orderBy('created_at')->chunk(500, function ($chunk) use ($out, $model) {
+        $this->records->scope($ctx, $model, $env)->orderBy('created_at')->chunk(500, function ($chunk) use ($out, $model) {
             foreach ($chunk as $record) {
                 $values = $record->values();
                 $row = [$record->id];
@@ -50,7 +50,7 @@ class CsvService
     }
 
     /** @return array{rows:int, created:int, dryRun:bool, errors:list<array{row:int, field:string, message:string}>} */
-    public function import(DataContext $ctx, array $model, string $path, Actor $actor, bool $dryRun): array
+    public function import(DataContext $ctx, array $model, string $path, Actor $actor, bool $dryRun, string $env = RecordService::ENV_PREVIEW): array
     {
         $ctx->assertAllowed($model, $actor, 'create');
         $fh = fopen($path, 'r');
@@ -109,10 +109,10 @@ class CsvService
             return ['rows' => count($rows), 'created' => 0, 'dryRun' => $dryRun, 'errors' => array_slice($errors, 0, 200)];
         }
 
-        DB::transaction(function () use ($ctx, $model, $rows, $actor, &$errors) {
+        DB::transaction(function () use ($ctx, $model, $rows, $actor, $env, &$errors) {
             foreach ($rows as $n => $input) {
                 try {
-                    $this->records->create($ctx, $model, $input, $actor, 'import', runWorkflows: false);
+                    $this->records->create($ctx, $model, $input, $actor, 'import', $env, runWorkflows: false);
                 } catch (ApiException $e) {
                     foreach ($e->details['fields'] ?? ['_' => $e->getMessage()] as $fieldId => $msg) {
                         $errors[] = ['row' => $n + 2, 'field' => (string) $fieldId, 'message' => $msg];

@@ -6,6 +6,7 @@ use App\Domain\Schema\DocumentCodec;
 use App\Domain\Schema\Upcaster;
 use App\Models\AppDefinition;
 use App\Models\Project;
+use App\Models\Release;
 
 /**
  * Read-only view of a project's data definitions. Phase 2 reads the current head (preview);
@@ -20,6 +21,12 @@ final class DataContext
         $def = AppDefinition::query()->where('project_id', $project->id)->firstOrFail();
 
         return new self($project, Upcaster::upcast(DocumentCodec::decode($def->document)));
+    }
+
+    /** Production runtime: definitions come from the immutable live release, never the draft. */
+    public static function forRelease(Project $project, Release $release): self
+    {
+        return new self($project, Upcaster::upcast(DocumentCodec::decode($release->document)));
     }
 
     public function model(string $idOrName): array

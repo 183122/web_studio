@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard.tsx';
 const Editor = lazy(() => import('./editor/Editor.tsx'));
 const Preview = lazy(() => import('./pages/Preview.tsx'));
 const DataAdmin = lazy(() => import('./pages/DataAdmin.tsx'));
+const SharePreview = lazy(() => import('./pages/SharePreview.tsx'));
 
 const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/app" replace /> },
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
   },
   { path: '/reset-password', element: <ResetPassword /> },
   { path: '/verify-email', element: <VerifyEmailResult /> },
+  { path: '/share/:token', element: <Suspense fallback={<FullPageSpinner />}><SharePreview /></Suspense> },
   {
     element: <RequireAuth />,
     children: [
