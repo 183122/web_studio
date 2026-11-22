@@ -79,6 +79,13 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | P-10 | Share-link leakage | 40-char random token, hash at rest, expiry, revoke, noindex, no data access | ✅ |
 | P-11 | Abuse hosting (phishing on our domain) | verified e-mail required to publish; reporting/abuse flags | ✅ / ⏳ Phase 6 |
 
+### Platform settings
+| # | Threat | Control | Status |
+|---|---|---|---|
+| S-1 | Tenant escalates to platform operator | `is_platform_admin` not mass-assignable; granted only via artisan; admin API returns 404 to others | ✅ `PlatformSettingsTest` |
+| S-2 | OAuth client secret disclosure | encrypted at rest (app key), write-only (last 4 shown), excluded from audit metadata and logs | ✅ |
+| S-3 | Hijacked admin session changes secrets | password re-confirmation on save/delete, 10/min throttle, audit log | ✅ |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
 - Published sites: set `PLATFORM_BASE_DOMAIN`/`PLATFORM_CNAME_TARGET`/`PLATFORM_HOSTS`, run the edge with on-demand TLS + `ask`, and keep `STUDIO_DNS_DRIVER=system`, `STUDIO_TLS_CHECK=probe` (the `static`/`assume` drivers are for local/E2E only). Use a separate registrable domain for tenant sites (not a subdomain of the studio) so cookies can never be shared.

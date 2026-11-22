@@ -2,6 +2,8 @@
 
 use App\Domain\Publishing\DomainService;
 use App\Models\Domain;
+use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
@@ -23,3 +25,19 @@ Artisan::command('studio:domains:check {--limit=200}', function (DomainService $
 })->purpose('Re-run ownership, routing and certificate checks for custom domains');
 
 Schedule::command('studio:domains:check')->everyTenMinutes()->withoutOverlapping();
+
+// Platform admins are operators, never self-service: granted/revoked only from the server shell.
+Artisan::command('studio:platform-admin {email} {--revoke}', function (string $email) {
+    $user = User::query()->where('email', mb_strtolower(trim($email)))->first();
+    if ($user === null) {
+        $this->error('ไม่พบผู้ใช้');
+
+        return 1;
+    }
+    $grant = ! $this->option('revoke');
+    $user->forceFill(['is_platform_admin' => $grant])->save();
+    app(AuditLogger::class)->record($grant ? 'platform.admin_granted' : 'platform.admin_revoked', $user, ['email' => $user->email]);
+    $this->info(($grant ? 'granted' : 'revoked').": {$user->email}");
+
+    return 0;
+})->purpose('Grant or revoke platform-admin access for a user');

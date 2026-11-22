@@ -45,6 +45,14 @@
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
 
+## ตั้งค่าระบบสำหรับผู้ดูแลแพลตฟอร์ม (2026-11-22)
+
+- หน้า **ตั้งค่าระบบ** (`/app/admin/settings`, ลิงก์บนแดชบอร์ดเห็นเฉพาะผู้ดูแลแพลตฟอร์ม): ตั้งค่า Google OAuth client (Client ID + secret) พร้อมค่า Authorized origin / redirect URI ให้คัดลอกไปใส่ใน Google Cloud Console
+- ผู้ดูแลแพลตฟอร์มมอบสิทธิ์ได้จาก shell เท่านั้น: `php artisan studio:platform-admin <email>` (`--revoke` เพื่อถอน) · ผู้อื่นได้ 404
+- secret เข้ารหัสด้วย app key (`platform_settings`), ไม่ถูกส่งกลับ (แสดงแค่ 4 ตัวท้าย), ต้องยืนยันรหัสผ่านทุกครั้งที่บันทึก/ลบ, บันทึก audit log (ไม่มีค่า secret)
+- ถ้าตั้ง `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` ใน environment ค่านั้นมีผลก่อนและฟอร์มจะเป็นแบบอ่านอย่างเดียว
+- ค่าที่บันทึกจะถูกใช้โดยขั้นตอนเชื่อมต่อ Google ใน Phase 5 (ยังไม่ได้สร้าง callback/OAuth flow)
+
 ## Phase 4: สิ่งที่ส่งมอบ (2026-11-22)
 
 - **Release & pipeline** (`app/Domain/Publishing/PublishService.php`): ตรึง revision ที่บันทึกแล้วเป็น release ที่แก้ไขไม่ได้ → validate → security scan (รูปถูกลบ/ไม่ผ่านสแกน = ล้มเหลว, ลิงก์เสีย/สิทธิ์อ่านสาธารณะ = คำเตือน) → manifest → stage → smoke test → สลับแบบ atomic (compare-and-set) → health check (ล้มเหลว = คืนค่าอัตโนมัติ) · rollback, หยุดเผยแพร่ · คิว `build`, ทีละ 1 deployment ต่อโปรเจกต์ · ต้องยืนยันอีเมลก่อนเผยแพร่
@@ -82,12 +90,12 @@
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **135/135 ผ่าน** (916 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **135/135 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **139/139 ผ่าน** (959 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **139/139 ผ่าน** |
 | Vitest app-schema / renderer / studio / runtime | `npm test` | **80/80, 10/10, 9/9, 4/4 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
 | Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **12/12 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
+| Playwright E2E | `npm run test:e2e` | **13/13 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
 
 E2E ที่ครอบคลุม: J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)

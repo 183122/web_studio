@@ -1192,3 +1192,49 @@ paths:
               properties:
                 role: *id009
                 status: *id009
+  /admin/settings/google-oauth:
+    get:
+      summary: 'Platform admin: Google OAuth client status (never returns the secret)
+        + values to register in Google Cloud Console'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not a platform admin
+    put:
+      summary: 'Platform admin: save client ID/secret (encrypted; secret optional
+        when already stored). 409 environment_managed'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not a platform admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                clientSecret:
+                  type: string
+                password: &id010
+                  type: string
+                  description: current password (re-authentication)
+    delete:
+      summary: 'Platform admin: remove stored client. 409 environment_managed'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not a platform admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password: *id010

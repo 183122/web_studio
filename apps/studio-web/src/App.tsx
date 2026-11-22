@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard.tsx';
 const Editor = lazy(() => import('./editor/Editor.tsx'));
 const Preview = lazy(() => import('./pages/Preview.tsx'));
 const DataAdmin = lazy(() => import('./pages/DataAdmin.tsx'));
+const AdminSettings = lazy(() => import('./pages/AdminSettings.tsx'));
 const SharePreview = lazy(() => import('./pages/SharePreview.tsx'));
 
 const router = createBrowserRouter([
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: '/app', element: <Dashboard /> },
       { path: '/app/projects/:projectId', element: <Suspense fallback={<FullPageSpinner />}><Editor /></Suspense> },
       { path: '/app/projects/:projectId/data', element: <Suspense fallback={<FullPageSpinner />}><DataAdmin /></Suspense> },
+      { path: '/app/admin/settings', element: <Suspense fallback={<FullPageSpinner />}><AdminSettings /></Suspense> },
       { path: '/app/projects/:projectId/preview', element: <Suspense fallback={<FullPageSpinner />}><Preview /></Suspense> },
     ],
   },

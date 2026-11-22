@@ -17,6 +17,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'emailVerified' => $this->email_verified_at !== null,
             'locale' => $this->locale,
+            'isPlatformAdmin' => (bool) $this->is_platform_admin,
         ];
     }
 }

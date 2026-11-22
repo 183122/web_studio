@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Google OAuth client (Sheets/Drive integration). Optional: platform admins can instead save it in
+    // Admin → Settings (encrypted in the database). When set here, the environment wins.
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    ],
+
 ];

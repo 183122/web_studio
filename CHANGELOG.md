@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Platform admin settings page with Google OAuth client configuration (encrypted at rest, write-only secret, password re-confirmation, audit log; environment variables take precedence). Platform admins are granted with `php artisan studio:platform-admin`.
+
 ## [0.4.0] — 2026-11-22 — Phase 4
 ### Added
 - Publishing: immutable releases, 8-step pipeline with automatic revert, rollback, unpublish, deployment log in the studio.

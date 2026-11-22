@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\DataController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\PlatformSettingsController;
 use App\Http\Controllers\Api\V1\PreviewRuntimeController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PublishingController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Api\V1\WorkflowController;
 use App\Http\Controllers\Api\V1\WorkspaceController;
 use App\Http\Controllers\RuntimeController;
 use App\Http\Middleware\AuthenticateAppApiKey;
+use App\Http\Middleware\EnsurePlatformAdmin;
 use App\Http\Middleware\Idempotency;
 use App\Http\Middleware\ResolveSite;
 use Illuminate\Support\Facades\Route;
@@ -118,6 +120,13 @@ Route::prefix('v1')->group(function () {
         // ---- Workflows (M20) ----
         Route::get('projects/{project}/workflow-runs', [WorkflowController::class, 'runs']);
         Route::post('projects/{project}/workflows/{workflowId}/dry-run', [WorkflowController::class, 'dryRun']);
+
+        // ---- Platform admin settings (operators only; 404 for everyone else) ----
+        Route::prefix('admin')->middleware(EnsurePlatformAdmin::class)->group(function () {
+            Route::get('settings/google-oauth', [PlatformSettingsController::class, 'showGoogle']);
+            Route::put('settings/google-oauth', [PlatformSettingsController::class, 'updateGoogle'])->middleware('throttle:10,1');
+            Route::delete('settings/google-oauth', [PlatformSettingsController::class, 'deleteGoogle'])->middleware('throttle:10,1');
+        });
 
         // ---- Publishing, domains, preview links, app users (M26–M28) ----
         Route::get('projects/{project}/publishing', [PublishingController::class, 'overview']);
