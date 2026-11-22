@@ -86,8 +86,25 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | S-2 | OAuth client secret disclosure | encrypted at rest (app key), write-only (last 4 shown), excluded from audit metadata and logs | ✅ |
 | S-3 | Hijacked admin session changes secrets | password re-confirmation on save/delete, 10/min throttle, audit log | ✅ |
 
+### Phase 5 additions (integrations)
+| # | Threat | Control | Status |
+|---|---|---|---|
+| I-1 | OAuth code interception / CSRF on callback | PKCE S256, single-use user-bound `state` (10 min), callback requires the same studio session, admin re-checked | ✅ `GoogleConnectionTest` |
+| I-2 | Token theft | refresh/access tokens encrypted at rest, never serialized/logged/returned; revoke + delete on disconnect | ✅ |
+| I-3 | Over-broad Google access | per-feature scopes; Drive limited to `drive.file`; scope checked before every call | ✅ |
+| I-4 | Residual access after disconnect | revoke at Google, local deletion regardless of Google's answer, syncs → `disconnected`, calls fail with `google_not_connected` | ✅ J4 |
+| I-5 | Formula/CSV injection into Sheets | writes use `valueInputOption=RAW`; imported cells validated like form input | ✅ |
+| I-6 | Sheets as an unreliable source corrupting data | app DB canonical; per-row validation; idempotent key/`_studio_id` matching; conflict policy; no deletes from sheets | ✅ |
+| I-7 | Quota storms / outages | per-sync lock, backoff, dead letter, scheduler skips syncs with work in flight, 30 req/min/user on Google-backed endpoints | ✅ |
+| I-8 | Malicious attachments | content sniffing allowlist, 10 MB cap, malware scan, served as attachment with nosniff via the API | ✅ (ClamAV optional) |
+| I-9 | Accessing files after deletion/revocation | metadata re-check at Google on every download; status `missing`/`access_lost` | ✅ J5 |
+| I-10 | SSRF via webhooks | https/public-IP-only guard incl. metadata/CGNAT/ULA, DNS pinning (no rebinding), no redirects, short timeouts | ✅ `WebhookTest` |
+| I-11 | Webhook spoofing/replay at receivers | HMAC-SHA256 over timestamp + body, event id for idempotency, secret shown once (encrypted at rest) | ✅ |
+| I-12 | Fake Google endpoint in production | `GOOGLE_FAKE_BASE` refused when `APP_ENV=production` | ✅ |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
+- Google: complete OAuth verification for the sensitive `spreadsheets` scope and run `docs/runbooks/google-oauth-review.md` against real Google before enabling for customers.
 - Published sites: set `PLATFORM_BASE_DOMAIN`/`PLATFORM_CNAME_TARGET`/`PLATFORM_HOSTS`, run the edge with on-demand TLS + `ask`, and keep `STUDIO_DNS_DRIVER=system`, `STUDIO_TLS_CHECK=probe` (the `static`/`assume` drivers are for local/E2E only). Use a separate registrable domain for tenant sites (not a subdomain of the studio) so cookies can never be shared.
 - DAST, SAST and dependency scanning in CI: `npm audit` and `composer audit` run now; SAST/DAST tools are added in Phase 6.
 - Audit log tamper-evidence (hash chain) and retention policy: Phase 6.

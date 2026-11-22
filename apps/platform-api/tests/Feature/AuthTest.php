@@ -50,6 +50,13 @@ class AuthTest extends TestCase
             ->assertJsonStructure(['error' => ['details' => ['fields' => ['email', 'password', 'acceptTerms']]]]);
     }
 
+    public function test_guests_get_401_json_even_for_non_json_requests(): void
+    {
+        // e.g. a plain browser navigation to an API download URL after the session expired
+        $this->withHeaders(['Accept' => 'text/html'])->get('/api/v1/projects/01ARZ3NDEKTSV4RRFFQ69G5FAV/attachments/01ARZ3NDEKTSV4RRFFQ69G5FAV/download')
+            ->assertStatus(401)->assertJsonPath('error.code', 'unauthenticated');
+    }
+
     public function test_login_logout_and_me(): void
     {
         $user = User::factory()->create(['email' => 'a@example.com', 'password' => 'Password12345']);

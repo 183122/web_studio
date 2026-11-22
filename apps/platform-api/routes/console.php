@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Integrations\Sheets\SheetSyncRunner;
 use App\Domain\Publishing\DomainService;
 use App\Models\Domain;
 use App\Models\User;
@@ -41,3 +42,8 @@ Artisan::command('studio:platform-admin {email} {--revoke}', function (string $e
 
     return 0;
 })->purpose('Grant or revoke platform-admin access for a user');
+
+Artisan::command('studio:sheets:schedule', function (SheetSyncRunner $runner) {
+    $this->info('queued '.$runner->dispatchDue().' sheet sync job(s)');
+})->purpose('Queue due Google Sheets syncs');
+Schedule::command('studio:sheets:schedule')->everyMinute()->withoutOverlapping();

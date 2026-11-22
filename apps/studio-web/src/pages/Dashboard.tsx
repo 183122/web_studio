@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { DropdownMenu } from 'radix-ui';
 import {
-  Archive, ArchiveRestore, Copy, LayoutTemplate, LogOut, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Star, Trash2, FolderKanban, MailWarning, Settings,
+  Archive, ArchiveRestore, Copy, LayoutTemplate, LogOut, MoreHorizontal, Pencil, Plus, RotateCcw, Search, Star, Trash2, FolderKanban, MailWarning, Settings, Plug,
 } from 'lucide-react';
 import { PageRenderer } from '@studio/renderer';
 import { api, errorMessage, type Envelope } from '../lib/api.ts';
@@ -70,6 +70,9 @@ export default function Dashboard() {
                 แผน {summary.data.organization.plan?.name ?? '-'} · โปรเจกต์ {summary.data.usage.projects.used}/{summary.data.usage.projects.limit} · พื้นที่ {formatBytes(summary.data.usage.storage_bytes.used)}/{formatBytes(summary.data.usage.storage_bytes.limit)}
               </span>
             ) : null}
+            <Link to="/app/integrations" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
+              <Plug className="h-4 w-4" /> การเชื่อมต่อ
+            </Link>
             {me.user.isPlatformAdmin ? (
               <Link to="/app/admin/settings" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
                 <Settings className="h-4 w-4" /> ตั้งค่าระบบ

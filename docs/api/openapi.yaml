@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: AI Studio Cloud — Platform API
-  version: 0.4.0
+  version: 0.5.0
   description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN`
     (obtain via `GET /sanctum/csrf-cookie`).
 
@@ -20,6 +20,12 @@ info:
     writes require header `X-Runtime-Request: 1`; end-user session cookie `__site_session`
     (HttpOnly, host-only, SameSite=Lax). Edge TLS hook: `GET /api/internal/tls/ask?domain=`
     → 200 only for served hostnames.
+
+
+    Phase 5: Google errors are returned as `google_<kind>` (auth, permission, not_found,
+    rate_limited (503), transient (503), not_configured, not_connected, scope_missing).
+    Webhook requests carry `X-Studio-Event`, `X-Studio-Event-Id`, `X-Studio-Delivery`,
+    `X-Studio-Signature: t=<unix>,v1=<hex HMAC-SHA256(secret, "<t>.<raw body>")>`.
 
     '
 servers:
@@ -1238,3 +1244,332 @@ paths:
               type: object
               properties:
                 password: *id010
+  /workspaces/{workspace}/integrations/google:
+    get:
+      summary: Google connection status (no tokens)
+      parameters: &id011
+      - name: workspace
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: 'Disconnect: revoke at Google, delete tokens, pause syncs (workspace
+        admin)'
+      parameters: *id011
+      responses:
+        '200':
+          description: OK
+  /workspaces/{workspace}/integrations/google/connect:
+    post:
+      summary: 'Start OAuth (PKCE). features: sheets|drive → returns Google authorization
+        URL'
+      parameters: *id011
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                features:
+                  type: array
+  /integrations/google/callback:
+    get:
+      summary: OAuth redirect target (browser navigation, session cookie). Redirects
+        to /app/integrations?google=connected|partial|error&reason=
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/sheets/inspect:
+    post:
+      summary: Spreadsheet title and tabs from a URL or id
+      parameters: &id012
+      - &id013
+        name: project
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+  /projects/{project}/sheets/preview:
+    post:
+      summary: Header + first 5 rows of a tab
+      parameters: *id012
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spreadsheetId:
+                  type: string
+                sheetTitle:
+                  type: string
+  /projects/{project}/sheet-syncs:
+    get:
+      summary: List syncs with last job
+      parameters: *id012
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create sync {modelId, environment, spreadsheetId, sheetTitle, mapping[{fieldId,column}],
+        keyFieldId, direction pull|push|both, conflictPolicy app_wins|sheet_wins|skip,
+        intervalMinutes 0|15|60|360|1440}
+      parameters: *id012
+      responses:
+        '201':
+          description: Created
+  /projects/{project}/sheet-syncs/{id}:
+    patch:
+      summary: Update status/interval/conflict policy
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete sync (data in app and sheet kept)
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/sheet-syncs/{id}/dry-run:
+    post:
+      summary: Validate the sheet without writing (rows, created, updated, unchanged,
+        conflicts, errors)
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/sheet-syncs/{id}/run:
+    post:
+      summary: Queue a sync job
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted (queued)
+  /projects/{project}/sheet-syncs/{id}/jobs:
+    get:
+      summary: Job history (stats, row errors, attempts, dead letters)
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/sync-jobs/{jobId}/retry:
+    post:
+      summary: Retry a failed/dead/partial job as a new job
+      parameters:
+      - *id013
+      - name: jobId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted (queued)
+  /projects/{project}/drive:
+    get:
+      summary: Project Drive folder (?withFolders=1 lists app-created folders)
+      parameters: *id012
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/drive/folder:
+    put:
+      summary: Choose an app-created folder or create one
+      parameters: *id012
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                folderId:
+                  type: string
+                newName:
+                  type: string
+  /projects/{project}/data/{modelId}/records/{recordId}/attachments:
+    get:
+      summary: Record attachments (?env=production)
+      parameters:
+      - *id013
+      - name: modelId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Upload attachment to Drive (multipart file, ≤10 MB, allowlisted types)
+      parameters:
+      - *id013
+      - name: modelId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+  /projects/{project}/attachments/{id}/download:
+    get:
+      summary: Download via API after re-checking access at Google (?check=1 → access
+        check only)
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/attachments/{id}:
+    delete:
+      summary: Delete attachment (and the Drive file)
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/webhooks:
+    get:
+      summary: List webhook endpoints (secrets never returned)
+      parameters: *id012
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create endpoint {url (https, public), environment, events[]}; returns
+        signing secret once
+      parameters: *id012
+      responses:
+        '201':
+          description: Created
+  /projects/{project}/webhooks/{id}:
+    patch:
+      summary: Enable/disable, change events
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete endpoint
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/webhooks/{id}/deliveries:
+    get:
+      summary: Delivery log
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/webhook-deliveries/{id}/redeliver:
+    post:
+      summary: Redeliver a failed/dead delivery
+      parameters:
+      - *id013
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted (queued)

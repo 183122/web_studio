@@ -42,10 +42,17 @@
 - [ ] Deferred: real DNS + ACME issuance verified against a live edge (needs approval for DNS changes and production deployment)
 - [ ] Deferred: row-level "own records" rules, password reset/e-mail verification for end users, CAPTCHA
 
-## Phase 5 — Integrations
-- [ ] Google OAuth (least privilege, PKCE, encrypted refresh tokens, revoke), Sheets mapping/import/sync with conflict policy + DLQ, Drive picker/attachments
-- [ ] Generic REST/webhook connectors with SSRF allowlist; transactional e-mail
-- [ ] Journeys: J4, J5
+## Phase 5 — Integrations ✅ (2026-11-22)
+- [x] Platform admin settings for the Google OAuth client (encrypted; env takes precedence)
+- [x] M22 Google OAuth per workspace: PKCE, least-privilege features, encrypted refresh tokens, refresh under lock, revoke/disconnect, reconnection UX
+- [x] M23 Sheets: link by URL, tab preview, mapping, dry run, import/export (append/update), two-way with conflict policy, schedules, job history, backoff + dead letter + retry
+- [x] M24 Drive: app-created folder (`drive.file`), upload with checks, attach to records, access re-check per download, deleted/revoked handling
+- [x] M25 Outbound webhooks with SSRF allowlist, HMAC signatures, retries/DLQ, redelivery
+- [x] Journeys: J4, J5 (against a fake Google server; PHPUnit with an HTTP fake)
+- [ ] Deferred: verification against real Google + OAuth app verification (`docs/runbooks/google-oauth-review.md`)
+- [ ] Deferred: Google Picker (choose files/folders not created by the app), incremental authorization, per-organization BYOK OAuth clients
+- [ ] Deferred: workflow action "call webhook / send to connector", SMS, custom provider adapters; SMTP settings UI (mail is configured via env)
+- [ ] Deferred: file fields in data models (attachments are record-level for now)
 
 ## Phase 6 — SaaS & hardening
 - [ ] Billing provider adapter (Thai-compatible), webhooks (HMAC, replay protection, idempotency), dunning, invoices, downgrade policy

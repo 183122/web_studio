@@ -3,7 +3,7 @@
 > เอกสารนี้คือ "จุดเริ่มต้น" สำหรับการพัฒนารอบถัดไป: อ่านสถานะ → ดู backlog ใน `docs/ROADMAP.md` → ทำ Phase ถัดไปเป็น vertical slice
 > หลักการ: ไม่อ้างว่าฟีเจอร์ทำงานถ้ายังไม่มีโค้ดและเทสต์จริง
 
-## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 4)
+## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 5)
 
 | Phase | ขอบเขต | สถานะ |
 |---|---|---|
@@ -12,11 +12,11 @@
 | 2 | Data model designer, CRUD, generated admin, app RBAC, forms, workflows, REST API | ✅ เสร็จ (บัญชีผู้ใช้ของแอปส่งมอบใน Phase 4) |
 | 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ✅ เสร็จ (Claude + โหมดออฟไลน์; OpenAI/Gemini ยังไม่ทำ, ยังไม่ได้ทดสอบกับ API จริง — ดูข้อจำกัด) |
 | 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ✅ เสร็จ (ยังไม่ได้ทดสอบกับ DNS/ACME จริงและยังไม่ deploy production — ดูข้อจำกัด) |
-| 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ⏳ ถัดไป |
-| 6 | Billing, entitlements/metering, super admin, privacy, hardening | ⏳ (มี plans/entitlements พื้นฐานแล้ว) |
+| 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ✅ เสร็จ (ทดสอบกับ Google จำลอง ยังไม่ได้ทดสอบกับ Google จริง — ดูข้อจำกัด) |
+| 6 | Billing, entitlements/metering, super admin, privacy, hardening | ⏳ ถัดไป (มี plans/entitlements พื้นฐานแล้ว) |
 | 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ |
 
-ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J4, J5, J7 อยู่ใน phase ถัดไป)
+ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J7 อยู่ใน Phase 6; J4/J5 ยังไม่ได้ทดสอบกับ Google จริง)
 
 ## Phase 0–1: สิ่งที่ส่งมอบ
 
@@ -44,6 +44,16 @@
 - Autosave (debounce, batch, idempotency, backoff), conflict banner (รวมการแก้ไข/โหลดใหม่), beforeunload guard
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
+
+## Phase 5: สิ่งที่ส่งมอบ (2026-11-22)
+
+- **การเชื่อมต่อ Google** (`/app/integrations`): หนึ่งบัญชีต่อ Workspace, ผู้ดูแล Workspace เลือกฟีเจอร์เอง (Sheets → `spreadsheets`, Drive → `drive.file` เท่านั้น), OAuth + PKCE, state ใช้ครั้งเดียวและผูกกับผู้ใช้, โทเค็นเข้ารหัส, refresh อัตโนมัติ, ยกเลิกการเชื่อมต่อ = เพิกถอนที่ Google + ลบโทเค็น + หยุดการซิงก์
+- **Google Sheets** (แท็บใหม่ในหน้า ข้อมูล): วางลิงก์ → เลือกแท็บ → ดูตัวอย่าง → จับคู่คอลัมน์ (เดาให้อัตโนมัติ) → คีย์กันข้อมูลซ้ำ → ทิศทาง นำเข้า/ส่งออก/สองทาง + นโยบายเมื่อขัดแย้ง → ความถี่ · dry run · นำเข้าตรวจทุกแถวด้วยกฎเดียวกับฟอร์ม (แถวผิดถูกรายงาน ไม่ทำให้ทั้งงานล้ม) · ส่งออกแบบ RAW แก้เฉพาะเซลล์ที่จับคู่และเพิ่มคอลัมน์ `_studio_id` · ประวัติงาน, ลองใหม่อัตโนมัติ (30 วิ → 30 นาที) แล้วเข้าสถานะ dead ให้กดลองใหม่ได้
+- **Google Drive**: ไฟล์แนบในหน้าต่างแก้ไขข้อมูล, โฟลเดอร์ที่ระบบสร้าง, ตรวจชนิดไฟล์จากเนื้อหา ≤ 10 MB + สแกนมัลแวร์, ตรวจสิทธิ์ที่ Google ทุกครั้งที่ดาวน์โหลด, แสดงสถานะเมื่อไฟล์ถูกลบหรือสิทธิ์ถูกเพิกถอน
+- **Webhooks** (แท็บใหม่): ส่งเหตุการณ์ สร้าง/แก้ไข/ลบ ข้อมูล, ลายเซ็น HMAC-SHA256, กัน SSRF (https + IP สาธารณะเท่านั้น, ล็อก IP ที่ตรวจแล้ว, ไม่ตาม redirect), ลองใหม่ 6 ครั้ง, dead letter, ส่งใหม่ได้, ปิดอัตโนมัติเมื่อปลายทางพัง
+- **แก้บั๊กที่พบระหว่างทาง**: คำขอ API ที่ไม่ได้ล็อกอินแบบไม่ใช่ JSON เคยตอบ 500 → ตอนนี้ 401; ข้อผิดพลาดที่คาดไว้ (ApiException) ไม่ถูกบันทึกเป็น error อีก
+- **การทดสอบ**: PHPUnit ใช้ Google จำลองในหน่วยความจำ (Http::fake), E2E ใช้เซิร์ฟเวอร์ Google จำลอง `tests/e2e/fake-google` (ตรวจ PKCE เหมือน Google จริง) ผ่าน `GOOGLE_FAKE_BASE` ซึ่งระบบปฏิเสธใน production
+- เอกสาร: ADR-0012, threat model (I-1…I-12), OpenAPI 0.5.0, `docs/runbooks/google-oauth-review.md`
 
 ## ตั้งค่าระบบสำหรับผู้ดูแลแพลตฟอร์ม (2026-11-22)
 
@@ -90,15 +100,15 @@
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **139/139 ผ่าน** (959 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **139/139 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **166/166 ผ่าน** (1,250 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **166/166 ผ่าน** |
 | Vitest app-schema / renderer / studio / runtime | `npm test` | **80/80, 10/10, 9/9, 4/4 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
 | Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **13/13 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
+| Playwright E2E | `npm run test:e2e` | **15/15 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
 
-E2E ที่ครอบคลุม: J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
+E2E ที่ครอบคลุม: J4 (Sheets นำเข้า/ส่งออก/ยกเลิกการเชื่อมต่อ), J5 (Drive + การเพิกถอน + webhook ที่ตรวจลายเซ็น), J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
 
 ## ข้อจำกัดที่ทราบ (Known limitations)
 0. **AI ยังไม่ได้ทดสอบกับ Claude API จริง** — สภาพแวดล้อมนี้ไม่มี API key; เส้นทางเรียก SDK ทดสอบผ่าน fake HTTP transport (ตรวจรูปแบบคำขอ, การแปลงผลลัพธ์, ข้อผิดพลาด) · ต้องตั้ง `ANTHROPIC_API_KEY` (หรือ BYOK) แล้วทดลองจริงก่อนเปิดใช้ · OpenAI/Gemini adapter ยังไม่ทำ
@@ -106,6 +116,7 @@ E2E ที่ครอบคลุม: J1 (ครบ: เผยแพร่ → 
 2. **ClamAV** adapter ยังไม่ได้ทดสอบกับ clamd จริง; ถ้าไม่ตั้งค่า สถานะไฟล์คือ `not_scanned`
 3. **บัญชีผู้ใช้ของแอป**: มีสมัคร/เข้าสู่ระบบแล้ว แต่ยังไม่มีรีเซ็ตรหัสผ่าน/ยืนยันอีเมลของผู้ใช้ปลายทาง และสิทธิ์แบบ "เฉพาะข้อมูลของตัวเอง"
 9. **การเผยแพร่ยังไม่ได้ทดสอบกับ DNS/ACME จริง** — ตรวจ DNS/TLS ผ่าน interface (ทดสอบด้วย fake และไฟล์ static ใน E2E); `infra/edge/Caddyfile` และ nginx tenant server เป็น reference ที่ยังไม่ได้รันจริง · การแก้ DNS และ deploy production ต้องได้รับอนุมัติก่อน
+11. **Google ยังไม่ได้ทดสอบกับของจริง** — ไม่มีการเข้าถึง Google จากสภาพแวดล้อมนี้; โค้ดทดสอบกับ Google จำลองที่ทำตาม API จริง · ก่อนเปิดใช้ต้องทำตาม `docs/runbooks/google-oauth-review.md` (รวมการขอ verify scope `spreadsheets` กับ Google) · ยังไม่มี Google Picker (ลิงก์ชีตด้วย URL, โฟลเดอร์ Drive ต้องสร้างผ่านระบบ)
 10. หน้าเว็บที่เผยแพร่เรนเดอร์ฝั่ง client (server ส่ง title/description ให้ search engine แล้ว แต่เนื้อหายังไม่ SSR), ยังไม่มี sitemap.xml/robots.txt ต่อเว็บไซต์
 4. **ฟิลด์ไฟล์/อัปโหลด และความสัมพันธ์ระหว่างตาราง** ยังไม่มี (backlog)
 5. CAPTCHA ยังไม่มี (มี honeypot + เวลากรอกขั้นต่ำ + rate limit)
@@ -115,6 +126,6 @@ E2E ที่ครอบคลุม: J1 (ครบ: เผยแพร่ → 
 
 ## วิธีทำงานต่อ (สำหรับรอบถัดไป)
 1. อ่าน `docs/ROADMAP.md` → Phase 2 backlog
-2. Phase 5 (Integrations): Google OAuth (PKCE, encrypted refresh tokens) → Sheets mapping/sync ผ่าน RecordService เท่านั้น (environment preview/production), connectors REST/webhook ต้องผ่าน SSRF allowlist; ต้องตั้ง OAuth client ผ่าน environment secrets (ห้ามใส่ในโค้ด/แชท)
+2. Phase 6 (SaaS & hardening): billing adapter + webhooks (HMAC, idempotency — ใช้แนวทางเดียวกับ webhooks ขาออก), metering, super admin, PDPA; การเปิดใช้ billing ต้องได้รับอนุมัติก่อน
 3. runtime: build `npm run build:runtime` ก่อนรัน API (E2E ทำให้อัตโนมัติ)
 4. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้

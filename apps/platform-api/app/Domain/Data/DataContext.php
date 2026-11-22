@@ -7,6 +7,7 @@ use App\Domain\Schema\Upcaster;
 use App\Models\AppDefinition;
 use App\Models\Project;
 use App\Models\Release;
+use App\Support\ApiException;
 
 /**
  * Read-only view of a project's data definitions. Phase 2 reads the current head (preview);
@@ -24,6 +25,20 @@ final class DataContext
     }
 
     /** Production runtime: definitions come from the immutable live release, never the draft. */
+    /** Preview uses the draft schema; production uses the live release (404 when not published). */
+    public static function forEnvironment(Project $project, string $env): self
+    {
+        if ($env !== 'production') {
+            return self::forProject($project);
+        }
+        $release = $project->live_release_id ? Release::query()->find($project->live_release_id) : null;
+        if ($release === null) {
+            throw new ApiException(404, 'not_published', 'เว็บไซต์ยังไม่ได้เผยแพร่ จึงยังไม่มีข้อมูลจริง');
+        }
+
+        return self::forRelease($project, $release);
+    }
+
     public static function forRelease(Project $project, Release $release): self
     {
         return new self($project, Upcaster::upcast(DocumentCodec::decode($release->document)));

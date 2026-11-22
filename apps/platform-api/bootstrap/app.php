@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Integrations\Google\GoogleApiException;
 use App\Domain\Schema\SchemaException;
 use App\Http\Middleware\SecurityHeaders;
 use App\Support\ApiException;
@@ -31,11 +32,22 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->trustProxies(at: env('TRUSTED_PROXIES') ? explode(',', (string) env('TRUSTED_PROXIES')) : null);
         $middleware->append(SecurityHeaders::class);
+        // The API never redirects guests (there is no server-side login page): it answers 401 JSON.
+        $middleware->redirectGuestsTo(fn (Request $request) => $request->is('api/*') ? null : rtrim((string) config('studio.frontend_url'), '/').'/login');
     })
     ->withExceptions(function (Exceptions $exceptions) use ($error): void {
         $exceptions->shouldRenderJsonWhen(fn (Request $request) => $request->is('api/*') || $request->expectsJson());
 
         $exceptions->render(fn (ApiException $e) => $error($e->status, $e->errorCode, $e->getMessage(), $e->details));
+        // Google failures surface as actionable messages; never include tokens or raw responses.
+        $exceptions->render(fn (GoogleApiException $e) => $error(
+            match ($e->kind) {
+                'rate_limited', 'transient' => 503, 'not_found' => 404, default => 422
+            },
+            'google_'.$e->kind, $e->userMessage(),
+        ));
+        // Expected, user-facing errors are not application faults.
+        $exceptions->dontReport([GoogleApiException::class, ApiException::class]);
         $exceptions->render(fn (SchemaException $e) => $error(422, 'schema_invalid', $e->getMessage(), ['issues' => $e->issues]));
         $exceptions->render(function (ValidationException $e, Request $request) use ($error) {
             if ($request->is('api/*')) {

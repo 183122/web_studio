@@ -40,6 +40,9 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        // Local/E2E only: point every Google endpoint at a fake server (refused when APP_ENV=production).
+        'fake_base' => env('GOOGLE_FAKE_BASE'),
+        'timeout' => (int) env('GOOGLE_HTTP_TIMEOUT', 20),
     ],
 
 ];

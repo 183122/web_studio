@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
 use App\Http\Controllers\Api\V1\DataController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\Integrations\DriveController;
+use App\Http\Controllers\Api\V1\Integrations\GoogleConnectionController;
+use App\Http\Controllers\Api\V1\Integrations\SheetSyncController;
+use App\Http\Controllers\Api\V1\Integrations\WebhookController;
 use App\Http\Controllers\Api\V1\PlatformSettingsController;
 use App\Http\Controllers\Api\V1\PreviewRuntimeController;
 use App\Http\Controllers\Api\V1\ProjectController;
@@ -127,6 +131,35 @@ Route::prefix('v1')->group(function () {
             Route::put('settings/google-oauth', [PlatformSettingsController::class, 'updateGoogle'])->middleware('throttle:10,1');
             Route::delete('settings/google-oauth', [PlatformSettingsController::class, 'deleteGoogle'])->middleware('throttle:10,1');
         });
+
+        // ---- Integrations (M22–M25) ----
+        Route::get('workspaces/{workspace}/integrations/google', [GoogleConnectionController::class, 'show']);
+        Route::post('workspaces/{workspace}/integrations/google/connect', [GoogleConnectionController::class, 'connect'])->middleware('throttle:10,1');
+        Route::delete('workspaces/{workspace}/integrations/google', [GoogleConnectionController::class, 'disconnect']);
+        Route::middleware('throttle:google')->group(function () {
+            Route::post('projects/{project}/sheets/inspect', [SheetSyncController::class, 'inspect']);
+            Route::post('projects/{project}/sheets/preview', [SheetSyncController::class, 'preview']);
+            Route::post('projects/{project}/sheet-syncs/{id}/dry-run', [SheetSyncController::class, 'dryRun']);
+            Route::post('projects/{project}/sheet-syncs/{id}/run', [SheetSyncController::class, 'run']);
+            Route::post('projects/{project}/sync-jobs/{jobId}/retry', [SheetSyncController::class, 'retry']);
+            Route::get('projects/{project}/drive', [DriveController::class, 'show']);
+            Route::put('projects/{project}/drive/folder', [DriveController::class, 'setFolder']);
+            Route::post('projects/{project}/data/{modelId}/records/{recordId}/attachments', [DriveController::class, 'store']);
+            Route::get('projects/{project}/attachments/{id}/download', [DriveController::class, 'download']);
+            Route::delete('projects/{project}/attachments/{id}', [DriveController::class, 'destroy']);
+        });
+        Route::get('projects/{project}/sheet-syncs', [SheetSyncController::class, 'index']);
+        Route::post('projects/{project}/sheet-syncs', [SheetSyncController::class, 'store']);
+        Route::patch('projects/{project}/sheet-syncs/{id}', [SheetSyncController::class, 'update']);
+        Route::delete('projects/{project}/sheet-syncs/{id}', [SheetSyncController::class, 'destroy']);
+        Route::get('projects/{project}/sheet-syncs/{id}/jobs', [SheetSyncController::class, 'jobs']);
+        Route::get('projects/{project}/data/{modelId}/records/{recordId}/attachments', [DriveController::class, 'index']);
+        Route::get('projects/{project}/webhooks', [WebhookController::class, 'index']);
+        Route::post('projects/{project}/webhooks', [WebhookController::class, 'store']);
+        Route::patch('projects/{project}/webhooks/{id}', [WebhookController::class, 'update']);
+        Route::delete('projects/{project}/webhooks/{id}', [WebhookController::class, 'destroy']);
+        Route::get('projects/{project}/webhooks/{id}/deliveries', [WebhookController::class, 'deliveries']);
+        Route::post('projects/{project}/webhook-deliveries/{id}/redeliver', [WebhookController::class, 'redeliver'])->middleware('throttle:30,1');
 
         // ---- Publishing, domains, preview links, app users (M26–M28) ----
         Route::get('projects/{project}/publishing', [PublishingController::class, 'overview']);

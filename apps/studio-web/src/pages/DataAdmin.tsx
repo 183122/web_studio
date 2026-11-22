@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Tabs } from 'radix-ui';
-import { ArrowLeft, Download, KeyRound, Plus, Trash2, Upload, Database, History, Workflow as WorkflowIcon, Copy, Users as UsersIcon } from 'lucide-react';
+import { ArrowLeft, Download, KeyRound, Plus, Trash2, Upload, Database, History, Workflow as WorkflowIcon, Copy, Users as UsersIcon, FileSpreadsheet as SheetIcon, Webhook as WebhookIcon } from 'lucide-react';
 import type { DataModel } from '@studio/app-schema';
 import { api, ApiError, errorMessage, type Envelope } from '../lib/api.ts';
 import { useProject, type SchemaHead } from '../lib/queries.ts';
@@ -13,6 +13,9 @@ import { Field } from '../components/ui/Field.tsx';
 import { toast } from '../components/ui/Toast.tsx';
 import { EmptyState, ErrorState, FullPageSpinner, Spinner, ThemeToggle, formatDate } from '../components/ui/misc.tsx';
 import { FieldInput, displayValue } from '../components/data/FieldInput.tsx';
+import { SheetsTab } from '../components/integrations/SheetsTab.tsx';
+import { WebhooksTab } from '../components/integrations/WebhooksTab.tsx';
+import { Attachments } from '../components/integrations/Attachments.tsx';
 
 const FIELD_ERRORS: Record<string, string> = {
   required: 'จำเป็นต้องกรอก',
@@ -67,7 +70,7 @@ export default function DataAdmin() {
           {model ? (
             <Tabs.Root defaultValue="records">
               <Tabs.List className="mb-4 flex gap-1 border-b border-slate-200 text-sm dark:border-slate-800">
-                {[['records', 'ข้อมูล', Database], ['audit', 'ประวัติการแก้ไข', History], ['runs', 'Workflow runs', WorkflowIcon], ['keys', 'API keys', KeyRound], ['users', 'ผู้ใช้แอป', UsersIcon]].map(([v, label, Icon]) => {
+                {[['records', 'ข้อมูล', Database], ['audit', 'ประวัติการแก้ไข', History], ['runs', 'Workflow runs', WorkflowIcon], ['keys', 'API keys', KeyRound], ['users', 'ผู้ใช้แอป', UsersIcon], ['sheets', 'Google Sheets', SheetIcon], ['webhooks', 'Webhooks', WebhookIcon]].map(([v, label, Icon]) => {
                   const I = Icon as typeof Database;
                   return (
                     <Tabs.Trigger key={v as string} value={v as string} className="inline-flex items-center gap-1.5 px-3 py-2 data-[state=active]:border-b-2 data-[state=active]:border-brand-600 data-[state=active]:font-medium">
@@ -79,6 +82,8 @@ export default function DataAdmin() {
               <Tabs.Content value="records"><RecordsTab key={`${model.id}-${env}`} projectId={projectId} model={model} canEdit={canEdit} env={env} /></Tabs.Content>
               <Tabs.Content value="audit"><AuditTab projectId={projectId} model={model} env={env} /></Tabs.Content>
               <Tabs.Content value="runs"><RunsTab projectId={projectId} /></Tabs.Content>
+              <Tabs.Content value="sheets"><SheetsTab key={`${model.id}-${env}`} projectId={projectId} model={model} env={env} canEdit={canEdit} /></Tabs.Content>
+              <Tabs.Content value="webhooks"><WebhooksTab key={env} projectId={projectId} env={env} canEdit={canEdit} /></Tabs.Content>
               <Tabs.Content value="users"><AppUsersTab projectId={projectId} canEdit={canEdit} /></Tabs.Content>
               <Tabs.Content value="keys"><KeysTab projectId={projectId} canEdit={canEdit} models={models} /></Tabs.Content>
             </Tabs.Root>
@@ -209,13 +214,13 @@ function RecordsTab({ projectId, model, canEdit, env }: { projectId: string; mod
       ) : null}
       <p className="mt-2 text-xs text-slate-500">ทั้งหมด {list.data?.meta.total ?? 0} รายการ</p>
 
-      {editing ? <RecordDialog env={env} base={base} model={model} record={editing === 'new' ? null : editing} canEdit={canEdit} onClose={() => setEditing(null)} onSaved={refresh} /> : null}
+      {editing ? <RecordDialog projectId={projectId} env={env} base={base} model={model} record={editing === 'new' ? null : editing} canEdit={canEdit} onClose={() => setEditing(null)} onSaved={refresh} /> : null}
       <ImportDialog env={env} open={importOpen} onOpenChange={setImportOpen} base={base} onDone={refresh} />
     </section>
   );
 }
 
-function RecordDialog({ env, base, model, record, canEdit, onClose, onSaved }: { env: DataEnv; base: string; model: DataModel; record: RecordRow | null; canEdit: boolean; onClose: () => void; onSaved: () => void }) {
+function RecordDialog({ projectId, env, base, model, record, canEdit, onClose, onSaved }: { projectId: string; env: DataEnv; base: string; model: DataModel; record: RecordRow | null; canEdit: boolean; onClose: () => void; onSaved: () => void }) {
   const [values, setValues] = useState<Record<string, unknown>>(() => ({ ...(record?.data ?? {}) }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
@@ -266,6 +271,7 @@ function RecordDialog({ env, base, model, record, canEdit, onClose, onSaved }: {
           </div>
         </div>
       </form>
+      {record ? <Attachments projectId={projectId} modelId={model.id} recordId={record.id} env={env} canEdit={canEdit} /> : null}
     </Dialog>
   );
 }

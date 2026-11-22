@@ -1,7 +1,15 @@
 # Changelog
 
-## [Unreleased]
+## [0.5.0] — 2026-11-22 — Phase 5
 ### Added
+- Google connection per workspace (OAuth + PKCE, least-privilege features, encrypted tokens, refresh, revoke/disconnect) and an Integrations page.
+- Google Sheets sync per model: link by URL, tab preview, column mapping, dry run, import with validation and idempotent key matching, export (RAW, mapped cells only, append), two-way with conflict policy, schedules, job history, retries with backoff and dead letter.
+- Google Drive attachments on records (app-created folder, `drive.file` scope, type/size/malware checks, access re-checked on every download).
+- Outbound webhooks for record events: HMAC-signed, SSRF-guarded, retried, dead-lettered, redeliverable, auto-disabled.
+- Fake Google server for E2E; J4 and J5 journeys.
+### Fixed
+- Unauthenticated non-JSON API requests returned 500 (missing login route) instead of 401.
+- Expected API errors were logged as application errors.
 - Platform admin settings page with Google OAuth client configuration (encrypted at rest, write-only secret, password re-confirmation, audit log; environment variables take precedence). Platform admins are granted with `php artisan studio:platform-admin`.
 
 ## [0.4.0] — 2026-11-22 — Phase 4

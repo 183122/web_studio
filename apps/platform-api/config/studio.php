@@ -69,6 +69,11 @@ return [
     ],
 
     // Sign-ups per IP per hour (abuse protection). Raised only for automated E2E runs.
+    // Outbound requests to user-supplied URLs (webhooks). Private networks only for local dev/E2E.
+    'egress' => [
+        'allow_private' => (bool) env('STUDIO_EGRESS_ALLOW_PRIVATE', false),
+    ],
+
     'register_per_hour' => (int) env('STUDIO_REGISTER_PER_HOUR', 10),
 
     // Default plan code assigned to new organizations (see PlanSeeder).

@@ -72,6 +72,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('uploads', fn (Request $r) => Limit::perMinute(30)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('form-submit', fn (Request $r) => Limit::perMinute(10)->by($r->ip().'|'.(is_object($r->route('project')) ? $r->route('project')->id : (string) $r->route('project'))));
         RateLimiter::for('app-api', fn (Request $r) => Limit::perMinute(120)->by((string) ($r->bearerToken() ? substr($r->bearerToken(), 0, 16) : $r->ip())));
+        RateLimiter::for('google', fn (Request $r) => Limit::perMinute(30)->by((string) $r->user()?->id));
         RateLimiter::for('runtime', fn (Request $r) => Limit::perMinute(300)->by($r->getHost().'|'.$r->ip()));
         RateLimiter::for('runtime-form', fn (Request $r) => Limit::perMinute(10)->by($r->getHost().'|'.$r->ip()));
         RateLimiter::for('runtime-auth', fn (Request $r) => Limit::perMinute(10)->by($r->getHost().'|'.$r->ip()));

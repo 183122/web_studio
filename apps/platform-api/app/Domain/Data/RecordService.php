@@ -2,6 +2,7 @@
 
 namespace App\Domain\Data;
 
+use App\Domain\Integrations\Webhooks\WebhookService;
 use App\Models\AppAuditLog;
 use App\Models\AppRecord;
 use App\Models\Organization;
@@ -24,6 +25,7 @@ class RecordService
     public function __construct(
         private readonly EntitlementService $entitlements,
         private readonly WorkflowEngine $workflows,
+        private readonly WebhookService $webhooks,
     ) {}
 
     public function create(DataContext $ctx, array $model, array $input, Actor $actor, string $source, string $env = self::ENV_PREVIEW, bool $runWorkflows = true): AppRecord
@@ -51,6 +53,7 @@ class RecordService
             return $record;
         });
 
+        $this->webhooks->recordChanged($ctx->project->id, $model, $record, 'record.created');
         if ($runWorkflows) {
             $this->workflows->dispatch($ctx, $record, 'record.created');
         }
@@ -87,6 +90,7 @@ class RecordService
             return $fresh;
         });
 
+        $this->webhooks->recordChanged($ctx->project->id, $model, $record, 'record.updated');
         if ($runWorkflows) {
             $this->workflows->dispatch($ctx, $record, 'record.updated');
         }
@@ -102,6 +106,7 @@ class RecordService
             $record->delete();
             $this->audit($record, 'record.deleted', $actor, ['before' => $record->values()]);
         });
+        $this->webhooks->recordChanged($ctx->project->id, $model, $record, 'record.deleted');
     }
 
     public function find(DataContext $ctx, array $model, string $id, string $env = self::ENV_PREVIEW): AppRecord
