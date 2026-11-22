@@ -38,6 +38,21 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | X4 | SSRF via integrations | egress allowlist, private-range deny | ⏳ Phase 5 |
 | X5 | Payment webhook forgery | HMAC + replay window + idempotency | ⏳ Phase 6 |
 
+### Phase 2 additions (generated-app data)
+| # | Threat | Control | Status |
+|---|---|---|---|
+| D-1 | Cross-tenant record access | every query scoped by project + environment; project resolved through workspace membership (404 otherwise); API keys bound to one project | ✅ `DataRecordsTest`, `AppApiTest` |
+| D-2 | Privilege escalation by app users / keys | explicit per-model permission matrix, default deny; scopes ∩ role for keys | ✅ `DataRuntimeTest`, `AppApiTest` |
+| D-3 | Duplicate/unique race | unique-key table with DB unique index | ✅ |
+| D-4 | Lost updates | per-record version (409) | ✅ |
+| D-5 | Form spam / abuse | honeypot, minimum fill time, 10/min per IP+project, record quota | ✅ (CAPTCHA ⏳) |
+| D-6 | CSV formula injection | export prefixes `= + - @` cells with `'` | ✅ |
+| D-7 | Destructive schema change | impact preview; values never deleted on field/model removal | ✅ |
+| D-8 | Workflow loops / duplicate e-mails | no re-trigger from workflow writes; unique run per event/version; mail queued after commit | ✅ |
+| D-9 | E-mail header/HTML injection via templates | plain-text body, single-line subject, recipient validated | ✅ |
+| D-10 | API key theft | SHA-256 at rest, shown once, revocable, rate limited; Sanctum PAT lookup disabled | ✅ |
+| D-11 | PII in app audit logs | stored for the app owner; retention/export/delete policy | ⏳ Phase 6 (PDPA) |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
 - DAST, SAST and dependency scanning in CI: `npm audit` and `composer audit` run now; SAST/DAST tools are added in Phase 6.

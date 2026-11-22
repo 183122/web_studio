@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard.tsx';
 
 const Editor = lazy(() => import('./editor/Editor.tsx'));
 const Preview = lazy(() => import('./pages/Preview.tsx'));
+const DataAdmin = lazy(() => import('./pages/DataAdmin.tsx'));
 
 const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/app" replace /> },
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/app', element: <Dashboard /> },
       { path: '/app/projects/:projectId', element: <Suspense fallback={<FullPageSpinner />}><Editor /></Suspense> },
+      { path: '/app/projects/:projectId/data', element: <Suspense fallback={<FullPageSpinner />}><DataAdmin /></Suspense> },
       { path: '/app/projects/:projectId/preview', element: <Suspense fallback={<FullPageSpinner />}><Preview /></Suspense> },
     ],
   },

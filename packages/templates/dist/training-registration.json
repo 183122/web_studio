@@ -1,6 +1,6 @@
 {
   "category": "education",
-  "description": "เว็บไซต์ศูนย์ฝึกอบรม: หน้าแรก รายการหลักสูตร และหน้าลงทะเบียน (ฟอร์มที่บันทึกลงฐานข้อมูลจะเพิ่มใน Phase 2)",
+  "description": "ศูนย์ฝึกอบรม: หลักสูตร ฟอร์มลงทะเบียนที่บันทึกลงฐานข้อมูล อีเมลยืนยันอัตโนมัติ และรายชื่อผู้สมัครสำหรับผู้ดูแล",
   "document": {
     "actions": [],
     "assets": [],
@@ -1156,7 +1156,8 @@
         "children": [
           "c_tr01v",
           "c_tr01w",
-          "c_tr01x"
+          "c_tr01x",
+          "c_tr024"
         ],
         "id": "c_tr01u",
         "props": {},
@@ -1210,90 +1211,122 @@
         "children": [
           "c_tr01y",
           "c_tr01z",
-          "c_tr020"
+          "c_tr020",
+          "c_tr021",
+          "c_tr022",
+          "c_tr023"
         ],
         "id": "c_tr01x",
-        "props": {},
+        "name": "ฟอร์มลงทะเบียน",
+        "props": {
+          "modelId": "m_registrations",
+          "submitLabel": "ส่งใบสมัคร",
+          "successMessage": "ได้รับใบสมัครแล้ว ระบบได้ส่งอีเมลยืนยันให้คุณ"
+        },
         "styles": {
           "base": {
             "backgroundColor": "$surface",
             "borderRadius": "$radius",
-            "boxShadow": "sm",
             "display": "flex",
             "flexDirection": "column",
-            "gap": "12px",
+            "gap": "16px",
             "padding": "24px"
           }
         },
-        "type": "Card"
+        "type": "Form"
       },
       "c_tr01y": {
         "children": [],
         "id": "c_tr01y",
         "props": {
-          "level": "h3",
-          "text": "ช่องทางลงทะเบียน"
+          "fieldId": "f_reg_name",
+          "helpText": "",
+          "label": "",
+          "placeholder": "เช่น สมชาย ใจดี"
         },
-        "styles": {
-          "base": {
-            "fontFamily": "$heading",
-            "fontSize": "22px",
-            "fontWeight": "700",
-            "lineHeight": 1.3
-          },
-          "mobile": {
-            "fontSize": "20px"
-          }
-        },
-        "type": "Heading"
+        "styles": {},
+        "type": "FormField"
       },
       "c_tr01z": {
         "children": [],
         "id": "c_tr01z",
         "props": {
-          "text": "ส่งข้อมูลการลงทะเบียนทางอีเมล เจ้าหน้าที่จะยืนยันภายใน 1 วันทำการ"
+          "fieldId": "f_reg_email",
+          "helpText": "",
+          "label": "",
+          "placeholder": "name@example.com"
         },
-        "styles": {
-          "base": {
-            "fontSize": "17px",
-            "lineHeight": 1.7
-          }
-        },
-        "type": "Text"
+        "styles": {},
+        "type": "FormField"
       },
       "c_tr020": {
-        "children": [
-          "c_tr021"
-        ],
+        "children": [],
         "id": "c_tr020",
-        "props": {},
-        "styles": {
-          "base": {
-            "display": "flex",
-            "flexDirection": "row",
-            "flexWrap": "wrap",
-            "gap": "12px"
-          }
+        "props": {
+          "fieldId": "f_reg_phone",
+          "helpText": "",
+          "label": "",
+          "placeholder": "08x-xxx-xxxx"
         },
-        "type": "Container"
+        "styles": {},
+        "type": "FormField"
       },
       "c_tr021": {
         "children": [],
         "id": "c_tr021",
         "props": {
-          "href": "mailto:training@example.com?subject=register",
-          "label": "ลงทะเบียนทางอีเมล",
-          "newTab": false,
-          "variant": "primary"
+          "fieldId": "f_reg_org",
+          "helpText": "",
+          "label": "",
+          "placeholder": ""
         },
         "styles": {},
-        "type": "Button"
+        "type": "FormField"
       },
       "c_tr022": {
-        "children": [
-          "c_tr023"
-        ],
+        "children": [],
         "id": "c_tr022",
+        "props": {
+          "fieldId": "f_reg_course",
+          "helpText": "",
+          "label": "",
+          "placeholder": ""
+        },
+        "styles": {},
+        "type": "FormField"
+      },
+      "c_tr023": {
+        "children": [],
+        "id": "c_tr023",
+        "props": {
+          "fieldId": "f_reg_note",
+          "helpText": "",
+          "label": "",
+          "placeholder": ""
+        },
+        "styles": {},
+        "type": "FormField"
+      },
+      "c_tr024": {
+        "children": [],
+        "id": "c_tr024",
+        "props": {
+          "text": "ข้อมูลของคุณใช้เพื่อการจัดอบรมเท่านั้น ตามนโยบายความเป็นส่วนตัว (PDPA)"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "14px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr025": {
+        "children": [
+          "c_tr026"
+        ],
+        "id": "c_tr025",
         "props": {
           "anchorId": "",
           "backgroundImage": "",
@@ -1308,11 +1341,11 @@
         },
         "type": "Section"
       },
-      "c_tr023": {
+      "c_tr026": {
         "children": [
-          "c_tr024"
+          "c_tr027"
         ],
-        "id": "c_tr023",
+        "id": "c_tr026",
         "props": {},
         "styles": {
           "base": {
@@ -1326,9 +1359,190 @@
         },
         "type": "Container"
       },
-      "c_tr024": {
+      "c_tr027": {
         "children": [],
-        "id": "c_tr024",
+        "id": "c_tr027",
+        "props": {
+          "text": "© ศูนย์ฝึกอบรมออนไลน์"
+        },
+        "styles": {
+          "base": {
+            "fontSize": "14px",
+            "lineHeight": 1.7,
+            "textAlign": "center"
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr029": {
+        "children": [],
+        "id": "c_tr029",
+        "props": {
+          "brand": "ศูนย์ฝึกอบรมออนไลน์",
+          "links": [
+            {
+              "href": "/",
+              "label": "หน้าแรก"
+            },
+            {
+              "href": "/courses",
+              "label": "หลักสูตร"
+            },
+            {
+              "href": "/register",
+              "label": "ลงทะเบียน"
+            },
+            {
+              "href": "/#contact",
+              "label": "ติดต่อ"
+            }
+          ],
+          "logo": ""
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$surface",
+            "padding": "16px 24px"
+          }
+        },
+        "type": "Navbar"
+      },
+      "c_tr02a": {
+        "children": [
+          "c_tr02b"
+        ],
+        "id": "c_tr02a",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "section"
+        },
+        "styles": {
+          "base": {
+            "padding": "64px 24px"
+          },
+          "mobile": {
+            "padding": "40px 16px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr02b": {
+        "children": [
+          "c_tr02c",
+          "c_tr02d",
+          "c_tr02e"
+        ],
+        "id": "c_tr02b",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr02c": {
+        "children": [],
+        "id": "c_tr02c",
+        "props": {
+          "level": "h1",
+          "text": "รายชื่อผู้สมัคร"
+        },
+        "styles": {
+          "base": {
+            "fontFamily": "$heading",
+            "fontSize": "44px",
+            "fontWeight": "700",
+            "lineHeight": 1.3
+          },
+          "mobile": {
+            "fontSize": "30px"
+          }
+        },
+        "type": "Heading"
+      },
+      "c_tr02d": {
+        "children": [],
+        "id": "c_tr02d",
+        "props": {
+          "text": "หน้านี้แสดงข้อมูลเฉพาะผู้ที่มีสิทธิ์อ่าน (ผู้ดูแลแอป) — ลองเปลี่ยนบทบาทในหน้าดูตัวอย่าง"
+        },
+        "styles": {
+          "base": {
+            "color": "$muted",
+            "fontSize": "17px",
+            "lineHeight": 1.7
+          }
+        },
+        "type": "Text"
+      },
+      "c_tr02e": {
+        "children": [],
+        "id": "c_tr02e",
+        "props": {
+          "emptyMessage": "ยังไม่มีผู้สมัคร",
+          "fieldIds": [
+            "f_reg_name",
+            "f_reg_course",
+            "f_reg_status"
+          ],
+          "modelId": "m_registrations",
+          "pageSize": "10",
+          "searchable": true
+        },
+        "styles": {
+          "base": {
+            "width": "100%"
+          }
+        },
+        "type": "DataTable"
+      },
+      "c_tr02f": {
+        "children": [
+          "c_tr02g"
+        ],
+        "id": "c_tr02f",
+        "props": {
+          "anchorId": "",
+          "backgroundImage": "",
+          "tag": "footer"
+        },
+        "styles": {
+          "base": {
+            "backgroundColor": "$secondary",
+            "color": "#ffffff",
+            "padding": "32px 24px"
+          }
+        },
+        "type": "Section"
+      },
+      "c_tr02g": {
+        "children": [
+          "c_tr02h"
+        ],
+        "id": "c_tr02g",
+        "props": {},
+        "styles": {
+          "base": {
+            "display": "flex",
+            "flexDirection": "column",
+            "gap": "16px",
+            "margin": "0 auto",
+            "maxWidth": "1120px",
+            "width": "100%"
+          }
+        },
+        "type": "Container"
+      },
+      "c_tr02h": {
+        "children": [],
+        "id": "c_tr02h",
         "props": {
           "text": "© ศูนย์ฝึกอบรมออนไลน์"
         },
@@ -1384,7 +1598,7 @@
         "children": [
           "c_tr01s",
           "c_tr01t",
-          "c_tr022"
+          "c_tr025"
         ],
         "id": "p_tr01r",
         "props": {},
@@ -1397,9 +1611,105 @@
           }
         },
         "type": "Page"
+      },
+      "p_tr028": {
+        "children": [
+          "c_tr029",
+          "c_tr02a",
+          "c_tr02f"
+        ],
+        "id": "p_tr028",
+        "props": {},
+        "styles": {
+          "base": {
+            "backgroundColor": "$background",
+            "color": "$text",
+            "fontFamily": "$body",
+            "minHeight": "100vh"
+          }
+        },
+        "type": "Page"
       }
     },
-    "dataModels": [],
+    "dataModels": [
+      {
+        "displayFieldId": "f_reg_name",
+        "fields": [
+          {
+            "id": "f_reg_name",
+            "label": "ชื่อ–นามสกุล",
+            "maxLength": 120,
+            "name": "full_name",
+            "required": true,
+            "type": "text",
+            "unique": false
+          },
+          {
+            "id": "f_reg_email",
+            "label": "อีเมล",
+            "name": "email",
+            "required": true,
+            "type": "email",
+            "unique": true
+          },
+          {
+            "id": "f_reg_phone",
+            "label": "เบอร์โทรศัพท์",
+            "name": "phone",
+            "required": false,
+            "type": "phone",
+            "unique": false
+          },
+          {
+            "id": "f_reg_org",
+            "label": "หน่วยงาน",
+            "maxLength": 160,
+            "name": "organization",
+            "required": false,
+            "type": "text",
+            "unique": false
+          },
+          {
+            "id": "f_reg_course",
+            "label": "หลักสูตร",
+            "name": "course",
+            "options": [
+              "การใช้ AI เพื่อการทำงาน",
+              "การวิเคราะห์ข้อมูลเบื้องต้น",
+              "การออกแบบเว็บไซต์ไม่ต้องเขียนโค้ด"
+            ],
+            "required": true,
+            "type": "select",
+            "unique": false
+          },
+          {
+            "id": "f_reg_note",
+            "label": "หมายเหตุ",
+            "maxLength": 1000,
+            "name": "note",
+            "required": false,
+            "type": "longtext",
+            "unique": false
+          },
+          {
+            "id": "f_reg_status",
+            "label": "สถานะ",
+            "name": "status",
+            "options": [
+              "รอตรวจสอบ",
+              "ยืนยันแล้ว",
+              "ยกเลิก"
+            ],
+            "required": false,
+            "type": "select",
+            "unique": false
+          }
+        ],
+        "id": "m_registrations",
+        "label": "ผู้สมัครอบรม",
+        "name": "registrations"
+      }
+    ],
     "designTokens": {
       "colors": {
         "accent": "#f59e0b",
@@ -1451,9 +1761,36 @@
           "noindex": false,
           "title": "ลงทะเบียนอบรม"
         }
+      },
+      {
+        "id": "pg_tr4",
+        "name": "รายชื่อผู้สมัคร",
+        "path": "/registrants",
+        "rootId": "p_tr028",
+        "seo": {
+          "description": "สำหรับผู้ดูแลการอบรม",
+          "noindex": true,
+          "title": "รายชื่อผู้สมัคร (ผู้ดูแล)"
+        }
       }
     ],
-    "permissions": [],
+    "permissions": [
+      {
+        "modelId": "m_registrations",
+        "rules": {
+          "admin": [
+            "create",
+            "read",
+            "update",
+            "delete"
+          ],
+          "member": [],
+          "public": [
+            "create"
+          ]
+        }
+      }
+    ],
     "projectId": "template",
     "routes": [],
     "schemaVersion": 2,
@@ -1466,7 +1803,37 @@
       "homePageId": "pg_tr1",
       "notFoundPageId": null
     },
-    "workflows": []
+    "workflows": [
+      {
+        "actions": [
+          {
+            "fieldId": "f_reg_status",
+            "type": "record.setField",
+            "value": "รอตรวจสอบ"
+          },
+          {
+            "body": "เรียน คุณ{{full_name}}\n\nศูนย์ฝึกอบรมได้รับใบสมัครหลักสูตร \"{{course}}\" ของคุณแล้ว เจ้าหน้าที่จะยืนยันภายใน 1 วันทำการ\n\nศูนย์ฝึกอบรมออนไลน์",
+            "subject": "ได้รับใบสมัครหลักสูตร {{course}} แล้ว",
+            "to": "field:f_reg_email",
+            "type": "email.send"
+          },
+          {
+            "body": "ผู้สมัคร: {{full_name}} ({{email}})\nหลักสูตร: {{course}}\nหน่วยงาน: {{organization}}",
+            "subject": "ผู้สมัครใหม่: {{full_name}}",
+            "to": "training@example.com",
+            "type": "email.send"
+          }
+        ],
+        "conditions": [],
+        "enabled": true,
+        "id": "w_reg_received",
+        "name": "ยืนยันการรับใบสมัคร",
+        "trigger": {
+          "event": "record.created",
+          "modelId": "m_registrations"
+        }
+      }
+    ]
   },
   "name": "ระบบลงทะเบียนอบรม",
   "slug": "training-registration",

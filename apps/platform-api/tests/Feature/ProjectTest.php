@@ -25,7 +25,7 @@ class ProjectTest extends TestCase
         $tpl = $this->postJson("/api/v1/workspaces/{$ws->id}/projects", ['name' => 'ระบบลงทะเบียนอบรม', 'templateSlug' => 'training-registration'])->assertCreated();
         $tpl->assertJsonPath('data.template.slug', 'training-registration');
         $doc = $this->getJson("/api/v1/projects/{$tpl->json('data.id')}/schema")->json('data.document');
-        $this->assertCount(3, $doc['pages']);
+        $this->assertCount(4, $doc['pages']);
         $this->assertSame('ระบบลงทะเบียนอบรม', $doc['name']);
 
         $this->postJson("/api/v1/workspaces/{$ws->id}/projects", ['name' => 'x', 'templateSlug' => 'missing'])->assertStatus(422);

@@ -3,20 +3,20 @@
 > เอกสารนี้คือ "จุดเริ่มต้น" สำหรับการพัฒนารอบถัดไป: อ่านสถานะ → ดู backlog ใน `docs/ROADMAP.md` → ทำ Phase ถัดไปเป็น vertical slice
 > หลักการ: ไม่อ้างว่าฟีเจอร์ทำงานถ้ายังไม่มีโค้ดและเทสต์จริง
 
-## สถานะรวม (อัปเดต 2026-11-22)
+## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 2)
 
 | Phase | ขอบเขต | สถานะ |
 |---|---|---|
 | 0 | ADR, threat model, monorepo, Docker, CI, migrations, seed, auth, tenancy tests | ✅ เสร็จ (Docker image ยังไม่ได้ build ทดสอบในสภาพแวดล้อมนี้ — ดู "ข้อจำกัด") |
 | 1 | Project dashboard, canonical schema, pages, drag & drop, inspector, assets, responsive preview, save/revisions, templates | ✅ เสร็จ |
-| 2 | Data model designer, CRUD, generated admin, app RBAC, forms, actions/workflows, REST API | ⏳ ถัดไป |
-| 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ⏳ |
+| 2 | Data model designer, CRUD, generated admin, app RBAC, forms, workflows, REST API | ✅ เสร็จ (บัญชีผู้ใช้ของแอปที่สร้าง ย้ายไป Phase 4 — ดูข้อจำกัด) |
+| 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ⏳ ถัดไป |
 | 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ⏳ |
 | 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ⏳ |
 | 6 | Billing, entitlements/metering, super admin, privacy, hardening | ⏳ (มี plans/entitlements พื้นฐานแล้ว) |
 | 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ |
 
-ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J2–J7, J9, J10 อยู่ใน phase ถัดไป)
+ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J2 ส่วน AI, J4–J7, J9, J10 อยู่ใน phase ถัดไป)
 
 ## Phase 0–1: สิ่งที่ส่งมอบ
 
@@ -45,35 +45,46 @@
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
 
+## Phase 2: สิ่งที่ส่งมอบ (2026-11-22)
+
+- **Schema v2** (`packages/app-schema`): `dataModels`, `permissions`, `workflows` + upcaster v1→v2 ทั้ง TS/PHP (เอกสาร v1 เดิมอ่านได้และถูกยกระดับเมื่อบันทึก) · commands ใหม่ `model.*`, `permission.*`, `workflow.*` พร้อม inverse · กฎตรวจสอบใหม่ (ชนิดฟิลด์, ชื่อสงวน, สิทธิ์ต้องระบุทุกตาราง, workflow, การผูกฟอร์ม/ตาราง) · parity fixtures 19/9/27/19 กรณี
+- **Data plane** (`app/Domain/Data`): `app_records` แยก environment preview/production, unique key แบบ atomic, optimistic concurrency, `app_audit_logs`, โควตาจำนวน record ตามแผน
+- **RBAC ของแอป**: ตารางสิทธิ์ public/member/admin × create/read/update/delete, ค่าเริ่มต้นปฏิเสธ — ใช้กับ preview runtime (จำลองบทบาท), ฟอร์ม และ API key
+- **Generated admin** (`/app/projects/:id/data`): ค้นหา (ภาษาไทยได้), กรอง, เรียง (ตัวเลขเรียงถูกต้อง), แบ่งหน้า, เพิ่ม/แก้ไข/ลบ, ลบหลายรายการ, ส่งออก CSV (กัน formula injection, มี BOM สำหรับ Excel), นำเข้า CSV (dry run, ผิดแถวเดียวยกเลิกทั้งไฟล์), ประวัติการแก้ไข, workflow runs, API keys
+- **Data model designer** (แผง "ฐานข้อมูล"): 11 ชนิดฟิลด์, จำเป็น/ห้ามซ้ำ/ตัวเลือก/min/max/ความยาว, ฟิลด์แสดงชื่อ, ตารางสิทธิ์, **migration impact preview** ก่อนบันทึก (ไม่ลบหรือแก้ข้อมูลอัตโนมัติ)
+- **Forms & DataTable**: คอมโพเนนต์ Form, FormField, DataTable · ตรวจสอบทั้งฝั่ง client/server · honeypot + เวลากรอกขั้นต่ำ + rate limit · ปุ่ม "เพิ่มช่องกรอกที่ยังไม่มี"
+- **Workflows** (แผง "Workflow"): trigger สร้าง/แก้ไข → เงื่อนไข → ตั้งค่าฟิลด์ / ส่งอีเมล (ข้อความล้วน, queue + retry) · รันครั้งเดียวต่อเหตุการณ์ (idempotent) · ไม่วนซ้ำ · dry run · ประวัติการรัน
+- **REST API** (`/api/v1/apps/{project}/models/{name}/records`): API key แบบ hash, scopes, บทบาท, เพิกถอนได้, rate limit, ใช้ชื่อฟิลด์
+- **Showcase**: เทมเพลตระบบลงทะเบียนอบรมมีฟอร์มบันทึกลงฐานข้อมูลจริง, workflow ตั้งสถานะ "รอตรวจสอบ" + อีเมลยืนยันผู้สมัคร + แจ้งเจ้าหน้าที่, หน้ารายชื่อผู้สมัครสำหรับผู้ดูแลเท่านั้น
+- เอกสาร: ADR-0009
+
 ## ผลการทดสอบล่าสุด (รันจริงในสภาพแวดล้อมนี้)
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **73/73 ผ่าน** (337 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **73/73 ผ่าน** (337 assertions) |
-| Vitest app-schema | `npm test -w packages/app-schema` | **57/57 ผ่าน** |
-| Vitest renderer | `npm test -w packages/renderer` | **7/7 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **109/109 ผ่าน** (565 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **109/109 ผ่าน** |
+| Vitest app-schema | `npm test -w packages/app-schema` | **80/80 ผ่าน** |
+| Vitest renderer | `npm test -w packages/renderer` | **10/10 ผ่าน** |
 | Vitest studio | `npm test -w apps/studio-web` | **9/9 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
-| Typecheck | `npm run typecheck` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **6/6 ผ่าน** |
+| Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
+| Playwright E2E | `npm run test:e2e` | **8/8 ผ่าน** |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
-| `npm audit --omit=dev` / `composer audit` | | 0 vulnerabilities |
 
-E2E ที่ครอบคลุม: J1 (ขอบเขต Phase 1: สมัคร → workspace → เทมเพลต → แก้ไข → บันทึก → reload → preview), dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน (409 → merge), J8 (เข้าถึงข้าม tenant ถูกบล็อก)
+E2E ที่ครอบคลุม: J1 (ขอบเขต Phase 1), J2 (ยกเว้นขั้น AI), J3, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน (409 → merge), J8
 
 ## ข้อจำกัดที่ทราบ (Known limitations)
-1. **Docker images** (`infra/docker/*`) เขียนไว้แต่ยังไม่ได้ build ในสภาพแวดล้อมนี้ (ไม่มี Docker daemon) — ต้องทดสอบ `docker compose up --build` ก่อนใช้
-2. **ClamAV** adapter ยังไม่ได้ทดสอบกับ clamd จริง; ถ้าไม่ตั้งค่า สถานะไฟล์จะเป็น `not_scanned` (แสดงตามจริง)
-3. การสแกนไฟล์เป็นแบบ synchronous (ยังไม่ใช้ queue), ยังไม่มี image variants/folders
-4. Workspace switcher/การเชิญสมาชิก (invitations) ยังไม่มี UI/API — ผู้ใช้เห็น workspace แรก (M02 backlog)
-5. 2FA/passkeys, OAuth login, หน้าจัดการ session ยังไม่ทำ (M01 backlog → Phase 6)
-6. Redirects (`routes[]`) มีใน schema + validator แต่ยังไม่มี UI แก้ไข
-7. ยังไม่มี inline text editing บน canvas (แก้ผ่าน inspector)
-8. Template marketplace (moderation/licensing) ยังไม่ทำ — มีเฉพาะ curated templates
-9. Mobile-friendly simplified editor ยังไม่ทำ (editor ใช้บนจอ ≥ 1024px; dashboard/preview responsive)
+1. **Docker images** (`infra/docker/*`) และ CI workflow ยังไม่ได้ build/รันจริง (ไม่มี Docker daemon / ยังไม่มีรัน GitHub Actions)
+2. **ClamAV** adapter ยังไม่ได้ทดสอบกับ clamd จริง; ถ้าไม่ตั้งค่า สถานะไฟล์คือ `not_scanned`
+3. **บัญชีผู้ใช้ของแอปที่สร้าง** (สมัคร/เข้าสู่ระบบในแอป, member session, สิทธิ์แบบ "ของตัวเอง") ยังไม่มี — บทบาท member/admin ตอนนี้ใช้ได้ผ่านการจำลองบทบาทใน preview และ API key; จะทำพร้อม runtime ใน Phase 4
+4. **ฟิลด์ไฟล์/อัปโหลด และความสัมพันธ์ระหว่างตาราง** ยังไม่มี (backlog)
+5. CAPTCHA ยังไม่มี (มี honeypot + เวลากรอกขั้นต่ำ + rate limit)
+6. การค้นหาใช้ LIKE บน JSON — เหมาะกับข้อมูลระดับหมื่นแถวต่อตาราง; ข้อมูลใหญ่กว่านี้ต้องเพิ่ม materialized index (Phase 6)
+7. อีเมลจาก workflow ใช้ mail driver ของ Laravel (dev = log) — ต้องตั้งค่า SMTP/ผู้ให้บริการจริงก่อนใช้งาน
+8. Workspace switcher/การเชิญสมาชิก, 2FA/passkeys, UI แก้ redirects, inline text editing บนแคนวาส ยังไม่ทำ (backlog เดิม)
 
 ## วิธีทำงานต่อ (สำหรับรอบถัดไป)
 1. อ่าน `docs/ROADMAP.md` → Phase 2 backlog
-2. ขยาย schema → v1 ยังห้ามข้อมูลใน `dataModels/permissions/actions/workflows`; Phase 2 จะออก **schemaVersion 2** พร้อม upcaster v1→v2 ทั้ง TS และ PHP และ fixtures ใหม่
+2. Phase 3 (AI): ตัวสร้างต้องส่งออกเป็น typed commands เท่านั้น (รวม `model.upsert`/`permission.set`/`workflow.upsert`) แล้วผ่าน validator เดียวกัน; ถ้าต้องเปลี่ยน schema ให้ออก v3 + upcaster + fixtures
 3. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้

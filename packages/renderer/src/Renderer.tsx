@@ -2,6 +2,7 @@ import { createContext, useContext, useState, type CSSProperties, type MouseEven
 import { getComponentDefinition, type Breakpoint } from '@studio/component-registry';
 import { isSafeHref, isSafeImageSource, PATTERNS, type AppDefinition, type ComponentNode } from '@studio/app-schema';
 import { resolveStyles, toCss, fontStack } from './styles.ts';
+import { DataTableView, FormFieldView, FormView, type DataHost } from './data.tsx';
 
 export type RenderMode = 'edit' | 'preview' | 'live';
 
@@ -13,10 +14,12 @@ export interface RenderOptions {
   resolveAsset?: (ref: string) => string | undefined;
   /** Preview mode: called for internal links instead of navigating the browser. */
   onNavigate?: (href: string) => void;
+  /** Data access for forms and tables (preview: preview-runtime API; live: Phase 4 runtime). */
+  dataHost?: DataHost;
 }
 
-const Ctx = createContext<RenderOptions | null>(null);
-const useRender = () => {
+export const Ctx = createContext<RenderOptions | null>(null);
+export const useRender = () => {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('Renderer context missing');
   return ctx;
@@ -257,6 +260,12 @@ function NodeView({ id }: { id: string }): ReactNode {
     }
     case 'Divider':
       return <hr {...attrs} style={{ border: 0, borderTopStyle: 'solid', borderTopWidth: 1, ...css, height: 0 }} />;
+    case 'Form':
+      return <FormView node={node} css={css} attrs={attrs}>{children}{emptyDrop}</FormView>;
+    case 'FormField':
+      return <FormFieldView node={node} css={css} attrs={attrs} />;
+    case 'DataTable':
+      return <DataTableView node={node} css={css} attrs={attrs} />;
     case 'Spacer':
       return <div {...attrs} aria-hidden="true" style={css} />;
     default:

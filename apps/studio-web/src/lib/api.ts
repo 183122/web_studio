@@ -7,12 +7,15 @@ export class ApiError extends Error {
   readonly status: number;
   readonly code: string;
   readonly details: Record<string, unknown>;
-  constructor(status: number, code: string, message: string, details: Record<string, unknown> = {}) {
+  /** Full parsed response body (some endpoints return a report alongside a 4xx status). */
+  readonly body: unknown;
+  constructor(status: number, code: string, message: string, details: Record<string, unknown> = {}, body: unknown = null) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
     this.details = details;
+    this.body = body;
   }
 
   /** Field errors from a 422 validation_failed response. */
@@ -76,7 +79,7 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
   const json = text ? safeJson(text) : null;
   if (!res.ok) {
     const err = (json as { error?: { code?: string; message?: string; details?: Record<string, unknown> } } | null)?.error;
-    throw new ApiError(res.status, err?.code ?? `http_${res.status}`, err?.message ?? 'เกิดข้อผิดพลาด กรุณาลองใหม่', err?.details ?? {});
+    throw new ApiError(res.status, err?.code ?? `http_${res.status}`, err?.message ?? 'เกิดข้อผิดพลาด กรุณาลองใหม่', err?.details ?? {}, json);
   }
   return json as T;
 }

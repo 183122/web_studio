@@ -8,6 +8,7 @@ const CATEGORIES: Array<[ComponentDefinition['category'], string]> = [
   ['basic', 'พื้นฐาน'],
   ['media', 'สื่อ'],
   ['navigation', 'การนำทาง'],
+  ['data', 'ข้อมูลและฟอร์ม'],
 ];
 
 function Item({ type, def }: { type: string; def: ComponentDefinition }) {

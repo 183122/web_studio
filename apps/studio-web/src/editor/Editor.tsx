@@ -5,7 +5,7 @@ import {
   DndContext, DragOverlay, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type DragMoveEvent, type DragStartEvent,
 } from '@dnd-kit/core';
 import {
-  AlertTriangle, ArrowLeft, Blocks, CheckCircle2, CloudUpload, Eye, FileStack, History, Image as ImageIcon, Laptop, Layers, Loader2, Monitor, Palette, Redo2, Smartphone, Tablet, Undo2, ZoomIn, ZoomOut,
+  AlertTriangle, ArrowLeft, Database, Table2, Zap, Blocks, CheckCircle2, CloudUpload, Eye, FileStack, History, Image as ImageIcon, Laptop, Layers, Loader2, Monitor, Palette, Redo2, Smartphone, Tablet, Undo2, ZoomIn, ZoomOut,
 } from 'lucide-react';
 import { createNode, type AppCommand } from '@studio/app-schema';
 import { getComponentDefinition, type Breakpoint } from '@studio/component-registry';
@@ -27,6 +27,8 @@ import { PagesPanel } from './panels/PagesPanel.tsx';
 import { AssetsPanel } from './panels/AssetsPanel.tsx';
 import { ThemePanel } from './panels/ThemePanel.tsx';
 import { VersionsPanel } from './panels/VersionsPanel.tsx';
+import { DatabasePanel } from './panels/DatabasePanel.tsx';
+import { WorkflowsPanel } from './panels/WorkflowsPanel.tsx';
 
 const PANELS: Array<{ id: PanelId; label: string; icon: typeof Layers }> = [
   { id: 'pages', label: 'หน้า', icon: FileStack },
@@ -34,6 +36,8 @@ const PANELS: Array<{ id: PanelId; label: string; icon: typeof Layers }> = [
   { id: 'layers', label: 'เลเยอร์', icon: Layers },
   { id: 'assets', label: 'คลังภาพ', icon: ImageIcon },
   { id: 'theme', label: 'ธีม', icon: Palette },
+  { id: 'database', label: 'ฐานข้อมูล', icon: Database },
+  { id: 'workflows', label: 'Workflow', icon: Zap },
   { id: 'versions', label: 'เวอร์ชัน', icon: History },
 ];
 
@@ -115,6 +119,8 @@ function EditorShell({ projectName, archived }: { projectName: string; archived:
             {panel === 'layers' ? <LayersPanel /> : null}
             {panel === 'assets' ? <AssetsPanel /> : null}
             {panel === 'theme' ? <ThemePanel /> : null}
+            {panel === 'database' ? <DatabasePanel /> : null}
+            {panel === 'workflows' ? <WorkflowsPanel /> : null}
             {panel === 'versions' ? <VersionsPanel /> : null}
           </aside>
           <div ref={centerRef} className="flex min-w-0 flex-1 flex-col">
@@ -193,6 +199,9 @@ function TopBar({ projectName }: { projectName: string }) {
         <Button variant="ghost" size="icon" onClick={() => setZoom(zoom + 0.1)} aria-label="ซูมเข้า"><ZoomIn className="h-4 w-4" /></Button>
       </div>
       <ThemeToggle />
+      <Link to={`/app/projects/${projectId}/data`} target="_blank" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm hover:bg-slate-100 dark:hover:bg-navy-800">
+        <Table2 className="h-4 w-4" /> ข้อมูล
+      </Link>
       <Link to={`/app/projects/${projectId}/preview?page=${encodeURIComponent(page?.path ?? '/')}`} target="_blank" className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-300 px-3 text-sm hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-navy-800">
         <Laptop className="h-4 w-4" /> ดูตัวอย่าง
       </Link>

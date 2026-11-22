@@ -11,7 +11,7 @@ import {
 import type { Breakpoint } from '@studio/component-registry';
 
 export type SaveState = 'saved' | 'pending' | 'saving' | 'retrying' | 'conflict' | 'error' | 'readonly';
-export type PanelId = 'pages' | 'components' | 'layers' | 'assets' | 'theme' | 'versions';
+export type PanelId = 'pages' | 'components' | 'layers' | 'assets' | 'theme' | 'database' | 'workflows' | 'versions';
 
 interface HistoryEntry {
   label: string;

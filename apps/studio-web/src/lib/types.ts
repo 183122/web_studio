@@ -76,3 +76,49 @@ export interface WorkspaceSummary {
   organization: { id: string; name: string; plan: { code: string; name: string } | null };
   usage: { projects: { used: number; limit: number }; storage_bytes: { used: number; limit: number } };
 }
+
+export interface RecordRow {
+  id: string;
+  version: number;
+  data: Record<string, unknown>;
+  source: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ListMeta {
+  currentPage: number;
+  lastPage: number;
+  total: number;
+  perPage?: number;
+}
+
+export interface ApiKey {
+  id: string;
+  name: string;
+  prefix: string;
+  environment: string;
+  role: 'public' | 'member' | 'admin';
+  scopes: string[];
+  lastUsedAt: string | null;
+  revokedAt: string | null;
+  createdAt: string;
+  token?: string;
+}
+
+export interface WorkflowRunRow {
+  id: number;
+  workflowId: string;
+  recordId: string;
+  event: string;
+  status: string;
+  steps: Array<Record<string, unknown>>;
+  error: string | null;
+  createdAt: string;
+}
+
+export interface ImpactReport {
+  totalRecords: number;
+  requiresConfirmation: boolean;
+  fields: Array<{ fieldId: string; name: string; change: string; invalidRecords?: number; duplicateValues?: number; recordsWithData?: number }>;
+}

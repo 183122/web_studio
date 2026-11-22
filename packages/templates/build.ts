@@ -57,7 +57,7 @@ class Builder {
     return id;
   }
 
-  build(name: string, description: string, tokens: DesignTokens): AppDefinition {
+  build(name: string, description: string, tokens: DesignTokens, data: Pick<AppDefinition, 'dataModels' | 'permissions' | 'workflows'> = { dataModels: [], permissions: [], workflows: [] }): AppDefinition {
     const doc: AppDefinition = {
       schemaVersion: 2,
       projectId: 'template',
@@ -66,10 +66,10 @@ class Builder {
       routes: [],
       components: this.components,
       designTokens: tokens,
-      dataModels: [],
-      permissions: [],
+      dataModels: data.dataModels,
+      permissions: data.permissions,
       actions: [],
-      workflows: [],
+      workflows: data.workflows,
       integrations: [],
       assets: [],
       seo: { siteName: name, description, lang: 'th' },
@@ -98,6 +98,7 @@ const button = (label: string, href: string, variant = 'primary') => el('Button'
 const card = (children: Spec[]) => el('Card', {}, undefined, children);
 const columns = (n: number, children: Spec[]) =>
   el('Columns', {}, { base: { display: 'grid', columns: n, gap: '24px' }, tablet: { columns: Math.min(n, 2) }, mobile: { columns: 1 } }, children);
+const ff = (fieldId: string, placeholder: string) => el('FormField', { fieldId, label: '', placeholder, helpText: '' });
 const footer = (line: string) =>
   el('Section', { tag: 'footer', anchorId: '', backgroundImage: '' }, { base: { padding: '32px 24px', backgroundColor: '$secondary', color: '#ffffff' } }, [container([text(line, { fontSize: '14px', textAlign: 'center' })])]);
 const buttons = (items: Spec[]) => el('Container', {}, { base: { display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '12px' } }, items);
@@ -164,22 +165,64 @@ function trainingRegistration() {
       container([
         heading('ลงทะเบียนเข้าร่วมอบรม', 'h1'),
         text('กรุณาเตรียมข้อมูลต่อไปนี้: ชื่อ–นามสกุล อีเมล เบอร์โทรศัพท์ หน่วยงาน และหลักสูตรที่ต้องการ'),
-        card([
-          heading('ช่องทางลงทะเบียน', 'h3'),
-          text('ส่งข้อมูลการลงทะเบียนทางอีเมล เจ้าหน้าที่จะยืนยันภายใน 1 วันทำการ'),
-          buttons([button('ลงทะเบียนทางอีเมล', 'mailto:training@example.com?subject=register', 'primary')]),
-        ]),
+        el('Form', { modelId: 'm_registrations', submitLabel: 'ส่งใบสมัคร', successMessage: 'ได้รับใบสมัครแล้ว ระบบได้ส่งอีเมลยืนยันให้คุณ' }, undefined, [
+          ff('f_reg_name', 'เช่น สมชาย ใจดี'),
+          ff('f_reg_email', 'name@example.com'),
+          ff('f_reg_phone', '08x-xxx-xxxx'),
+          ff('f_reg_org', ''),
+          ff('f_reg_course', ''),
+          ff('f_reg_note', ''),
+        ], 'ฟอร์มลงทะเบียน'),
+        text('ข้อมูลของคุณใช้เพื่อการจัดอบรมเท่านั้น ตามนโยบายความเป็นส่วนตัว (PDPA)', { fontSize: '14px', color: '$muted' }),
       ], { maxWidth: '760px' }),
     ]),
     footer('© ศูนย์ฝึกอบรมออนไลน์'),
   ]);
+  const regs = b.page('รายชื่อผู้สมัคร', '/registrants', 'รายชื่อผู้สมัคร (ผู้ดูแล)', 'สำหรับผู้ดูแลการอบรม', [
+    nav(),
+    section([
+      container([
+        heading('รายชื่อผู้สมัคร', 'h1'),
+        text('หน้านี้แสดงข้อมูลเฉพาะผู้ที่มีสิทธิ์อ่าน (ผู้ดูแลแอป) — ลองเปลี่ยนบทบาทในหน้าดูตัวอย่าง', { color: '$muted' }),
+        el('DataTable', { modelId: 'm_registrations', fieldIds: ['f_reg_name', 'f_reg_course', 'f_reg_status'], pageSize: '10', searchable: true, emptyMessage: 'ยังไม่มีผู้สมัคร' }),
+      ]),
+    ]),
+    footer('© ศูนย์ฝึกอบรมออนไลน์'),
+  ]);
+  b.pages.find((p) => p.id === regs)!.seo.noindex = true;
+  const courses = ['การใช้ AI เพื่อการทำงาน', 'การวิเคราะห์ข้อมูลเบื้องต้น', 'การออกแบบเว็บไซต์ไม่ต้องเขียนโค้ด'];
+  const data = {
+    dataModels: [{
+      id: 'm_registrations', name: 'registrations', label: 'ผู้สมัครอบรม', displayFieldId: 'f_reg_name',
+      fields: [
+        { id: 'f_reg_name', name: 'full_name', label: 'ชื่อ–นามสกุล', type: 'text' as const, required: true, unique: false, maxLength: 120 },
+        { id: 'f_reg_email', name: 'email', label: 'อีเมล', type: 'email' as const, required: true, unique: true },
+        { id: 'f_reg_phone', name: 'phone', label: 'เบอร์โทรศัพท์', type: 'phone' as const, required: false, unique: false },
+        { id: 'f_reg_org', name: 'organization', label: 'หน่วยงาน', type: 'text' as const, required: false, unique: false, maxLength: 160 },
+        { id: 'f_reg_course', name: 'course', label: 'หลักสูตร', type: 'select' as const, required: true, unique: false, options: courses },
+        { id: 'f_reg_note', name: 'note', label: 'หมายเหตุ', type: 'longtext' as const, required: false, unique: false, maxLength: 1000 },
+        { id: 'f_reg_status', name: 'status', label: 'สถานะ', type: 'select' as const, required: false, unique: false, options: ['รอตรวจสอบ', 'ยืนยันแล้ว', 'ยกเลิก'] },
+      ],
+    }],
+    permissions: [{ modelId: 'm_registrations', rules: { public: ['create' as const], member: [], admin: ['create' as const, 'read' as const, 'update' as const, 'delete' as const] } }],
+    workflows: [{
+      id: 'w_reg_received', name: 'ยืนยันการรับใบสมัคร', enabled: true,
+      trigger: { event: 'record.created' as const, modelId: 'm_registrations' },
+      conditions: [],
+      actions: [
+        { type: 'record.setField' as const, fieldId: 'f_reg_status', value: 'รอตรวจสอบ' },
+        { type: 'email.send' as const, to: 'field:f_reg_email', subject: 'ได้รับใบสมัครหลักสูตร {{course}} แล้ว', body: 'เรียน คุณ{{full_name}}\n\nศูนย์ฝึกอบรมได้รับใบสมัครหลักสูตร "{{course}}" ของคุณแล้ว เจ้าหน้าที่จะยืนยันภายใน 1 วันทำการ\n\nศูนย์ฝึกอบรมออนไลน์' },
+        { type: 'email.send' as const, to: 'training@example.com', subject: 'ผู้สมัครใหม่: {{full_name}}', body: 'ผู้สมัคร: {{full_name}} ({{email}})\nหลักสูตร: {{course}}\nหน่วยงาน: {{organization}}' },
+      ],
+    }],
+  };
   return {
     slug: 'training-registration',
     name: 'ระบบลงทะเบียนอบรม',
-    description: 'เว็บไซต์ศูนย์ฝึกอบรม: หน้าแรก รายการหลักสูตร และหน้าลงทะเบียน (ฟอร์มที่บันทึกลงฐานข้อมูลจะเพิ่มใน Phase 2)',
+    description: 'ศูนย์ฝึกอบรม: หลักสูตร ฟอร์มลงทะเบียนที่บันทึกลงฐานข้อมูล อีเมลยืนยันอัตโนมัติ และรายชื่อผู้สมัครสำหรับผู้ดูแล',
     category: 'education',
     sortOrder: 1,
-    document: b.build('ระบบลงทะเบียนอบรม', 'ลงทะเบียนเข้าร่วมอบรมออนไลน์', DEFAULT_TOKENS),
+    document: b.build('ระบบลงทะเบียนอบรม', 'ลงทะเบียนเข้าร่วมอบรมออนไลน์', DEFAULT_TOKENS, data),
   };
 }
 

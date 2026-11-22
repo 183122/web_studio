@@ -2,12 +2,12 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Tabs } from 'radix-ui';
 import { ArrowDown, ArrowUp, ImageIcon, Plus, RotateCcw, Trash2, X } from 'lucide-react';
 import { getComponentDefinition, registry, type Breakpoint, type PropDefinition } from '@studio/component-registry';
-import { COLOR_TOKENS, isSafeHref, isSafeImageSource, PATTERNS, validatePropValue, validateStyleValue, type ComponentNode } from '@studio/app-schema';
+import { COLOR_TOKENS, createNode, isSafeHref, isSafeImageSource, PATTERNS, validatePropValue, validateStyleValue, type ComponentNode } from '@studio/app-schema';
 import { resolveStyles } from '@studio/renderer';
 import { Dialog } from '../components/ui/Dialog.tsx';
 import { AssetGrid } from './panels/AssetsPanel.tsx';
 import { reportRejected } from './actions.ts';
-import { useEditor } from './store.ts';
+import { parentOf, useEditor } from './store.ts';
 
 const BP_LABEL: Record<Breakpoint, string> = { base: 'เดสก์ท็อป (ค่าหลัก)', tablet: 'แท็บเล็ต', mobile: 'มือถือ' };
 
@@ -178,6 +178,12 @@ function PropField({ node, name, def }: { node: ComponentNode; name: string; def
       return <Row label={def.label}><ImagePicker value={String(value)} onChange={(v) => commit(v, false)} /></Row>;
     case 'links':
       return <Row label={def.label}><LinksEditor value={value as Array<{ label: string; href: string }>} max={def.maxItems ?? 12} onChange={(v) => commit(v, false)} /></Row>;
+    case 'model':
+      return <ModelPicker id={id} label={def.label} value={String(value)} onChange={(v) => commit(v, false)} />;
+    case 'field':
+      return <FieldPicker id={id} node={node} label={def.label} value={String(value)} onChange={(v) => commit(v, false)} />;
+    case 'fieldList':
+      return <FieldListPicker node={node} label={def.label} value={value as string[]} onChange={(v) => commit(v, false)} />;
     case 'stringList':
       return (
         <Row label={`${def.label} (บรรทัดละ 1 รายการ)`} htmlFor={id}>
@@ -194,6 +200,89 @@ function PropField({ node, name, def }: { node: ComponentNode; name: string; def
     default:
       return null;
   }
+}
+
+// ---------------- data bindings ----------------
+
+function ModelPicker({ id, label, value, onChange }: { id: string; label: string; value: string; onChange: (v: string) => void }) {
+  const models = useEditor((s) => s.doc!.dataModels);
+  const setPanel = useEditor((s) => s.setPanel);
+  return (
+    <Row label={label} htmlFor={id}>
+      <select id={id} className="field-input" value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="">— เลือกตารางข้อมูล —</option>
+        {models.map((m) => <option key={m.id} value={m.id}>{m.label} ({m.name})</option>)}
+      </select>
+      {models.length === 0 ? (
+        <button type="button" className="mt-1 text-xs text-brand-700 underline dark:text-brand-300" onClick={() => setPanel('database')}>สร้างตารางข้อมูลก่อน</button>
+      ) : null}
+    </Row>
+  );
+}
+
+function formModelOf(node: ComponentNode): string {
+  const doc = useEditor.getState().doc!;
+  let cur = parentOf(doc, node.id);
+  while (cur) {
+    const n = doc.components[cur];
+    if (n?.type === 'Form') return typeof n.props.modelId === 'string' ? n.props.modelId : '';
+    cur = parentOf(doc, cur);
+  }
+  return '';
+}
+
+function FieldPicker({ id, node, label, value, onChange }: { id: string; node: ComponentNode; label: string; value: string; onChange: (v: string) => void }) {
+  const doc = useEditor((s) => s.doc)!;
+  const model = doc.dataModels.find((m) => m.id === formModelOf(node));
+  return (
+    <Row label={label} htmlFor={id}>
+      <select id={id} className="field-input" value={value} onChange={(e) => onChange(e.target.value)} disabled={!model}>
+        <option value="">— เลือกฟิลด์ —</option>
+        {model?.fields.map((f) => <option key={f.id} value={f.id}>{f.label} ({f.type}{f.required ? ', จำเป็น' : ''})</option>)}
+      </select>
+      {!model ? <p className="mt-1 text-xs text-amber-600">วางช่องนี้ในฟอร์มที่เลือกตารางข้อมูลแล้ว</p> : null}
+    </Row>
+  );
+}
+
+function FieldListPicker({ node, label, value, onChange }: { node: ComponentNode; label: string; value: string[]; onChange: (v: string[]) => void }) {
+  const doc = useEditor((s) => s.doc)!;
+  const model = doc.dataModels.find((m) => m.id === node.props.modelId);
+  if (!model) return <Row label={label}><p className="text-xs text-slate-500">เลือกตารางข้อมูลก่อน</p></Row>;
+  return (
+    <fieldset>
+      <legend className="field-label">{label} (ไม่เลือก = 4 ฟิลด์แรก)</legend>
+      {model.fields.map((f) => (
+        <label key={f.id} className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={value.includes(f.id)} onChange={(e) => onChange(e.target.checked ? model.fields.map((x) => x.id).filter((x) => x === f.id || value.includes(x)) : value.filter((x) => x !== f.id))} />
+          {f.label}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
+function FormTools({ node }: { node: ComponentNode }) {
+  const doc = useEditor((s) => s.doc)!;
+  const dispatch = useEditor((s) => s.dispatch);
+  const model = doc.dataModels.find((m) => m.id === node.props.modelId);
+  if (!model) return null;
+  const placed = new Set(node.children.map((c) => doc.components[c]).filter((c) => c?.type === 'FormField').map((c) => c.props.fieldId));
+  const missing = model.fields.filter((f) => !placed.has(f.id));
+  if (missing.length === 0) return <p className="text-xs text-emerald-700 dark:text-emerald-300">✓ ฟอร์มมีครบทุกฟิลด์แล้ว</p>;
+  return (
+    <button
+      type="button"
+      className="w-full rounded-lg border border-brand-600 px-3 py-1.5 text-sm text-brand-700 hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-900/20"
+      onClick={() => {
+        const nodes = missing.map((f) => createNode('FormField', { props: { fieldId: f.id } }));
+        const cmds = nodes.map((n, i) => ({ type: 'component.insert' as const, parentId: node.id, index: node.children.length + i, nodes: [n] }));
+        if (!dispatch(cmds, { label: 'เพิ่มช่องกรอกทุกฟิลด์' })) reportRejected();
+      }}
+    >
+      เพิ่มช่องกรอกที่ยังไม่มี ({missing.length} ฟิลด์)
+    </button>
+  );
 }
 
 // ---------------- styles ----------------
@@ -307,6 +396,7 @@ function ComponentInspector({ node }: { node: ComponentNode }) {
         <section className="space-y-3">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">เนื้อหา</h3>
           {Object.entries(def.props).map(([name, pd]) => <PropField key={name} node={node} name={name} def={pd} />)}
+          {node.type === 'Form' ? <FormTools node={node} /> : null}
         </section>
       ) : null}
       <section className="space-y-3">

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { previewDataHost, type PreviewRole } from '../lib/dataHost.ts';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Monitor, Smartphone, Tablet } from 'lucide-react';
@@ -26,6 +27,8 @@ export default function Preview() {
   const path = params.get('page') ?? '/';
   const bp = (params.get('bp') as Breakpoint) || 'base';
   const pageId = useMemo(() => (doc ? findPageByPath(doc, path) : null), [doc, path]);
+  const role = (['public', 'member', 'admin'].includes(params.get('role') ?? '') ? params.get('role') : 'public') as PreviewRole;
+  const dataHost = useMemo(() => previewDataHost(projectId, role), [projectId, role]);
 
   const set = (patch: Record<string, string>) => setParams({ ...Object.fromEntries(params), ...patch }, { replace: true });
   const error = project.error ?? (revisionParam ? revision.error : head.error);
@@ -44,6 +47,14 @@ export default function Preview() {
             {doc.pages.map((p) => <option key={p.id} value={p.path}>{p.name} ({p.path})</option>)}
           </select>
         </label>
+        {doc.dataModels.length > 0 ? (
+          <label className="flex items-center gap-1 text-xs">
+            <span>ดูในบทบาท</span>
+            <select aria-label="บทบาทผู้ใช้ในแอป" className="field-input h-8 w-auto py-0" value={role} onChange={(e) => set({ role: e.target.value })}>
+              <option value="public">ผู้เยี่ยมชม</option><option value="member">สมาชิก</option><option value="admin">ผู้ดูแลแอป</option>
+            </select>
+          </label>
+        ) : null}
         <div role="radiogroup" aria-label="ขนาดหน้าจอ" className="flex rounded-lg bg-slate-100 p-0.5 dark:bg-navy-800">
           {([['base', Monitor], ['tablet', Tablet], ['mobile', Smartphone]] as const).map(([id, Icon]) => (
             <button key={id} type="button" role="radio" aria-checked={bp === id} aria-label={id} onClick={() => set({ bp: id })} className={`rounded-md p-1.5 ${bp === id ? 'bg-white shadow-sm dark:bg-navy-900' : 'text-slate-500'}`}>
@@ -61,6 +72,8 @@ export default function Preview() {
               breakpoint={bp}
               mode="preview"
               resolveAsset={(ref) => assets.data?.[ref]}
+              dataHost={dataHost}
+              key={role}
               onNavigate={(href) => {
                 if (href.startsWith('#')) {
                   document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' });

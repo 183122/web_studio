@@ -1,138 +1,859 @@
 openapi: 3.1.0
 info:
   title: AI Studio Cloud — Platform API
-  version: 0.1.0
-  description: |
-    Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN` (obtain via `GET /sanctum/csrf-cookie`).
+  version: 0.2.0
+  description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN` (obtain via `GET /sanctum/csrf-cookie`).
+
     Responses: `{ "data": ... }` (paginated lists add `links` and `meta`). Errors: `{ "error": { "code", "message", "details"? } }`.
+
     Cross-tenant or missing resources return 404. Optional `Idempotency-Key` header on POST.
-servers: [{ url: /api/v1 }]
+
+    '
+servers:
+- url: /api/v1
 components:
   securitySchemes:
-    session: { type: apiKey, in: cookie, name: laravel_session }
+    session:
+      type: apiKey
+      in: cookie
+      name: laravel_session
+    appApiKey:
+      type: http
+      scheme: bearer
+      description: sk_<prefix>_<secret>
   schemas:
     Error:
       type: object
-      required: [error]
+      required:
+      - error
       properties:
         error:
           type: object
-          required: [code, message]
+          required:
+          - code
+          - message
           properties:
-            code: { type: string, examples: [validation_failed, schema_invalid, revision_conflict, quota_exceeded, not_found, forbidden, rate_limited] }
-            message: { type: string }
-            details: { type: object }
+            code:
+              type: string
+              examples:
+              - validation_failed
+              - schema_invalid
+              - revision_conflict
+              - quota_exceeded
+              - not_found
+              - forbidden
+              - rate_limited
+            message:
+              type: string
+            details:
+              type: object
     Project:
       type: object
       properties:
-        id: { type: string }
-        workspaceId: { type: string }
-        name: { type: string }
-        slug: { type: string }
-        description: { type: string }
-        status: { enum: [active, archived] }
-        isTrashed: { type: boolean }
-        isFavorite: { type: boolean }
-        revision: { type: [integer, 'null'] }
-        updatedAt: { type: string, format: date-time }
-    AppDefinition: { $ref: '../../packages/app-schema/schema/app-definition.schema.json' }
-    AppCommand: { $ref: '../../packages/app-schema/schema/app-command.schema.json' }
+        id:
+          type: string
+        workspaceId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        status:
+          enum:
+          - active
+          - archived
+        isTrashed:
+          type: boolean
+        isFavorite:
+          type: boolean
+        revision:
+          type:
+          - integer
+          - 'null'
+        updatedAt:
+          type: string
+          format: date-time
+    AppDefinition:
+      $ref: ../../packages/app-schema/schema/app-definition.schema.json
+    AppCommand:
+      $ref: ../../packages/app-schema/schema/app-command.schema.json
     SaveResult:
       type: object
       properties:
-        revision: { type: integer }
-        contentHash: { type: string }
-        checkpoint: { type: boolean }
+        revision:
+          type: integer
+        contentHash:
+          type: string
+        checkpoint:
+          type: boolean
   parameters:
-    workspace: { name: workspace, in: path, required: true, schema: { type: string } }
-    project: { name: project, in: path, required: true, schema: { type: string } }
+    workspace:
+      name: workspace
+      in: path
+      required: true
+      schema:
+        type: string
+    project:
+      name: project
+      in: path
+      required: true
+      schema:
+        type: string
   responses:
-    Error: { description: Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
-security: [{ session: [] }]
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+security:
+- session: []
 paths:
   /auth/register:
     post:
       security: []
       summary: Register; provisions organization + workspace; sends verification e-mail
-      requestBody: { content: { application/json: { schema: { type: object, required: [name, email, password, password_confirmation, acceptTerms], properties: { name: { type: string }, email: { type: string }, password: { type: string, minLength: 10 }, password_confirmation: { type: string }, organizationName: { type: string }, acceptTerms: { const: true } } } } } }
-      responses: { '201': { description: Created }, '422': { $ref: '#/components/responses/Error' }, '429': { $ref: '#/components/responses/Error' } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - email
+              - password
+              - password_confirmation
+              - acceptTerms
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                  minLength: 10
+                password_confirmation:
+                  type: string
+                organizationName:
+                  type: string
+                acceptTerms:
+                  const: true
+      responses:
+        '201':
+          description: Created
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
   /auth/login:
-    post: { security: [], summary: 'Log in (throttled)', responses: { '200': { description: OK }, '422': { $ref: '#/components/responses/Error' }, '429': { $ref: '#/components/responses/Error' } } }
+    post:
+      security: []
+      summary: Log in (throttled)
+      responses:
+        '200':
+          description: OK
+        '422':
+          $ref: '#/components/responses/Error'
+        '429':
+          $ref: '#/components/responses/Error'
   /auth/logout:
-    post: { summary: 'Log out', responses: { '200': { description: OK } } }
+    post:
+      summary: Log out
+      responses:
+        '200':
+          description: OK
   /auth/me:
-    get: { summary: 'Current user with organizations, workspaces and roles', responses: { '200': { description: OK }, '401': { $ref: '#/components/responses/Error' } } }
+    get:
+      summary: Current user with organizations, workspaces and roles
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: '#/components/responses/Error'
   /auth/forgot-password:
-    post: { security: [], summary: 'Send reset link (non-enumerating)', responses: { '200': { description: OK } } }
+    post:
+      security: []
+      summary: Send reset link (non-enumerating)
+      responses:
+        '200':
+          description: OK
   /auth/reset-password:
-    post: { security: [], summary: 'Reset password and revoke sessions', responses: { '200': { description: OK }, '422': { $ref: '#/components/responses/Error' } } }
+    post:
+      security: []
+      summary: Reset password and revoke sessions
+      responses:
+        '200':
+          description: OK
+        '422':
+          $ref: '#/components/responses/Error'
   /auth/email/verify/{id}/{hash}:
-    get: { security: [], summary: 'Signed verification link → redirect to studio', parameters: [{ name: id, in: path, required: true, schema: { type: string } }, { name: hash, in: path, required: true, schema: { type: string } }], responses: { '302': { description: Redirect } } }
+    get:
+      security: []
+      summary: Signed verification link → redirect to studio
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: hash
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '302':
+          description: Redirect
   /auth/email/verification-notification:
-    post: { summary: 'Resend verification e-mail', responses: { '200': { description: OK } } }
+    post:
+      summary: Resend verification e-mail
+      responses:
+        '200':
+          description: OK
   /workspaces/{workspace}:
-    get: { summary: 'Workspace summary with plan usage', parameters: [{ $ref: '#/components/parameters/workspace' }], responses: { '200': { description: OK }, '404': { $ref: '#/components/responses/Error' } } }
+    get:
+      summary: Workspace summary with plan usage
+      parameters:
+      - $ref: '#/components/parameters/workspace'
+      responses:
+        '200':
+          description: OK
+        '404':
+          $ref: '#/components/responses/Error'
   /workspaces/{workspace}/members:
-    get: { summary: 'Members and roles', parameters: [{ $ref: '#/components/parameters/workspace' }], responses: { '200': { description: OK } } }
+    get:
+      summary: Members and roles
+      parameters:
+      - $ref: '#/components/parameters/workspace'
+      responses:
+        '200':
+          description: OK
   /workspaces/{workspace}/audit-logs:
-    get: { summary: 'Audit trail (workspace admin)', parameters: [{ $ref: '#/components/parameters/workspace' }], responses: { '200': { description: OK }, '403': { $ref: '#/components/responses/Error' } } }
+    get:
+      summary: Audit trail (workspace admin)
+      parameters:
+      - $ref: '#/components/parameters/workspace'
+      responses:
+        '200':
+          description: OK
+        '403':
+          $ref: '#/components/responses/Error'
   /workspaces/{workspace}/projects:
     get:
       summary: List projects
       parameters:
-        - { $ref: '#/components/parameters/workspace' }
-        - { name: search, in: query, schema: { type: string } }
-        - { name: status, in: query, schema: { enum: [active, archived, trashed, all] } }
-        - { name: favorites, in: query, schema: { type: boolean } }
-        - { name: sort, in: query, schema: { enum: [updated, name, created] } }
-        - { name: perPage, in: query, schema: { type: integer, maximum: 60 } }
-      responses: { '200': { description: Paginated projects } }
+      - $ref: '#/components/parameters/workspace'
+      - name: search
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          enum:
+          - active
+          - archived
+          - trashed
+          - all
+      - name: favorites
+        in: query
+        schema:
+          type: boolean
+      - name: sort
+        in: query
+        schema:
+          enum:
+          - updated
+          - name
+          - created
+      - name: perPage
+        in: query
+        schema:
+          type: integer
+          maximum: 60
+      responses:
+        '200':
+          description: Paginated projects
     post:
       summary: Create project (blank or from template); enforces plan quota
-      parameters: [{ $ref: '#/components/parameters/workspace' }]
-      requestBody: { content: { application/json: { schema: { type: object, required: [name], properties: { name: { type: string }, description: { type: string }, templateSlug: { type: string } } } } } }
-      responses: { '201': { description: Created }, '422': { $ref: '#/components/responses/Error' } }
+      parameters:
+      - $ref: '#/components/parameters/workspace'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                templateSlug:
+                  type: string
+      responses:
+        '201':
+          description: Created
+        '422':
+          $ref: '#/components/responses/Error'
   /projects/{project}:
-    get: { summary: 'Project', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK }, '404': { $ref: '#/components/responses/Error' } } }
-    patch: { summary: 'Rename / describe', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } }
-    delete: { summary: 'Move to trash (admin)', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } }
-  /projects/{project}/restore: { post: { summary: 'Restore from trash (admin, quota-checked)', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } } }
-  /projects/{project}/archive: { post: { summary: 'Archive (read-only)', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } } }
-  /projects/{project}/unarchive: { post: { summary: 'Unarchive', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } } }
-  /projects/{project}/duplicate: { post: { summary: 'Clone project (quota-checked)', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '201': { description: Created } } } }
+    get:
+      summary: Project
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+        '404':
+          $ref: '#/components/responses/Error'
+    patch:
+      summary: Rename / describe
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Move to trash (admin)
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/restore:
+    post:
+      summary: Restore from trash (admin, quota-checked)
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/archive:
+    post:
+      summary: Archive (read-only)
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/unarchive:
+    post:
+      summary: Unarchive
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/duplicate:
+    post:
+      summary: Clone project (quota-checked)
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '201':
+          description: Created
   /projects/{project}/favorite:
-    put: { summary: 'Favorite', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } }
-    delete: { summary: 'Unfavorite', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } }
+    put:
+      summary: Favorite
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Unfavorite
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
   /projects/{project}/schema:
     get:
       summary: Head document (ETag = revision)
-      parameters: [{ $ref: '#/components/parameters/project' }]
-      responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { data: { type: object, properties: { revision: { type: integer }, document: { $ref: '#/components/schemas/AppDefinition' }, contentHash: { type: string } } } } } } } } }
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      revision:
+                        type: integer
+                      document:
+                        $ref: '#/components/schemas/AppDefinition'
+                      contentHash:
+                        type: string
     put:
       summary: Replace whole document (requires If-Match revision)
-      parameters: [{ $ref: '#/components/parameters/project' }, { name: If-Match, in: header, required: true, schema: { type: string } }]
-      responses: { '200': { description: Saved }, '409': { $ref: '#/components/responses/Error' }, '422': { $ref: '#/components/responses/Error' }, '428': { $ref: '#/components/responses/Error' } }
+      parameters:
+      - $ref: '#/components/parameters/project'
+      - name: If-Match
+        in: header
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Saved
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
+        '428':
+          $ref: '#/components/responses/Error'
   /projects/{project}/commands:
     post:
       summary: Apply typed commands atomically against baseRevision
-      parameters: [{ $ref: '#/components/parameters/project' }, { name: Idempotency-Key, in: header, schema: { type: string } }]
-      requestBody: { content: { application/json: { schema: { type: object, required: [baseRevision, commands], properties: { baseRevision: { type: integer }, commands: { type: array, maxItems: 200, items: { $ref: '#/components/schemas/AppCommand' } }, message: { type: string } } } } } }
-      responses: { '200': { description: Saved, content: { application/json: { schema: { type: object, properties: { data: { $ref: '#/components/schemas/SaveResult' } } } } } }, '409': { $ref: '#/components/responses/Error' }, '422': { $ref: '#/components/responses/Error' } }
+      parameters:
+      - $ref: '#/components/parameters/project'
+      - name: Idempotency-Key
+        in: header
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - baseRevision
+              - commands
+              properties:
+                baseRevision:
+                  type: integer
+                commands:
+                  type: array
+                  maxItems: 200
+                  items:
+                    $ref: '#/components/schemas/AppCommand'
+                message:
+                  type: string
+      responses:
+        '200':
+          description: Saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SaveResult'
+        '409':
+          $ref: '#/components/responses/Error'
+        '422':
+          $ref: '#/components/responses/Error'
   /projects/{project}/revisions:
-    get: { summary: 'Checkpoints (paginated)', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '200': { description: OK } } }
-    post: { summary: 'Name the current head as a checkpoint', parameters: [{ $ref: '#/components/parameters/project' }], responses: { '201': { description: Created }, '409': { $ref: '#/components/responses/Error' } } }
+    get:
+      summary: Checkpoints (paginated)
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Name the current head as a checkpoint
+      parameters:
+      - $ref: '#/components/parameters/project'
+      responses:
+        '201':
+          description: Created
+        '409':
+          $ref: '#/components/responses/Error'
   /projects/{project}/revisions/{revision}:
-    get: { summary: 'Checkpoint with document', parameters: [{ $ref: '#/components/parameters/project' }, { name: revision, in: path, required: true, schema: { type: integer } }], responses: { '200': { description: OK } } }
+    get:
+      summary: Checkpoint with document
+      parameters:
+      - $ref: '#/components/parameters/project'
+      - name: revision
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
   /projects/{project}/revisions/{revision}/restore:
-    post: { summary: 'Restore as a new revision', parameters: [{ $ref: '#/components/parameters/project' }, { name: revision, in: path, required: true, schema: { type: integer } }], responses: { '200': { description: OK }, '409': { $ref: '#/components/responses/Error' } } }
+    post:
+      summary: Restore as a new revision
+      parameters:
+      - $ref: '#/components/parameters/project'
+      - name: revision
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+        '409':
+          $ref: '#/components/responses/Error'
   /workspaces/{workspace}/assets:
-    get: { summary: 'List assets (or resolve ids[] to signed URLs)', parameters: [{ $ref: '#/components/parameters/workspace' }], responses: { '200': { description: OK } } }
-    post: { summary: 'Upload image (multipart `file`)', parameters: [{ $ref: '#/components/parameters/workspace' }], responses: { '201': { description: Created }, '200': { description: Deduplicated }, '422': { $ref: '#/components/responses/Error' } } }
+    get:
+      summary: List assets (or resolve ids[] to signed URLs)
+      parameters:
+      - $ref: '#/components/parameters/workspace'
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Upload image (multipart `file`)
+      parameters:
+      - $ref: '#/components/parameters/workspace'
+      responses:
+        '201':
+          description: Created
+        '200':
+          description: Deduplicated
+        '422':
+          $ref: '#/components/responses/Error'
   /assets/{asset}:
-    delete: { summary: 'Delete asset', parameters: [{ name: asset, in: path, required: true, schema: { type: string } }], responses: { '200': { description: OK } } }
+    delete:
+      summary: Delete asset
+      parameters:
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
   /assets/{asset}/content:
-    get: { security: [], summary: 'File bytes via temporary signed URL', parameters: [{ name: asset, in: path, required: true, schema: { type: string } }], responses: { '200': { description: File }, '403': { description: Invalid/expired signature } } }
+    get:
+      security: []
+      summary: File bytes via temporary signed URL
+      parameters:
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: File
+        '403':
+          description: Invalid/expired signature
   /templates:
-    get: { security: [], summary: 'Published templates', responses: { '200': { description: OK } } }
+    get:
+      security: []
+      summary: Published templates
+      responses:
+        '200':
+          description: OK
   /templates/{slug}:
-    get: { security: [], summary: 'Template with document (for preview)', parameters: [{ name: slug, in: path, required: true, schema: { type: string } }], responses: { '200': { description: OK } } }
+    get:
+      security: []
+      summary: Template with document (for preview)
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/data/{modelId}/records:
+    get:
+      summary: List records (search, filter[fieldId], sort, dir, page, perPage)
+      parameters:
+      - &id001
+        $ref: '#/components/parameters/project'
+      - &id002
+        name: modelId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create record {data:{fieldId:value}}
+      parameters:
+      - *id001
+      - *id002
+      responses:
+        '201':
+          description: Created
+        '422': &id003
+          $ref: '#/components/responses/Error'
+  /projects/{project}/data/{modelId}/records/{recordId}:
+    get:
+      summary: Record
+      parameters:
+      - *id001
+      - *id002
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    patch:
+      summary: Update {data, version} (409 on stale version)
+      parameters:
+      - *id001
+      - *id002
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '409': *id003
+        '422': *id003
+    delete:
+      summary: Delete
+      parameters:
+      - *id001
+      - *id002
+      - name: recordId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/data/{modelId}/records/bulk-delete:
+    post:
+      summary: Bulk delete {ids}
+      parameters:
+      - *id001
+      - *id002
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/data/{modelId}/export:
+    get:
+      summary: CSV export (field names, formula-safe)
+      parameters:
+      - *id001
+      - *id002
+      responses:
+        '200':
+          description: text/csv
+  /projects/{project}/data/{modelId}/import:
+    post:
+      summary: CSV import (multipart file, dryRun); all-or-nothing
+      parameters:
+      - *id001
+      - *id002
+      responses:
+        '200':
+          description: Report
+        '422':
+          description: Report with row errors
+  /projects/{project}/data/{modelId}/audit:
+    get:
+      summary: Record audit trail
+      parameters:
+      - *id001
+      - *id002
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/data/impact:
+    post:
+      summary: Migration impact preview for a proposed model {model}
+      parameters:
+      - *id001
+      responses:
+        '200':
+          description: OK
+        '422': *id003
+  /projects/{project}/preview-runtime/{modelId}/records:
+    get:
+      summary: Preview runtime list as X-Preview-Role
+      parameters:
+      - *id001
+      - *id002
+      - name: X-Preview-Role
+        in: header
+        schema:
+          enum:
+          - public
+          - member
+          - admin
+      responses:
+        '200':
+          description: OK
+        '403': *id003
+    post:
+      summary: Form submission {data, meta:{hp, elapsedMs}} (rate limited)
+      parameters:
+      - *id001
+      - *id002
+      - name: X-Preview-Role
+        in: header
+        schema:
+          enum:
+          - public
+          - member
+          - admin
+      responses:
+        '201':
+          description: Created
+        '403': *id003
+        '422': *id003
+        '429': *id003
+  /projects/{project}/workflow-runs:
+    get:
+      summary: Workflow run history
+      parameters:
+      - *id001
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/workflows/{workflowId}/dry-run:
+    post:
+      summary: Evaluate a saved workflow on sample data (no side effects)
+      parameters:
+      - *id001
+      - name: workflowId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/api-keys:
+    get:
+      summary: List API keys
+      parameters:
+      - *id001
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create API key {name, role, scopes}; token returned once
+      parameters:
+      - *id001
+      responses:
+        '201':
+          description: Created
+  /projects/{project}/api-keys/{keyId}:
+    delete:
+      summary: Revoke API key
+      parameters:
+      - *id001
+      - name: keyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /apps/{project}/models/{model}/records:
+    get:
+      security:
+      - appApiKey: []
+      summary: Generated REST API (GET), field names in `fields`
+      parameters:
+      - *id001
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401': *id003
+        '403': *id003
+    post:
+      security:
+      - appApiKey: []
+      summary: Generated REST API (POST), field names in `fields`
+      parameters:
+      - *id001
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401': *id003
+        '403': *id003
+  /apps/{project}/models/{model}/records/{id}:
+    get:
+      security:
+      - appApiKey: []
+      summary: Generated REST API (GET), field names in `fields`
+      parameters:
+      - *id001
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401': *id003
+        '403': *id003
+    patch:
+      security:
+      - appApiKey: []
+      summary: Generated REST API (PATCH), field names in `fields`
+      parameters:
+      - *id001
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401': *id003
+        '403': *id003
+    delete:
+      security:
+      - appApiKey: []
+      summary: Generated REST API (DELETE), field names in `fields`
+      parameters:
+      - *id001
+      - name: model
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+        '401': *id003
+        '403': *id003
