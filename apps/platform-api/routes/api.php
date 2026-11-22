@@ -1,15 +1,21 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ApiKeyController;
+use App\Http\Controllers\Api\V1\AppApiController;
 use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\V1\Auth\PasswordController;
+use App\Http\Controllers\Api\V1\DataController;
 use App\Http\Controllers\Api\V1\HealthController;
+use App\Http\Controllers\Api\V1\PreviewRuntimeController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\RevisionController;
 use App\Http\Controllers\Api\V1\SchemaController;
 use App\Http\Controllers\Api\V1\TemplateController;
+use App\Http\Controllers\Api\V1\WorkflowController;
 use App\Http\Controllers\Api\V1\WorkspaceController;
+use App\Http\Middleware\AuthenticateAppApiKey;
 use App\Http\Middleware\Idempotency;
 use Illuminate\Support\Facades\Route;
 
@@ -71,5 +77,41 @@ Route::prefix('v1')->group(function () {
         Route::get('workspaces/{workspace}/assets', [AssetController::class, 'index']);
         Route::post('workspaces/{workspace}/assets', [AssetController::class, 'store'])->middleware('throttle:uploads');
         Route::delete('assets/{asset}', [AssetController::class, 'destroy']);
+
+        // ---- App data: generated admin (M17) ----
+        Route::post('projects/{project}/data/impact', [DataController::class, 'impact']);
+        Route::prefix('projects/{project}/data/{modelId}')->group(function () {
+            Route::get('records', [DataController::class, 'index']);
+            Route::post('records', [DataController::class, 'store']);
+            Route::post('records/bulk-delete', [DataController::class, 'bulkDelete']);
+            Route::get('records/{recordId}', [DataController::class, 'show']);
+            Route::patch('records/{recordId}', [DataController::class, 'update']);
+            Route::delete('records/{recordId}', [DataController::class, 'destroy']);
+            Route::get('export', [DataController::class, 'export']);
+            Route::post('import', [DataController::class, 'import'])->middleware('throttle:uploads');
+            Route::get('audit', [DataController::class, 'audit']);
+        });
+
+        // ---- Preview runtime (forms, data tables) with simulated app role ----
+        Route::get('projects/{project}/preview-runtime/{modelId}/records', [PreviewRuntimeController::class, 'index']);
+        Route::post('projects/{project}/preview-runtime/{modelId}/records', [PreviewRuntimeController::class, 'store'])->middleware('throttle:form-submit');
+
+        // ---- Workflows (M20) ----
+        Route::get('projects/{project}/workflow-runs', [WorkflowController::class, 'runs']);
+        Route::post('projects/{project}/workflows/{workflowId}/dry-run', [WorkflowController::class, 'dryRun']);
+
+        // ---- App API keys (M19) ----
+        Route::get('projects/{project}/api-keys', [ApiKeyController::class, 'index']);
+        Route::post('projects/{project}/api-keys', [ApiKeyController::class, 'store']);
+        Route::delete('projects/{project}/api-keys/{keyId}', [ApiKeyController::class, 'destroy']);
+    });
+
+    // ---- Generated app REST API (API key auth, no session) ----
+    Route::middleware([AuthenticateAppApiKey::class, 'throttle:app-api'])->prefix('apps/{project}/models/{model}')->group(function () {
+        Route::get('records', [AppApiController::class, 'index']);
+        Route::post('records', [AppApiController::class, 'store']);
+        Route::get('records/{id}', [AppApiController::class, 'show']);
+        Route::patch('records/{id}', [AppApiController::class, 'update']);
+        Route::delete('records/{id}', [AppApiController::class, 'destroy']);
     });
 });

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // The studio uses Sanctum's SPA session auth only; personal access tokens are never issued,
+        // so bearer tokens (e.g. generated-app API keys) must never be looked up as Sanctum tokens.
+        Sanctum::getAccessTokenFromRequestUsing(fn () => null);
+
         Model::preventLazyLoading(! $this->app->isProduction());
         Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
@@ -51,6 +56,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', fn (Request $r) => Limit::perMinute(240)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('commands', fn (Request $r) => Limit::perMinute(120)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('uploads', fn (Request $r) => Limit::perMinute(30)->by($r->user()?->id ?: $r->ip()));
+        RateLimiter::for('form-submit', fn (Request $r) => Limit::perMinute(10)->by($r->ip().'|'.(is_object($r->route('project')) ? $r->route('project')->id : (string) $r->route('project'))));
+        RateLimiter::for('app-api', fn (Request $r) => Limit::perMinute(120)->by((string) ($r->bearerToken() ? substr($r->bearerToken(), 0, 16) : $r->ip())));
         RateLimiter::for('login', fn (Request $r) => [
             Limit::perMinute(5)->by(mb_strtolower((string) $r->input('email')).'|'.$r->ip()),
             Limit::perMinute(30)->by($r->ip()),

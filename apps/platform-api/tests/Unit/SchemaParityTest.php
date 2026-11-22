@@ -2,12 +2,12 @@
 
 namespace Tests\Unit;
 
+use App\Domain\Data\FieldValue;
 use App\Domain\Schema\Canonical;
 use App\Domain\Schema\CommandApplier;
 use App\Domain\Schema\CommandException;
 use App\Domain\Schema\DefinitionValidator;
 use App\Domain\Schema\DocumentCodec;
-use App\Domain\Data\FieldValue;
 use App\Domain\Schema\Rules;
 use App\Domain\Schema\Upcaster;
 use PHPUnit\Framework\Attributes\DataProvider;

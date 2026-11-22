@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AppRecord;
 use App\Models\Asset;
 use App\Models\Organization;
 use App\Models\Project;
@@ -17,6 +18,7 @@ class EntitlementService
         'max_projects' => 3,
         'storage_bytes' => 100 * 1024 * 1024,
         'max_workspaces' => 1,
+        'max_records' => 1000,
     ];
 
     public function limit(Organization $org, string $key): int
@@ -33,6 +35,16 @@ class EntitlementService
         $used = Project::query()->where('organization_id', $org->id)->count(); // includes archived; trashed excluded
         if ($used >= $limit) {
             throw ApiException::quota('จำนวนโปรเจกต์', $limit);
+        }
+    }
+
+    /** Call inside a transaction holding a lock on the organization row. */
+    public function assertCanCreateRecord(Organization $org): void
+    {
+        $limit = $this->limit($org, 'max_records');
+        $used = AppRecord::query()->whereIn('project_id', Project::query()->where('organization_id', $org->id)->select('id'))->count();
+        if ($used >= $limit) {
+            throw ApiException::quota('จำนวนข้อมูล (records)', $limit);
         }
     }
 
@@ -53,6 +65,7 @@ class EntitlementService
     {
         return [
             'projects' => ['used' => Project::query()->where('organization_id', $org->id)->count(), 'limit' => $this->limit($org, 'max_projects')],
+            'records' => ['used' => AppRecord::query()->whereIn('project_id', Project::query()->where('organization_id', $org->id)->select('id'))->count(), 'limit' => $this->limit($org, 'max_records')],
             'storage_bytes' => ['used' => $this->storageUsed($org), 'limit' => $this->limit($org, 'storage_bytes')],
         ];
     }
