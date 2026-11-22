@@ -53,6 +53,17 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | D-10 | API key theft | SHA-256 at rest, shown once, revocable, rate limited; Sanctum PAT lookup disabled | ✅ |
 | D-11 | PII in app audit logs | stored for the app owner; retention/export/delete policy | ⏳ Phase 6 (PDPA) |
 
+### Phase 3 additions (AI)
+| # | Threat | Control | Status |
+|---|---|---|---|
+| A-1 | Prompt injection makes the model emit harmful structure (scripts, unsafe links, privilege grants) | model outputs intent only (JSON Schema); normaliser + deterministic compiler + canonical validator; links/styles re-checked; permission impact shown before approval | ✅ `AiPipelineTest::test_hostile_model_output_is_neutralised` |
+| A-2 | AI silently overwrites user work | plan and proposal both require approval; apply uses baseRevision (409 if stale); `ai` checkpoint for rollback | ✅ |
+| A-3 | Corrupted schema from invalid/truncated output | normalise → compile → dry-run validate; failures leave the document untouched | ✅ (J10 tests) |
+| A-4 | Sending personal data to a third party without consent | explicit consent per request for external providers; prompts stored redacted | ✅ |
+| A-5 | API key leakage | platform key in env only; BYOK encrypted at rest, never returned, audit-logged | ✅ |
+| A-6 | Cost abuse | monthly credits (reserve/commit under lock), per-user rate limit, bounded repair loop, max tokens | ✅ |
+| A-7 | Provider outage blocks users | offline fallback provider, clearly labelled | ✅ |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
 - DAST, SAST and dependency scanning in CI: `npm audit` and `composer audit` run now; SAST/DAST tools are added in Phase 6.

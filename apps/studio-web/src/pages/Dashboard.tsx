@@ -331,9 +331,10 @@ function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOp
   const templates = useTemplates();
   const [selected, setSelected] = useState<string | null>('training-registration');
   const [name, setName] = useState('');
-  const preview = useTemplate(selected);
+  const preview = useTemplate(selected === 'ai' ? null : selected);
+  const [aiPrompt, setAiPrompt] = useState('');
   const create = useProjectMutation(
-    () => api<Envelope<Project>>(`/workspaces/${wsId}/projects`, { method: 'POST', body: { name: name.trim(), templateSlug: selected ?? undefined } }),
+    () => api<Envelope<Project>>(`/workspaces/${wsId}/projects`, { method: 'POST', body: { name: name.trim(), templateSlug: selected && selected !== 'ai' ? selected : undefined } }),
     wsId,
   );
   const chosen = useMemo(() => templates.data?.find((t) => t.slug === selected), [templates.data, selected]);
@@ -348,7 +349,7 @@ function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOp
               const p = (res as Envelope<Project>).data;
               toast.success('สร้างโปรเจกต์แล้ว');
               onOpenChange(false);
-              navigate(`/app/projects/${p.id}`);
+              navigate(`/app/projects/${p.id}`, { state: selected === 'ai' ? { aiPrompt: aiPrompt.trim() } : undefined });
             },
             onError: (err) => toast.error(errorMessage(err)),
           });
@@ -360,6 +361,7 @@ function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOp
           <fieldset>
             <legend className="field-label text-sm">เทมเพลต</legend>
             <div className="space-y-2">
+              <TemplateOption checked={selected === 'ai'} onChange={() => setSelected('ai')} title="✨ อธิบายด้วยคำพูด (AI)" description="บอกว่าต้องการแอปแบบไหน ระบบจะวางแผนหน้าเว็บ ตารางข้อมูล และฟอร์มให้ตรวจก่อนสร้าง" />
               <TemplateOption checked={selected === null} onChange={() => setSelected(null)} title="หน้าว่าง" description="เริ่มต้นจากศูนย์" />
               {templates.isLoading ? <Spinner /> : null}
               {templates.data?.map((t) => (
@@ -370,8 +372,14 @@ function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOp
         </div>
         <div className="flex min-h-80 flex-col">
           <p className="field-label text-sm">ตัวอย่าง</p>
-          <div className="relative flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700" aria-hidden>
-            {selected === null ? (
+          <div className="relative flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-navy-900" aria-hidden={selected !== 'ai'}>
+            {selected === 'ai' ? (
+              <div className="flex h-full flex-col gap-2 p-4">
+                <label htmlFor="ai-create-prompt" className="field-label text-sm">อธิบายแอปที่ต้องการ</label>
+                <textarea id="ai-create-prompt" className="field-input flex-1" rows={8} maxLength={4000} value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="เช่น ระบบจองคิวร้านซ่อมรถ ลูกค้ากรอกชื่อ เบอร์โทร รุ่นรถ และวันที่ต้องการ แล้วส่งอีเมลยืนยัน" />
+                <p className="text-xs text-slate-500">ระบบจะแสดงแผนและรายการเปลี่ยนแปลงให้ตรวจสอบก่อนเสมอ</p>
+              </div>
+            ) : selected === null ? (
               <div className="flex h-full items-center justify-center text-sm text-slate-400"><LayoutTemplate className="mr-2 h-5 w-5" /> หน้าว่าง</div>
             ) : preview.data ? (
               <div className="pointer-events-none absolute left-0 top-0 w-[1280px] origin-top-left" style={{ transform: 'scale(0.34)' }}>
@@ -383,7 +391,7 @@ function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOp
           </div>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="secondary" onClick={() => onOpenChange(false)}>ยกเลิก</Button>
-            <Button type="submit" loading={create.isPending} disabled={!name.trim()}>สร้างโปรเจกต์</Button>
+            <Button type="submit" loading={create.isPending} disabled={!name.trim() || (selected === 'ai' && !aiPrompt.trim())}>สร้างโปรเจกต์</Button>
           </div>
         </div>
       </form>

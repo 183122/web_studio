@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useParams } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DndContext, DragOverlay, PointerSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type DragMoveEvent, type DragStartEvent,
 } from '@dnd-kit/core';
 import {
-  AlertTriangle, ArrowLeft, Database, Table2, Zap, Blocks, CheckCircle2, CloudUpload, Eye, FileStack, History, Image as ImageIcon, Laptop, Layers, Loader2, Monitor, Palette, Redo2, Smartphone, Tablet, Undo2, ZoomIn, ZoomOut,
+  AlertTriangle, ArrowLeft, Database, Sparkles, Table2, Zap, Blocks, CheckCircle2, CloudUpload, Eye, FileStack, History, Image as ImageIcon, Laptop, Layers, Loader2, Monitor, Palette, Redo2, Smartphone, Tablet, Undo2, ZoomIn, ZoomOut,
 } from 'lucide-react';
 import { createNode, type AppCommand } from '@studio/app-schema';
 import { getComponentDefinition, type Breakpoint } from '@studio/component-registry';
@@ -29,8 +29,10 @@ import { ThemePanel } from './panels/ThemePanel.tsx';
 import { VersionsPanel } from './panels/VersionsPanel.tsx';
 import { DatabasePanel } from './panels/DatabasePanel.tsx';
 import { WorkflowsPanel } from './panels/WorkflowsPanel.tsx';
+import { AiPanel } from './panels/AiPanel.tsx';
 
 const PANELS: Array<{ id: PanelId; label: string; icon: typeof Layers }> = [
+  { id: 'ai', label: 'AI', icon: Sparkles },
   { id: 'pages', label: 'หน้า', icon: FileStack },
   { id: 'components', label: 'คอมโพเนนต์', icon: Blocks },
   { id: 'layers', label: 'เลเยอร์', icon: Layers },
@@ -77,6 +79,12 @@ export default function EditorPage() {
 function EditorShell({ projectName, archived }: { projectName: string; archived: boolean }) {
   const panel = useEditor((s) => s.panel);
   const setPanel = useEditor((s) => s.setPanel);
+  // Projects created from the dashboard's "describe with AI" option open the AI panel prefilled.
+  const location = useLocation();
+  const aiPrompt = (location.state as { aiPrompt?: string } | null)?.aiPrompt;
+  useEffect(() => {
+    if (aiPrompt) setPanel('ai');
+  }, [aiPrompt, setPanel]);
   const { flushNow } = useAutosave();
   const centerRef = useRef<HTMLDivElement>(null);
   const [centerWidth, setCenterWidth] = useState(0);
@@ -114,6 +122,7 @@ function EditorShell({ projectName, archived }: { projectName: string; archived:
           </nav>
           <aside className="w-72 shrink-0 overflow-y-auto border-r border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-navy-950" aria-label={PANELS.find((p) => p.id === panel)?.label}>
             <h2 className="mb-3 text-sm font-semibold">{PANELS.find((p) => p.id === panel)?.label}</h2>
+            {panel === 'ai' ? <AiPanel initialPrompt={aiPrompt} /> : null}
             {panel === 'pages' ? <PagesPanel /> : null}
             {panel === 'components' ? <ComponentsPanel /> : null}
             {panel === 'layers' ? <LayersPanel /> : null}

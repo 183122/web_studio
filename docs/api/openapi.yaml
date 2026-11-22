@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: AI Studio Cloud — Platform API
-  version: 0.2.0
+  version: 0.3.0
   description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN` (obtain via `GET /sanctum/csrf-cookie`).
 
     Responses: `{ "data": ... }` (paginated lists add `links` and `meta`). Errors: `{ "error": { "code", "message", "details"? } }`.
@@ -857,3 +857,113 @@ paths:
           description: OK
         '401': *id003
         '403': *id003
+  /projects/{project}/ai/status:
+    get:
+      summary: Provider, model, key source, consent requirement, monthly credits
+      parameters:
+      - &id004
+        $ref: '#/components/parameters/project'
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/ai/plan:
+    post:
+      summary: Start planning from a description {prompt, consent} (queued on the ai queue)
+      parameters:
+      - *id004
+      responses:
+        '202':
+          description: Accepted
+        '422': &id005
+          $ref: '#/components/responses/Error'
+        '429': *id005
+  /projects/{project}/ai/patch:
+    post:
+      summary: Start a scoped edit {prompt, consent, pageId?, componentId?}
+      parameters:
+      - *id004
+      responses:
+        '202':
+          description: Accepted
+        '422': *id005
+  /projects/{project}/ai/requests/{id}:
+    get:
+      summary: Request status, plan result or proposal id, usage, error
+      parameters:
+      - *id004
+      - &id006
+        name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/ai/requests/{id}/generate:
+    post:
+      summary: Compile an approved plan into a validated proposal (no AI call)
+      parameters:
+      - *id004
+      - *id006
+      responses:
+        '201':
+          description: Created
+        '422': *id005
+  /projects/{project}/ai/proposals/{id}:
+    get:
+      summary: Proposal summary and commands
+      parameters:
+      - *id004
+      - *id006
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/ai/proposals/{id}/apply:
+    post:
+      summary: Apply {baseRevision}; 409 on stale revision or closed/expired proposal
+      parameters:
+      - *id004
+      - *id006
+      responses:
+        '200':
+          description: Applied
+        '409': *id005
+  /projects/{project}/ai/proposals/{id}/reject:
+    post:
+      summary: Reject proposal
+      parameters:
+      - *id004
+      - *id006
+      responses:
+        '200':
+          description: OK
+  /workspaces/{workspace}/ai-credentials:
+    get:
+      summary: BYOK credentials (provider, last4 only)
+      parameters:
+      - &id007
+        $ref: '#/components/parameters/workspace'
+      responses:
+        '200':
+          description: OK
+    put:
+      summary: Set BYOK key {provider, apiKey} (workspace admin)
+      parameters:
+      - *id007
+      responses:
+        '200':
+          description: OK
+  /workspaces/{workspace}/ai-credentials/{provider}:
+    delete:
+      summary: Remove BYOK key
+      parameters:
+      - *id007
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK

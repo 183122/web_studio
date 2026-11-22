@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(5)->by(mb_strtolower((string) $r->input('email')).'|'.$r->ip()),
             Limit::perMinute(30)->by($r->ip()),
         ]);
-        RateLimiter::for('register', fn (Request $r) => Limit::perHour(10)->by($r->ip()));
+        RateLimiter::for('register', fn (Request $r) => Limit::perHour((int) config('studio.register_per_hour'))->by($r->ip()));
         RateLimiter::for('password', fn (Request $r) => Limit::perMinute(5)->by($r->ip()));
     }
 }

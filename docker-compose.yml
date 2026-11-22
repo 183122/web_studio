@@ -50,7 +50,7 @@ services:
       REDIS_HOST: redis
       CACHE_STORE: redis
       QUEUE_CONNECTION: redis
-    command: ["php", "artisan", "queue:work", "--tries=3", "--backoff=10", "--max-time=3600"]
+    command: ["php", "artisan", "queue:work", "--queue=ai,email,default", "--tries=3", "--backoff=10", "--max-time=3600", "--timeout=620"]
     volumes: [assets:/var/www/apps/platform-api/storage/app/tenant-assets]
     depends_on: [api]
 

@@ -19,11 +19,17 @@
 - [ ] Deferred: file/upload fields and relations between models → Phase 2.5 backlog (needs per-record file ACL and relation integrity rules)
 - [ ] Deferred: CAPTCHA adapter (honeypot + timing + rate limit are in place)
 
-## Phase 3 — AI
-- [ ] `packages/ai-adapters`: OpenAI/Anthropic/Gemini adapters, BYOK (encrypted), timeouts, retries, spend caps, redacted logging
-- [ ] Planner → structured plan (missing requirements, confidence) → generator emitting **typed commands only** → validators → preview → user approval with diff, credit estimate, permission impact
-- [ ] Conversational editor with scoped patches, partial regeneration, repair loop with budget
-- [ ] Journeys: J2 (full), J10
+## Phase 3 — AI ✅ (2026-11-22)
+- [x] Provider gateway: Claude Opus 5.5 via the official Anthropic PHP SDK (structured outputs, effort, server-side refusal fallback), typed error mapping, BYOK (encrypted), timeouts/retries, credit budgets, redacted logging
+- [x] Offline rules provider as safe fallback (no key / outage), clearly labelled
+- [x] Planner → structured plan (missing requirements, assumptions, confidence) → approval
+- [x] Deterministic compiler → typed commands only → dry-run validation → bounded repair loop
+- [x] Proposal review (pages, models, permission impact, workflows, before/after, warnings, cost) → apply/reject; `ai` checkpoints for rollback
+- [x] Conversational editor with scoped (selection/page) edits = partial regeneration
+- [x] Journeys: J2 (full, with offline provider in E2E), J10 (PHPUnit: outage, invalid JSON, refusal, auth, truncation)
+- [ ] Deferred: OpenAI and Gemini adapters (interface ready; not implemented)
+- [ ] Deferred: live verification against the real Claude API (no key in this environment — SDK path tested with a fake transport)
+- [ ] Deferred: streaming progress for long generations, image/brand-asset understanding, AI-generated sample data
 
 ## Phase 4 — Publishing & domains
 - [ ] App end-user accounts and member sessions for generated apps (from Phase 2)

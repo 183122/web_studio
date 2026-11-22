@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] — 2026-11-22 — Phase 3
+### Added
+- AI gateway: Claude Opus 5.5 via the official Anthropic PHP SDK with structured outputs and refusal fallback; offline template planner as fallback; BYOK, consent, redacted logs, monthly AI credits.
+- Prompt → plan → approval → compiled typed commands → validated proposal → apply/reject (rollback via versions).
+- Scoped conversational edits from the editor's AI panel; "describe with AI" option when creating a project.
+
 ## [0.2.0] — 2026-11-22 — Phase 2
 ### Added
 - AppDefinition schema v2 (data models, permissions, workflows) with v1→v2 upcasting and new typed commands.

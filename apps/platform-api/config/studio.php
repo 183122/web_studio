@@ -50,6 +50,9 @@ return [
         'proposal_ttl_hours' => 24,
     ],
 
+    // Sign-ups per IP per hour (abuse protection). Raised only for automated E2E runs.
+    'register_per_hour' => (int) env('STUDIO_REGISTER_PER_HOUR', 10),
+
     // Default plan code assigned to new organizations (see PlanSeeder).
     'default_plan' => env('STUDIO_DEFAULT_PLAN', 'free'),
 ];

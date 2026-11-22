@@ -3,20 +3,20 @@
 > เอกสารนี้คือ "จุดเริ่มต้น" สำหรับการพัฒนารอบถัดไป: อ่านสถานะ → ดู backlog ใน `docs/ROADMAP.md` → ทำ Phase ถัดไปเป็น vertical slice
 > หลักการ: ไม่อ้างว่าฟีเจอร์ทำงานถ้ายังไม่มีโค้ดและเทสต์จริง
 
-## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 2)
+## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 3)
 
 | Phase | ขอบเขต | สถานะ |
 |---|---|---|
 | 0 | ADR, threat model, monorepo, Docker, CI, migrations, seed, auth, tenancy tests | ✅ เสร็จ (Docker image ยังไม่ได้ build ทดสอบในสภาพแวดล้อมนี้ — ดู "ข้อจำกัด") |
 | 1 | Project dashboard, canonical schema, pages, drag & drop, inspector, assets, responsive preview, save/revisions, templates | ✅ เสร็จ |
 | 2 | Data model designer, CRUD, generated admin, app RBAC, forms, workflows, REST API | ✅ เสร็จ (บัญชีผู้ใช้ของแอปที่สร้าง ย้ายไป Phase 4 — ดูข้อจำกัด) |
-| 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ⏳ ถัดไป |
-| 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ⏳ |
+| 3 | AI planner/generator/editor, diff approval, multi-model, budgets | ✅ เสร็จ (Claude + โหมดออฟไลน์; OpenAI/Gemini ยังไม่ทำ, ยังไม่ได้ทดสอบกับ API จริง — ดูข้อจำกัด) |
+| 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ⏳ ถัดไป |
 | 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ⏳ |
 | 6 | Billing, entitlements/metering, super admin, privacy, hardening | ⏳ (มี plans/entitlements พื้นฐานแล้ว) |
 | 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ |
 
-ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J2 ส่วน AI, J4–J7, J9, J10 อยู่ใน phase ถัดไป)
+ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J4–J7, J9 อยู่ใน phase ถัดไป)
 
 ## Phase 0–1: สิ่งที่ส่งมอบ
 
@@ -45,6 +45,15 @@
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
 
+## Phase 3: สิ่งที่ส่งมอบ (2026-11-22)
+
+- **AI gateway** (`app/Domain/Ai`): Claude Opus 5.5 ผ่าน Anthropic PHP SDK อย่างเป็นทางการ (structured outputs, effort `medium`, server-side refusal fallback), แปลงข้อผิดพลาดเป็นข้อความที่ทำต่อได้, BYOK เข้ารหัสต่อองค์กร, ต้องได้รับความยินยอมก่อนส่งข้อความออกภายนอก, เก็บ prompt แบบปิดบังข้อมูลส่วนบุคคล, เครดิต AI รายเดือนตามแผน (จองก่อน → ตัดตามจริง), คิว `ai` แยก, จำกัด 6 ครั้ง/นาที/ผู้ใช้
+- **โหมดออฟไลน์**: ถ้าไม่มี API key หรือผู้ให้บริการล่ม ระบบใช้ตัววางแผนจากแม่แบบ (ระบุชัดว่าไม่ใช่ AI) — รองรับ ลงทะเบียนอบรม / จองคิว / ร้านค้า / เว็บไซต์ทั่วไป และคำสั่งแก้ไขพื้นฐาน
+- **ไปป์ไลน์**: คำอธิบายภาษาไทย → แผน (หน้า, ตาราง, สิทธิ์, workflow, ข้อมูลที่ขาด, สมมติฐาน, ความครบถ้วน) → ผู้ใช้อนุมัติ → compiler แปลงเป็น typed commands เท่านั้น → ทดลอง apply + validate → ข้อเสนอให้ตรวจ (หน้า, ตาราง, ผลต่อสิทธิ์, workflow, ก่อน/หลัง, คำเตือน) → นำไปใช้/ไม่ใช้ · ย้อนกลับได้จากแผงเวอร์ชัน
+- **แก้ไขด้วย AI**: จำกัดขอบเขตตามคอมโพเนนต์ที่เลือกหรือหน้าปัจจุบัน (partial regeneration)
+- **Studio**: แผง AI ในตัวแก้ไข + ตัวเลือก "อธิบายด้วยคำพูด (AI)" ตอนสร้างโปรเจกต์
+- เอกสาร: ADR-0010, threat model (A-1…A-7), OpenAPI 0.3.0
+
 ## Phase 2: สิ่งที่ส่งมอบ (2026-11-22)
 
 - **Schema v2** (`packages/app-schema`): `dataModels`, `permissions`, `workflows` + upcaster v1→v2 ทั้ง TS/PHP (เอกสาร v1 เดิมอ่านได้และถูกยกระดับเมื่อบันทึก) · commands ใหม่ `model.*`, `permission.*`, `workflow.*` พร้อม inverse · กฎตรวจสอบใหม่ (ชนิดฟิลด์, ชื่อสงวน, สิทธิ์ต้องระบุทุกตาราง, workflow, การผูกฟอร์ม/ตาราง) · parity fixtures 19/9/27/19 กรณี
@@ -62,19 +71,18 @@
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **109/109 ผ่าน** (565 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **109/109 ผ่าน** |
-| Vitest app-schema | `npm test -w packages/app-schema` | **80/80 ผ่าน** |
-| Vitest renderer | `npm test -w packages/renderer` | **10/10 ผ่าน** |
-| Vitest studio | `npm test -w apps/studio-web` | **9/9 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **117/117 ผ่าน** (688 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **117/117 ผ่าน** |
+| Vitest app-schema / renderer / studio | `npm test` | **80/80, 10/10, 9/9 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
 | Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **8/8 ผ่าน** |
+| Playwright E2E | `npm run test:e2e` | **10/10 ผ่าน** |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
 
-E2E ที่ครอบคลุม: J1 (ขอบเขต Phase 1), J2 (ยกเว้นขั้น AI), J3, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน (409 → merge), J8
+E2E ที่ครอบคลุม: J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
 
 ## ข้อจำกัดที่ทราบ (Known limitations)
+0. **AI ยังไม่ได้ทดสอบกับ Claude API จริง** — สภาพแวดล้อมนี้ไม่มี API key; เส้นทางเรียก SDK ทดสอบผ่าน fake HTTP transport (ตรวจรูปแบบคำขอ, การแปลงผลลัพธ์, ข้อผิดพลาด) · ต้องตั้ง `ANTHROPIC_API_KEY` (หรือ BYOK) แล้วทดลองจริงก่อนเปิดใช้ · OpenAI/Gemini adapter ยังไม่ทำ
 1. **Docker images** (`infra/docker/*`) และ CI workflow ยังไม่ได้ build/รันจริง (ไม่มี Docker daemon / ยังไม่มีรัน GitHub Actions)
 2. **ClamAV** adapter ยังไม่ได้ทดสอบกับ clamd จริง; ถ้าไม่ตั้งค่า สถานะไฟล์คือ `not_scanned`
 3. **บัญชีผู้ใช้ของแอปที่สร้าง** (สมัคร/เข้าสู่ระบบในแอป, member session, สิทธิ์แบบ "ของตัวเอง") ยังไม่มี — บทบาท member/admin ตอนนี้ใช้ได้ผ่านการจำลองบทบาทใน preview และ API key; จะทำพร้อม runtime ใน Phase 4
