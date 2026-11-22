@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Ai\AiProviderFactory;
 use App\Services\Scanning\ClamAvScanner;
 use App\Services\Scanning\MalwareScanner;
 use App\Services\Scanning\NullScanner;
@@ -19,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(AiProviderFactory::class);
         $this->app->singleton(MalwareScanner::class, function () {
             $cfg = config('studio.assets.clamav');
 
@@ -58,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('uploads', fn (Request $r) => Limit::perMinute(30)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('form-submit', fn (Request $r) => Limit::perMinute(10)->by($r->ip().'|'.(is_object($r->route('project')) ? $r->route('project')->id : (string) $r->route('project'))));
         RateLimiter::for('app-api', fn (Request $r) => Limit::perMinute(120)->by((string) ($r->bearerToken() ? substr($r->bearerToken(), 0, 16) : $r->ip())));
+        RateLimiter::for('ai', fn (Request $r) => Limit::perMinute(6)->by($r->user()?->id ?: $r->ip()));
         RateLimiter::for('login', fn (Request $r) => [
             Limit::perMinute(5)->by(mb_strtolower((string) $r->input('email')).'|'.$r->ip()),
             Limit::perMinute(30)->by($r->ip()),

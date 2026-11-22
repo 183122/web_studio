@@ -27,6 +27,29 @@ return [
         ],
     ],
 
+    'ai' => [
+        // Platform credential (optional). Organisations can bring their own key (BYOK).
+        'anthropic_api_key' => env('ANTHROPIC_API_KEY'),
+        'anthropic_base_url' => env('ANTHROPIC_BASE_URL'),
+        'model' => env('STUDIO_AI_MODEL', 'claude-opus-5-5'),
+        'effort' => env('STUDIO_AI_EFFORT', 'medium'),
+        'max_tokens' => (int) env('STUDIO_AI_MAX_TOKENS', 16000),
+        'timeout_seconds' => (float) env('STUDIO_AI_TIMEOUT', 240),
+        'max_retries' => 2,
+        // Server-side refusal fallback (beta) for Claude Opus 5.5.
+        'fallbacks' => env('STUDIO_AI_FALLBACKS', 'default'),
+        'repair_attempts' => 2,
+        // 1 credit = USD 0.01 of provider cost (rounded up). Prices per million tokens.
+        'credit_usd' => 0.01,
+        'pricing' => [
+            'claude-opus-5-5' => ['input' => 4.00, 'output' => 20.00],
+            'claude-sonnet-5-5' => ['input' => 2.00, 'output' => 10.00],
+            'claude-haiku-5-5' => ['input' => 0.10, 'output' => 0.50],
+        ],
+        'max_prompt_chars' => 4000,
+        'proposal_ttl_hours' => 24,
+    ],
+
     // Default plan code assigned to new organizations (see PlanSeeder).
     'default_plan' => env('STUDIO_DEFAULT_PLAN', 'free'),
 ];

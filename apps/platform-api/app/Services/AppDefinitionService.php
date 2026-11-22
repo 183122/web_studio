@@ -73,7 +73,7 @@ class AppDefinitionService
     /**
      * @param  list<mixed>  $commandObjects  commands decoded as objects (stdClass) for JSON Schema validation
      */
-    public function applyCommands(Project $project, int $baseRevision, array $commandObjects, User $user, ?string $message = null): array
+    public function applyCommands(Project $project, int $baseRevision, array $commandObjects, User $user, ?string $message = null, string $source = 'editor'): array
     {
         $max = (int) config('studio.schema.max_commands_per_request');
         if ($commandObjects === [] || count($commandObjects) > $max) {
@@ -97,7 +97,7 @@ class AppDefinitionService
             $events[] = ['type' => $commands[$i]['type'], 'json' => json_encode($obj, DocumentCodec::JSON_FLAGS)];
         }
 
-        return DB::transaction(function () use ($project, $baseRevision, $commands, $events, $user, $message) {
+        return DB::transaction(function () use ($project, $baseRevision, $commands, $events, $user, $message, $source) {
             $def = $this->lockHead($project, $baseRevision);
             try {
                 $doc = CommandApplier::applyAll(Upcaster::upcast(DocumentCodec::decode($def->document)), $commands);
@@ -108,7 +108,7 @@ class AppDefinitionService
                 ]);
             }
 
-            return $this->persist($project, $def, $doc, 'editor', $user, $message, $events, false, null);
+            return $this->persist($project, $def, $doc, $source, $user, $message, $events, $source !== 'editor', null);
         });
     }
 

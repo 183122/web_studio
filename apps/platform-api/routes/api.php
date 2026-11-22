@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AiController;
 use App\Http\Controllers\Api\V1\ApiKeyController;
 use App\Http\Controllers\Api\V1\AppApiController;
 use App\Http\Controllers\Api\V1\AssetController;
@@ -99,6 +100,19 @@ Route::prefix('v1')->group(function () {
         // ---- Workflows (M20) ----
         Route::get('projects/{project}/workflow-runs', [WorkflowController::class, 'runs']);
         Route::post('projects/{project}/workflows/{workflowId}/dry-run', [WorkflowController::class, 'dryRun']);
+
+        // ---- AI (M13–M15) ----
+        Route::get('projects/{project}/ai/status', [AiController::class, 'status']);
+        Route::post('projects/{project}/ai/plan', [AiController::class, 'plan'])->middleware('throttle:ai');
+        Route::post('projects/{project}/ai/patch', [AiController::class, 'patch'])->middleware('throttle:ai');
+        Route::get('projects/{project}/ai/requests/{id}', [AiController::class, 'showRequest']);
+        Route::post('projects/{project}/ai/requests/{id}/generate', [AiController::class, 'generate']);
+        Route::get('projects/{project}/ai/proposals/{id}', [AiController::class, 'showProposal']);
+        Route::post('projects/{project}/ai/proposals/{id}/apply', [AiController::class, 'apply']);
+        Route::post('projects/{project}/ai/proposals/{id}/reject', [AiController::class, 'reject']);
+        Route::get('workspaces/{workspace}/ai-credentials', [AiController::class, 'showCredential']);
+        Route::put('workspaces/{workspace}/ai-credentials', [AiController::class, 'setCredential']);
+        Route::delete('workspaces/{workspace}/ai-credentials/{provider}', [AiController::class, 'deleteCredential']);
 
         // ---- App API keys (M19) ----
         Route::get('projects/{project}/api-keys', [ApiKeyController::class, 'index']);
