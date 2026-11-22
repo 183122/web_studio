@@ -60,7 +60,7 @@ class AssetService
         $asset = DB::transaction(function () use ($workspace, $user, $file, $mime, $allowed, $encoded, $sha, $width, $height, $status) {
             $org = Organization::query()->whereKey($workspace->organization_id)->lockForUpdate()->firstOrFail();
             $this->entitlements->assertStorageAvailable($org, strlen($encoded));
-            $id = (string) Str::ulid();
+            $id = strtolower((string) Str::ulid());
             $disk = config('studio.assets.disk');
             $path = "tenants/{$org->id}/{$workspace->id}/assets/{$id}.{$allowed[$mime]}";
             Storage::disk($disk)->put($path, $encoded);

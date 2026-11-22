@@ -36,6 +36,17 @@ class RevisionController extends Controller
         return response()->json(['data' => (new RevisionResource($rev))->resolve() + ['document' => DocumentCodec::decodeForResponse($rev->document)]]);
     }
 
+    public function store(Request $request, Project $project, AppDefinitionService $definitions): JsonResponse
+    {
+        $this->authorize('update', $project);
+        $data = $request->validate([
+            'baseRevision' => ['required', 'integer', 'min:1'],
+            'message' => ['required', 'string', 'min:1', 'max:200'],
+        ]);
+
+        return response()->json(['data' => $definitions->checkpointHead($project, (int) $data['baseRevision'], $data['message'], $request->user())], 201);
+    }
+
     public function restore(Request $request, Project $project, int $revision, AppDefinitionService $definitions): JsonResponse
     {
         $this->authorize('update', $project);

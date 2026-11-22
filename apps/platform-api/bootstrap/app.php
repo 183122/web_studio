@@ -72,7 +72,15 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $exceptions->render(function (HttpExceptionInterface $e, Request $request) use ($error) {
             if ($request->is('api/*')) {
-                return $error($e->getStatusCode(), 'http_'.$e->getStatusCode(), $e->getMessage() ?: 'Request failed');
+                $status = $e->getStatusCode();
+                // Generic framework messages ("Not Found", "Forbidden", "Invalid signature.") are replaced with clear Thai ones.
+                $generic = in_array($e->getMessage(), ['', 'Not Found', 'Forbidden', 'This action is unauthorized.', 'Invalid signature.'], true);
+
+                return match (true) {
+                    $status === 404 => $error(404, 'not_found', 'ไม่พบข้อมูลที่ต้องการ'),
+                    $status === 403 => $error(403, 'forbidden', $generic ? 'คุณไม่มีสิทธิ์ดำเนินการนี้' : $e->getMessage()),
+                    default => $error($status, 'http_'.$status, $e->getMessage() ?: 'Request failed'),
+                };
             }
         });
     })->create();

@@ -118,6 +118,21 @@ class AppDefinitionService
         });
     }
 
+    /** Name the current head as an immutable checkpoint (no content change). */
+    public function checkpointHead(Project $project, int $baseRevision, string $message, User $user): array
+    {
+        return DB::transaction(function () use ($project, $baseRevision, $message, $user) {
+            $def = $this->lockHead($project, $baseRevision);
+            $existing = AppRevision::query()->where('project_id', $project->id)->where('revision', $def->current_revision)->first();
+            if ($existing !== null) {
+                throw ApiException::conflict('checkpoint_exists', 'เวอร์ชันนี้ถูกบันทึกไว้แล้ว แก้ไขเพิ่มเติมก่อนบันทึกเวอร์ชันใหม่', ['revision' => $existing->revision]);
+            }
+            $this->checkpoint($project, $def->current_revision, $def->document, $def->content_hash, 'editor', mb_substr($message, 0, 200), $user, null);
+
+            return ['revision' => $def->current_revision, 'checkpoint' => true];
+        });
+    }
+
     public function restore(Project $project, int $revision, int $baseRevision, User $user): array
     {
         $checkpoint = AppRevision::query()->where('project_id', $project->id)->where('revision', $revision)->first();

@@ -63,6 +63,7 @@ Route::prefix('v1')->group(function () {
         Route::put('projects/{project}/schema', [SchemaController::class, 'replace']);
         Route::post('projects/{project}/commands', [SchemaController::class, 'commands'])->middleware('throttle:commands');
         Route::get('projects/{project}/revisions', [RevisionController::class, 'index']);
+        Route::post('projects/{project}/revisions', [RevisionController::class, 'store']);
         Route::get('projects/{project}/revisions/{revision}', [RevisionController::class, 'show'])->whereNumber('revision');
         Route::post('projects/{project}/revisions/{revision}/restore', [RevisionController::class, 'restore'])->whereNumber('revision');
 

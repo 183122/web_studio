@@ -131,6 +131,17 @@ class SchemaApiTest extends TestCase
         $this->postJson("/api/v1/projects/{$p->id}/revisions/3/restore", ['baseRevision' => 6])->assertNotFound()->assertJsonPath('error.code', 'revision_not_found');
     }
 
+    public function test_named_checkpoint_of_current_head(): void
+    {
+        [, , $p] = $this->setup_project();
+        // Revision 1 already has its creation checkpoint.
+        $this->postJson("/api/v1/projects/{$p->id}/revisions", ['baseRevision' => 1, 'message' => 'x'])->assertStatus(409)->assertJsonPath('error.code', 'checkpoint_exists');
+        $this->postJson("/api/v1/projects/{$p->id}/commands", ['baseRevision' => 1, 'commands' => [['type' => 'site.update', 'changes' => ['name' => 'สอง']]]])->assertOk();
+        $this->postJson("/api/v1/projects/{$p->id}/revisions", ['baseRevision' => 1, 'message' => 'เก่า'])->assertStatus(409)->assertJsonPath('error.code', 'revision_conflict');
+        $this->postJson("/api/v1/projects/{$p->id}/revisions", ['baseRevision' => 2, 'message' => 'พร้อมรีวิว'])->assertCreated()->assertJsonPath('data.revision', 2);
+        $this->assertSame('พร้อมรีวิว', $this->getJson("/api/v1/projects/{$p->id}/revisions")->json('data.0.message'));
+    }
+
     public function test_idempotency_key_replays_instead_of_double_applying(): void
     {
         [, , $p, $doc] = $this->setup_project();
