@@ -39,7 +39,7 @@ class HealthController extends Controller
         });
         $ok = ! in_array('error', $checks, true);
 
-        $beat = Cache::get('scheduler:heartbeat');
+        $beat = rescue(fn () => Cache::get('scheduler:heartbeat'), null, false); // cache may live in the (down) database
         $info = [
             'scheduler' => $beat === null ? 'unknown' : (time() - (int) $beat < 180 ? 'ok' : 'stale'),
             'failedJobs' => rescue(fn () => DB::table('failed_jobs')->count(), null, false),

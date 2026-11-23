@@ -1,0 +1,45 @@
+# AI Studio Cloud — Apache rules for public_html (DirectAdmin / cPanel shared hosting).
+# The studio host line below is filled in by `php artisan studio:install` (or edit it by hand).
+
+Options -Indexes -MultiViews
+DirectoryIndex index.html index.php
+
+<IfModule mod_headers.c>
+    Header always setifempty X-Content-Type-Options "nosniff"
+    Header always setifempty Referrer-Policy "strict-origin-when-cross-origin"
+    # Studio pages (Laravel sets its own CSP on API and published-site responses).
+    <FilesMatch "^index\.html$">
+        Header always set X-Frame-Options "DENY"
+        Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; font-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://player.vimeo.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+        Header always set Cache-Control "no-cache"
+    </FilesMatch>
+    <If "%{REQUEST_URI} =~ m#^/(assets|runtime/assets)/#">
+        Header always set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Never serve dotfiles (except ACME challenges).
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
+    # Pass the Authorization header to PHP (app API keys: Bearer sk_…).
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Any host other than the studio is a published site → Laravel decides by Host.
+    RewriteCond %{HTTP_HOST} !^(www\.)?studio\.example\.com(:[0-9]+)?$ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+    # Studio host: API, auth, health, published-site assets → Laravel.
+    RewriteRule ^(api|sanctum|up|_assets)(/|$) index.php [L]
+
+    # Real files (SPA assets, runtime bundle).
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Everything else is a studio route → single-page app.
+    RewriteRule ^ index.html [L]
+</IfModule>

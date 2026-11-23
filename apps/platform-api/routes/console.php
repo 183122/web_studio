@@ -98,3 +98,91 @@ Schedule::command('studio:retention:run')->dailyAt('02:41');
 
 // Heartbeat read by /api/health (detects a stopped scheduler).
 Schedule::call(fn () => Cache::put('scheduler:heartbeat', time(), 600))->everyMinute()->name('scheduler-heartbeat');
+
+/*
+ * One-time / repeatable installer for hosts without SSH (run from a DirectAdmin cron job) or with SSH.
+ * Idempotent: checks requirements, creates APP_KEY if missing, migrates, seeds plans + templates,
+ * writes the studio host into public_html/.htaccess, and caches config. Output also goes to storage/logs/install.log.
+ */
+Artisan::command('studio:install {--force : run even when APP_ENV=production checks warn}', function () {
+    $log = [];
+    $say = function (string $line) use (&$log) {
+        $log[] = '['.now()->toDateTimeString().'] '.$line;
+        $this->line($line);
+    };
+    $fail = function (string $line) use (&$log, $say) {
+        $say('ERROR: '.$line);
+        @file_put_contents(storage_path('logs/install.log'), implode("\n", $log)."\n", FILE_APPEND);
+
+        return 1;
+    };
+
+    $say('PHP '.PHP_VERSION);
+    if (version_compare(PHP_VERSION, '8.3.0', '<')) {
+        return $fail('ต้องใช้ PHP 8.3 ขึ้นไป (เลือกได้ใน DirectAdmin → Select PHP version)');
+    }
+    $missing = array_values(array_filter(['pdo_mysql', 'gd', 'fileinfo', 'curl', 'zip', 'openssl', 'mbstring', 'intl'], fn ($e) => ! extension_loaded($e)));
+    if ($missing !== []) {
+        return $fail('PHP extension ที่ขาด: '.implode(', ', $missing));
+    }
+    if (function_exists('imagewebp') === false) {
+        return $fail('PHP gd ต้องรองรับ WebP');
+    }
+    foreach ([storage_path(), storage_path('framework/cache'), storage_path('framework/sessions'), storage_path('framework/views'), storage_path('logs'), base_path('bootstrap/cache')] as $dir) {
+        if (! is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+        if (! is_writable($dir)) {
+            return $fail("เขียนโฟลเดอร์ไม่ได้: {$dir} (ตั้งสิทธิ์ 755/775)");
+        }
+    }
+    $say('public path: '.public_path());
+    if (! is_file(public_path('index.php')) || ! is_file(public_path('runtime/.vite/manifest.json'))) {
+        return $fail('ไม่พบไฟล์ใน public_html (index.php / runtime) — อัปโหลดโฟลเดอร์ public_html ให้ครบ');
+    }
+
+    $envFile = base_path('.env');
+    if (! is_file($envFile)) {
+        return $fail('ไม่พบไฟล์ .env — คัดลอก .env.directadmin เป็น .env แล้วแก้ค่าให้ครบ');
+    }
+    if (trim((string) config('app.key')) === '') {
+        $key = 'base64:'.base64_encode(random_bytes(32));
+        $env = (string) file_get_contents($envFile);
+        $env = preg_match('/^APP_KEY=.*$/m', $env) ? preg_replace('/^APP_KEY=.*$/m', 'APP_KEY='.$key, $env) : $env."\nAPP_KEY={$key}\n";
+        file_put_contents($envFile, $env);
+        config(['app.key' => $key]);
+        $say('สร้าง APP_KEY แล้ว (เก็บสำรองไฟล์ .env ไว้ในที่ปลอดภัย — หาย = ข้อมูลที่เข้ารหัสจะอ่านไม่ได้)');
+    }
+    try {
+        \Illuminate\Support\Facades\DB::select('select 1');
+    } catch (\Throwable $e) {
+        return $fail('เชื่อมต่อฐานข้อมูลไม่ได้ — ตรวจ DB_* ใน .env ('.mb_substr($e->getMessage(), 0, 160).')');
+    }
+    $say('เชื่อมต่อฐานข้อมูลได้');
+
+    $this->call('migrate', ['--force' => true]);
+    $this->call('db:seed', ['--class' => \Database\Seeders\PlanSeeder::class, '--force' => true]);
+    $this->call('db:seed', ['--class' => \Database\Seeders\TemplateSeeder::class, '--force' => true]);
+    $say('migrate + seed เรียบร้อย');
+
+    // Studio host → .htaccess (other hosts are published sites served by Laravel).
+    $host = parse_url((string) config('studio.frontend_url'), PHP_URL_HOST);
+    $ht = public_path('.htaccess');
+    if ($host && is_file($ht)) {
+        $c = (string) file_get_contents($ht);
+        $pattern = '^(www\\.)?'.preg_quote($host, '/').'(:[0-9]+)?$';
+        $c = preg_replace('/^(\s*RewriteCond %\{HTTP_HOST\} !)\S+( \[NC\])$/m', '${1}'.$pattern.'${2}', $c);
+        file_put_contents($ht, $c);
+        $say(".htaccess: studio host = {$host}");
+    }
+
+    $this->call('config:clear');
+    if (app()->isProduction()) {
+        $this->call('config:cache');
+        $this->call('route:cache');
+    }
+    $say('ติดตั้งเสร็จ — เปิด '.config('studio.frontend_url').' แล้วสมัครบัญชีแรก');
+    @file_put_contents(storage_path('logs/install.log'), implode("\n", $log)."\n", FILE_APPEND);
+
+    return 0;
+})->purpose('Install or upgrade on a host without SSH (run once from cron)');

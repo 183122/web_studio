@@ -23,7 +23,7 @@ $error = static fn (int $status, string $code, string $message, array $details =
     $status,
 );
 
-return Application::configure(basePath: dirname(__DIR__))
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -98,3 +98,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
     })->create();
+
+// Shared hosting (DirectAdmin/cPanel): the web root is a sibling folder (public_html) instead of ./public.
+if (! is_dir($app->basePath('public')) && is_dir($app->basePath('../public_html'))) {
+    $app->usePublicPath(realpath($app->basePath('../public_html')));
+}
+
+return $app;

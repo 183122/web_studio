@@ -40,15 +40,31 @@ class ObservabilityTest extends TestCase
     {
         $mw = new DirectNavigationIsFrontend;
         $run = function (string $method, array $headers, string $uri = '/api/v1/auth/me') use ($mw) {
-            $req = Request::create($uri, $method, server: array_combine(array_map(fn ($k) => 'HTTP_'.strtoupper($k), array_keys($headers)), array_values($headers)) ?: []);
+            $cookies = isset($headers['Cookie']) ? [config('session.cookie') => 'abc'] : [];
+            unset($headers['Cookie']);
+            $req = Request::create($uri, $method, cookies: $cookies, server: array_combine(array_map(fn ($k) => 'HTTP_'.strtoupper($k), array_keys($headers)), array_values($headers)) ?: []);
             $mw->handle($req, fn () => new Response);
 
             return $req->headers->get('Referer');
         };
-        $this->assertSame(rtrim(config('studio.frontend_url'), '/').'/', $run('GET', []));
-        $this->assertSame('https://evil.example/', $run('GET', ['Referer' => 'https://evil.example/']));
+        $cookie = ['Cookie' => config('session.cookie').'=abc'];
+        $this->assertSame(rtrim(config('studio.frontend_url'), '/').'/', $run('GET', $cookie));
+        $this->assertNull($run('GET', [])); // no session cookie (API keys, health checks) → stays stateless
+        $this->assertSame('https://evil.example/', $run('GET', ['Referer' => 'https://evil.example/'] + $cookie));
         $this->assertNull($run('GET', ['Origin' => 'https://evil.example']));
-        $this->assertNull($run('POST', []));
-        $this->assertNull($run('GET', [], '/api/runtime/v1/auth/me'));
+        $this->assertNull($run('POST', $cookie));
+        $this->assertNull($run('GET', $cookie, '/api/runtime/v1/auth/me'));
+    }
+
+    public function test_health_reports_degraded_instead_of_crashing_when_the_cache_database_is_down(): void
+    {
+        // Shared hosting keeps cache in the database: when MySQL is down, every probe must fail softly.
+        config([
+            'database.connections.broken' => ['driver' => 'sqlite', 'database' => '/nonexistent/dir/db.sqlite', 'prefix' => ''],
+            'cache.stores.database.connection' => 'broken',
+            'cache.default' => 'database',
+        ]);
+        $this->getJson('/api/health')->assertStatus(503)->assertJsonPath('status', 'degraded')->assertJsonPath('checks.cache', 'error')
+            ->assertJsonPath('info.scheduler', 'unknown');
     }
 }

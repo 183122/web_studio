@@ -17,7 +17,10 @@ class DirectNavigationIsFrontend
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->isMethodSafe() && $request->is('api/v1/*') && ! $request->headers->has('Origin') && ! $request->headers->has('Referer')) {
+        // Only browser navigations that already carry the studio session cookie (API-key clients,
+        // health checks and crawlers stay stateless and never create sessions).
+        if ($request->isMethodSafe() && $request->is('api/v1/*') && ! $request->headers->has('Origin') && ! $request->headers->has('Referer')
+            && $request->cookies->has((string) config('session.cookie'))) {
             $request->headers->set('Referer', rtrim((string) config('studio.frontend_url'), '/').'/');
         }
 

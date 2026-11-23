@@ -2,7 +2,8 @@
 
 return [
     // Monorepo packages directory holding shared JSON Schemas, component registry and templates.
-    'packages_path' => env('STUDIO_PACKAGES_PATH', base_path('../../packages')),
+    // Monorepo: ../../packages. Deployment bundle (e.g. DirectAdmin): ./packages next to the app.
+    'packages_path' => env('STUDIO_PACKAGES_PATH', is_dir(base_path('packages')) ? base_path('packages') : base_path('../../packages')),
 
     // Public origin of the studio SPA (used for e-mail links).
     'frontend_url' => rtrim((string) env('FRONTEND_URL', 'http://localhost:5173'), '/'),
