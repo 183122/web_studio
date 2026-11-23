@@ -354,6 +354,7 @@ function RenameDialog({ project, open, onOpenChange, wsId }: { project: Project;
 function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOpenChange: (o: boolean) => void; wsId: string }) {
   const navigate = useNavigate();
   const templates = useTemplates();
+  const [tplSearch, setTplSearch] = useState('');
   const [selected, setSelected] = useState<string | null>('training-registration');
   const [name, setName] = useState('');
   const preview = useTemplate(selected === 'ai' ? null : selected);
@@ -389,9 +390,19 @@ function CreateProjectDialog({ open, onOpenChange, wsId }: { open: boolean; onOp
               <TemplateOption checked={selected === 'ai'} onChange={() => setSelected('ai')} title="✨ อธิบายด้วยคำพูด (AI)" description="บอกว่าต้องการแอปแบบไหน ระบบจะวางแผนหน้าเว็บ ตารางข้อมูล และฟอร์มให้ตรวจก่อนสร้าง" />
               <TemplateOption checked={selected === null} onChange={() => setSelected(null)} title="หน้าว่าง" description="เริ่มต้นจากศูนย์" />
               {templates.isLoading ? <Spinner /> : null}
-              {templates.data?.map((t) => (
+              {(templates.data ?? []).filter((t) => t.source !== 'community').map((t) => (
                 <TemplateOption key={t.slug} checked={selected === t.slug} onChange={() => setSelected(t.slug)} title={t.name} description={t.description} />
               ))}
+              {(templates.data ?? []).some((t) => t.source === 'community') ? (
+                <>
+                  <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-slate-500">จากชุมชน (ผ่านการตรวจโดยทีมงาน)</p>
+                  <input type="search" aria-label="ค้นหาเทมเพลตชุมชน" className="field-input h-8" placeholder="ค้นหาเทมเพลตชุมชน…" value={tplSearch} onChange={(e) => setTplSearch(e.target.value)} />
+                  {(templates.data ?? []).filter((t) => t.source === 'community' && (t.name + t.description).toLowerCase().includes(tplSearch.toLowerCase())).map((t) => (
+                    <TemplateOption key={t.slug} checked={selected === t.slug} onChange={() => setSelected(t.slug)} title={t.name}
+                      description={`${t.description} · โดย ${t.authorName ?? '—'} · ${t.license === 'free' ? 'ใช้ได้ทุกวัตถุประสงค์' : 'ใช้ส่วนตัว/ไม่แสวงหากำไรเท่านั้น'} · v${t.version} · ใช้แล้ว ${t.installCount} ครั้ง`} />
+                  ))}
+                </>
+              ) : null}
             </div>
           </fieldset>
         </div>

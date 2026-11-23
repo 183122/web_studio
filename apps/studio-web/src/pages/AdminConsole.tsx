@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Building2, Flag, Settings } from 'lucide-react';
+import { ArrowLeft, Building2, Flag, LayoutTemplate, Settings } from 'lucide-react';
+import type { AppDefinition } from '@studio/app-schema';
+import { PageRenderer } from '@studio/renderer';
 import { api, errorMessage, type Envelope } from '../lib/api.ts';
 import { useMe } from '../lib/auth.tsx';
 import { Button } from '../components/ui/Button.tsx';
@@ -25,7 +27,7 @@ const CATEGORY: Record<string, string> = { phishing: 'ฟิชชิง', malwa
 /** Platform operator console: organizations, support access requests, suspension, abuse reports. */
 export default function AdminConsole() {
   const me = useMe().data;
-  const [tab, setTab] = useState<'orgs' | 'abuse'>('orgs');
+  const [tab, setTab] = useState<'orgs' | 'abuse' | 'templates'>('orgs');
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState<string | null>(null);
   const orgs = useQuery({ queryKey: ['admin-orgs', search], queryFn: async () => (await api<{ data: OrgRow[]; meta: { total: number } }>(`/admin/organizations?search=${encodeURIComponent(search)}`)), enabled: !!me?.user.isPlatformAdmin });
@@ -44,6 +46,7 @@ export default function AdminConsole() {
           <nav className="ml-4 flex gap-1 text-sm" aria-label="เมนูผู้ดูแล">
             <button type="button" aria-pressed={tab === 'orgs'} onClick={() => setTab('orgs')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 ${tab === 'orgs' ? 'bg-brand-700 text-white' : 'hover:bg-slate-100 dark:hover:bg-navy-800'}`}><Building2 className="h-4 w-4" /> องค์กร</button>
             <button type="button" aria-pressed={tab === 'abuse'} onClick={() => setTab('abuse')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 ${tab === 'abuse' ? 'bg-brand-700 text-white' : 'hover:bg-slate-100 dark:hover:bg-navy-800'}`}><Flag className="h-4 w-4" /> รายงานการละเมิด</button>
+            <button type="button" aria-pressed={tab === 'templates'} onClick={() => setTab('templates')} className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 ${tab === 'templates' ? 'bg-brand-700 text-white' : 'hover:bg-slate-100 dark:hover:bg-navy-800'}`}><LayoutTemplate className="h-4 w-4" /> เทมเพลตรอตรวจ</button>
             <Link to="/app/admin/settings" className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-navy-800"><Settings className="h-4 w-4" /> ตั้งค่าระบบ</Link>
           </nav>
           <span className="ml-auto" />
@@ -70,7 +73,7 @@ export default function AdminConsole() {
               </table>
             )}
           </>
-        ) : (
+        ) : tab === 'templates' ? <TemplateQueue /> : (
           abuse.isLoading ? <Spinner /> : (abuse.data ?? []).length === 0 ? <p className="text-slate-500">ไม่มีรายงานที่รอดำเนินการ</p> : (
             <ul className="space-y-2 text-sm">
               {abuse.data!.map((r) => <AbuseItem key={r.id} r={r} onOpenOrg={setOpen} onDone={() => abuse.refetch()} />)}
@@ -151,5 +154,49 @@ function OrgDialog({ id, onClose }: { id: string; onClose: () => void }) {
         </div>
       )}
     </Dialog>
+  );
+}
+
+interface SubmissionRow { id: string; templateId: string | null; name: string; description: string; category: string; license: string; changelog: string | null; organization: string; submittedBy: string; sanitization: { emailActions: number; workflows: number } | null; assetCount: number; createdAt: string }
+
+/** Moderation queue: preview the sanitized document, approve (publishes a new version) or reject with a reason. */
+function TemplateQueue() {
+  const q = useQuery({ queryKey: ['admin-template-queue'], queryFn: async () => (await api<Envelope<SubmissionRow[]>>('/admin/template-submissions')).data });
+  const [open, setOpen] = useState<string | null>(null);
+  const detail = useQuery({ queryKey: ['admin-template-sub', open], queryFn: async () => (await api<Envelope<SubmissionRow & { document: AppDefinition }>>(`/admin/template-submissions/${open}`)).data, enabled: !!open });
+  const decide = (id: string, decision: 'approve' | 'reject') => {
+    const reason = window.prompt(decision === 'approve' ? 'หมายเหตุถึงผู้ส่ง' : 'เหตุผลที่ไม่อนุมัติ (ผู้ส่งจะเห็น)');
+    if (!reason) return;
+    api(`/admin/template-submissions/${id}`, { method: 'POST', body: { decision, reason } }).then(() => { toast.success('บันทึกแล้ว'); setOpen(null); q.refetch(); }, (e) => toast.error(errorMessage(e)));
+  };
+  if (q.isLoading) return <Spinner />;
+  if (!q.data?.length) return <p className="text-slate-500">ไม่มีเทมเพลตรอตรวจ</p>;
+  const doc = detail.data?.document;
+  return (
+    <div className="grid gap-4 lg:grid-cols-[22rem_1fr]">
+      <ul className="space-y-2 text-sm">
+        {q.data.map((s) => (
+          <li key={s.id}>
+            <button type="button" onClick={() => setOpen(s.id)} className={`w-full rounded-xl border p-3 text-left ${open === s.id ? 'border-brand-600' : 'border-slate-200 dark:border-slate-700'}`}>
+              <p className="font-medium">{s.name} {s.templateId ? <span className="text-xs text-slate-500">(เวอร์ชันใหม่)</span> : null}</p>
+              <p className="text-xs text-slate-500">{s.organization} · {s.submittedBy} · {formatDate(s.createdAt)}</p>
+            </button>
+          </li>
+        ))}
+      </ul>
+      {open && detail.data ? (
+        <div className="space-y-3 text-sm">
+          <p><b>{detail.data.name}</b> · {detail.data.category} · สัญญาอนุญาต {detail.data.license === 'free' ? 'ใช้ได้ทุกวัตถุประสงค์' : 'ใช้ส่วนตัว'} · รูป {detail.data.assetCount} ไฟล์</p>
+          <p>{detail.data.description}</p>
+          {detail.data.changelog ? <p className="text-slate-500">มีอะไรใหม่: {detail.data.changelog}</p> : null}
+          {detail.data.sanitization ? <p className="text-xs text-slate-500">นำออกอัตโนมัติ: อีเมลที่อยู่คงที่ {detail.data.sanitization.emailActions} · workflow ที่ว่าง {detail.data.sanitization.workflows}</p> : null}
+          <p className="text-xs text-slate-500">หน้า: {doc?.pages.map((p) => p.path).join(', ')} · ตาราง: {doc?.dataModels.map((m) => m.label).join(', ') || '—'} · workflow: {doc?.workflows.length ?? 0}</p>
+          <div className="relative h-96 overflow-hidden rounded-xl border border-slate-200 bg-white" aria-label="ตัวอย่างเทมเพลต">
+            {doc ? <div className="pointer-events-none absolute left-0 top-0 w-[1280px] origin-top-left" style={{ transform: 'scale(0.5)' }}><PageRenderer doc={doc} pageId={doc.settings.homePageId} breakpoint="base" mode="live" /></div> : null}
+          </div>
+          <div className="flex gap-2"><Button size="sm" onClick={() => decide(open, 'approve')}>อนุมัติและเผยแพร่</Button><Button size="sm" variant="ghost" onClick={() => decide(open, 'reject')}>ไม่อนุมัติ</Button></div>
+        </div>
+      ) : <p className="text-slate-500">เลือกรายการเพื่อดูตัวอย่าง</p>}
+    </div>
   );
 }

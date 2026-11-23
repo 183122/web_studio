@@ -3,7 +3,7 @@
 > เอกสารนี้คือ "จุดเริ่มต้น" สำหรับการพัฒนารอบถัดไป: อ่านสถานะ → ดู backlog ใน `docs/ROADMAP.md` → ทำ Phase ถัดไปเป็น vertical slice
 > หลักการ: ไม่อ้างว่าฟีเจอร์ทำงานถ้ายังไม่มีโค้ดและเทสต์จริง
 
-## สถานะรวม (อัปเดต 2026-11-22, หลัง Phase 6)
+## สถานะรวม (อัปเดต 2026-11-23, หลัง Phase 7)
 
 | Phase | ขอบเขต | สถานะ |
 |---|---|---|
@@ -14,7 +14,7 @@
 | 4 | Publishing (wildcard subdomain), immutable releases, rollback, custom domains/SSL | ✅ เสร็จ (ยังไม่ได้ทดสอบกับ DNS/ACME จริงและยังไม่ deploy production — ดูข้อจำกัด) |
 | 5 | Google Sheets/Drive OAuth + sync, webhooks, monitoring | ✅ เสร็จ (ทดสอบกับ Google จำลอง ยังไม่ได้ทดสอบกับ Google จริง — ดูข้อจำกัด) |
 | 6 | Billing, entitlements/metering, super admin, privacy, hardening | ✅ เสร็จ (billing โหมดทดสอบ — การเปิดใช้ผู้ให้บริการชำระเงินจริงต้องได้รับอนุมัติ) |
-| 7 | Marketplace, collaboration, export, sandboxed custom code | ⏳ ถัดไป |
+| 7 | Marketplace, collaboration, export, sandboxed custom code | ✅ เสร็จ (custom code: ทำ security review แล้ว — ตัดสินใจยังไม่เปิดใช้) |
 
 ยังไม่พร้อมใช้งาน production — gates ใน spec §21 ยังไม่ครบ (J1–J10 มีเทสต์แล้ว แต่ Google, DNS/ACME และผู้ให้บริการชำระเงิน ยังไม่ได้ทดสอบกับระบบจริง และยังไม่ได้ deploy)
 
@@ -44,6 +44,14 @@
 - Autosave (debounce, batch, idempotency, backoff), conflict banner (รวมการแก้ไข/โหลดใหม่), beforeunload guard
 - Private preview (ทุกหน้า, ทุก breakpoint, นำทางลิงก์ภายใน, ดู revision เก่า)
 - Dark/light mode, Kanit/Sarabun/Prompt/Noto Sans Thai แบบ self-host
+
+## Phase 7: สิ่งที่ส่งมอบ (2026-11-23)
+
+- **แกลเลอรีเทมเพลตชุมชน**: ส่งโปรเจกต์เป็นเทมเพลตจากหน้าต่าง "เผยแพร่" → ระบบตัดข้อมูลในตาราง ปิด workflow และนำการส่งอีเมลไปยังที่อยู่คงที่ออก → ผู้ดูแลแพลตฟอร์มดูตัวอย่างและอนุมัติ/ไม่อนุมัติ (แจ้งผลทางอีเมล) → แสดงในหน้าสร้างโปรเจกต์ พร้อมผู้สร้าง สัญญาอนุญาต (ใช้ได้ทุกวัตถุประสงค์ / ใช้ส่วนตัว) เวอร์ชัน และจำนวนการใช้ · ส่งเวอร์ชันใหม่ได้ · รูปภาพถูกคัดลอกเข้า workspace ของผู้ใช้ (ตรวจโควตา) · ผู้สร้างหรือผู้ดูแลนำออกได้ · รายงานเทมเพลตได้
+- **แก้ไขพร้อมกัน**: เห็นรูปผู้ที่เปิดโปรเจกต์อยู่ด้วย เห็นกรอบสีที่คนอื่นกำลังเลือก การแก้ไขของคนอื่นแสดงในไม่กี่วินาทีโดยไม่ต้องรีโหลด และถ้าบันทึกชนกัน ระบบรวมให้อัตโนมัติ (แสดงแถบให้เลือกเองเฉพาะกรณีรวมไม่ได้) — ใช้การ polling ทุก 3 วินาที ยังไม่ใช่ WebSocket และการแก้ช่องเดียวกันพร้อมกันคนบันทึกหลังชนะ
+- **ส่งออก (ZIP)**: เว็บไซต์แบบ static (ใช้ runtime ตัวเดียวกัน ฟอร์ม/ตารางแสดงข้อความแจ้ง), ข้อมูล CSV/JSON, `schema.sql` สำหรับ MySQL 8 (ทดลองนำเข้าจริงแล้ว), `app.json`, `openapi.json`, README ที่บอกชัดว่าส่วนใดใช้ได้โดยไม่ต้องใช้แพลตฟอร์ม · ไม่มีคีย์ ความลับ หรือรหัสผ่านในไฟล์
+- **Custom code**: ทำ security review (`docs/security/custom-code-sandbox-review.md`) — สรุปว่ายังไม่เปิดให้รันโค้ดของลูกค้า พร้อมเงื่อนไขที่ต้องมีก่อนเปิด และเทสต์ป้องกันไม่ให้เพิ่มคอมโพเนนต์/คำสั่งที่รันโค้ดได้โดยไม่ผ่านการทบทวน
+- เอกสาร: ADR-0014, threat model (M-1…X-1), OpenAPI 0.7.0
 
 ## Phase 6: สิ่งที่ส่งมอบ (2026-11-22)
 
@@ -112,15 +120,15 @@
 
 | ชุดทดสอบ | คำสั่ง | ผล |
 |---|---|---|
-| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **198/198 ผ่าน** (1,542 assertions) |
-| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **198/198 ผ่าน** |
-| Vitest app-schema / renderer / studio / runtime | `npm test` | **80/80, 10/10, 9/9, 4/4 ผ่าน** |
+| PHPUnit บน SQLite | `cd apps/platform-api && php artisan test` | **208/208 ผ่าน** (1,703 assertions) |
+| PHPUnit บน MySQL 8.0.46 | `DB_CONNECTION=mysql … php artisan test` | **208/208 ผ่าน** |
+| Vitest app-schema / renderer / studio / runtime | `npm test` | **80/80, 10/10, 9/9, 5/5 ผ่าน** |
 | Template validation | `npm test -w packages/templates` | 3/3 valid |
 | Typecheck + production build | `npm run typecheck && npm run build` | ผ่าน |
-| Playwright E2E | `npm run test:e2e` | **18/18 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
+| Playwright E2E | `npm run test:e2e` | **21/21 ผ่าน** (รอบหนึ่งมี J2 timeout ครั้งเดียว รันซ้ำผ่านทั้งเดี่ยวและทั้งชุด) |
 | Pint (code style) | `vendor/bin/pint --test` | ผ่าน |
 
-E2E ที่ครอบคลุม: J7 (อัปเกรด → ชำระเงินจำลอง → webhook → โควตาเพิ่ม → ใบกำกับภาษี), บัตรถูกปฏิเสธ, 2FA, J4 (Sheets นำเข้า/ส่งออก/ยกเลิกการเชื่อมต่อ), J5 (Drive + การเพิกถอน + webhook ที่ตรวจลายเซ็น), J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
+E2E ที่ครอบคลุม: แก้ไขพร้อมกัน 3 ผู้ใช้, แกลเลอรีเทมเพลต (ส่ง → ตรวจ → ติดตั้ง), ส่งออก ZIP, J7 (อัปเกรด → ชำระเงินจำลอง → webhook → โควตาเพิ่ม → ใบกำกับภาษี), บัตรถูกปฏิเสธ, 2FA, J4 (Sheets นำเข้า/ส่งออก/ยกเลิกการเชื่อมต่อ), J5 (Drive + การเพิกถอน + webhook ที่ตรวจลายเซ็น), J1 (ครบ: เผยแพร่ → เปิด `<slug>.sites.localhost` → ส่งฟอร์มจริง → สมัครสมาชิก → เห็นข้อมูลจริงใน studio → เผยแพร่ใหม่ → ย้อนกลับ → ลิงก์แชร์), J6 (DNS แบบ static file), J1 (ขอบเขต Phase 1), J2 (ครบรวมขั้น AI — ใช้โหมดออฟไลน์), J3, แก้ไขด้วย AI, dashboard, drag & drop + keyboard, upload asset, แก้ไขพร้อมกัน, J8 · J10 ทดสอบใน PHPUnit (ผู้ให้บริการล่ม → fallback, JSON เสีย, ปฏิเสธคำขอ, key ผิด, คำตอบถูกตัด)
 
 ## ข้อจำกัดที่ทราบ (Known limitations)
 0. **AI ยังไม่ได้ทดสอบกับ Claude API จริง** — สภาพแวดล้อมนี้ไม่มี API key; เส้นทางเรียก SDK ทดสอบผ่าน fake HTTP transport (ตรวจรูปแบบคำขอ, การแปลงผลลัพธ์, ข้อผิดพลาด) · ต้องตั้ง `ANTHROPIC_API_KEY` (หรือ BYOK) แล้วทดลองจริงก่อนเปิดใช้ · OpenAI/Gemini adapter ยังไม่ทำ
@@ -141,6 +149,6 @@ E2E ที่ครอบคลุม: J7 (อัปเกรด → ชำร�
 ## วิธีทำงานต่อ (สำหรับรอบถัดไป)
 1. อ่าน `docs/ROADMAP.md` → Phase 2 backlog
 2. ก่อนใช้งานจริง: ทดสอบกับ Google/DNS จริง, เลือกและอนุมัติผู้ให้บริการชำระเงิน, ทำ restore drill และ DAST ตาม `docs/runbooks/`
-3. Phase 7: template marketplace, real-time collaboration, code export, sandboxed custom code (ต้อง security review ก่อน)
+3. งานที่เหลือ: M30 Analytics, เทมเพลตแบบเสียเงิน, collaboration แบบ WebSocket/CRDT, prototype custom code แบบ Wasm (หลัง external review)
 4. runtime: build `npm run build:runtime` ก่อนรัน API (E2E ทำให้อัตโนมัติ)
 5. ทุก slice: migration → API contract (อัปเดต `docs/api/openapi.yaml`) → policy → service → UI → tests (PHPUnit + Vitest + E2E) → อัปเดตไฟล์นี้

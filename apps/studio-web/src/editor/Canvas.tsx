@@ -6,6 +6,7 @@ import { PageRenderer } from '@studio/renderer';
 import { useAssetUrls } from '../lib/queries.ts';
 import { duplicateSelected, moveSelectedBy, removeSelected, selectParent } from './actions.ts';
 import { canvasRef, useDragState } from './dragState.ts';
+import { useCollab } from './collab.ts';
 import { useEditor } from './store.ts';
 
 interface Box { top: number; left: number; width: number; height: number }
@@ -46,6 +47,8 @@ export function Canvas() {
   const breakpoint = useEditor((s) => s.breakpoint);
   const zoom = useEditor((s) => s.zoom);
   const selectedId = useEditor((s) => s.selectedId);
+  const participants = useCollab((s) => s.participants);
+  const remote = participants.filter((p) => !p.me && p.pageId === pageId && p.selectedId && p.selectedId !== selectedId);
   const hoveredId = useEditor((s) => s.hoveredId);
   const workspaceId = useEditor((s) => s.workspaceId);
   const select = useEditor((s) => s.select);
@@ -106,6 +109,7 @@ export function Canvas() {
             {indicator ? (
               <div className="pointer-events-none absolute z-20 rounded-full bg-brand-500" style={indicator} data-testid="drop-indicator" />
             ) : null}
+            {remote.map((p) => <RemoteSelection key={p.userId} frame={frame} id={p.selectedId!} name={p.name} color={p.color} zoom={zoom} deps={[doc, breakpoint, pageId, frameHeight]} />)}
             {selectedBox && selectedNode ? (
               <>
                 <Outline box={selectedBox} className="border-2 border-brand-600" />
@@ -115,6 +119,17 @@ export function Canvas() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Another collaborator's selection on this page (outline + name tag in their colour). */
+function RemoteSelection({ frame, id, name, color, zoom, deps }: { frame: HTMLDivElement | null; id: string; name: string; color: string; zoom: number; deps: unknown[] }) {
+  const box = useNodeBox(frame, id, zoom, deps);
+  if (!box) return null;
+  return (
+    <div className="pointer-events-none absolute z-10" style={{ top: box.top, left: box.left, width: box.width, height: box.height, outline: `2px solid ${color}` }} data-testid="remote-selection">
+      <span className="absolute -top-5 left-0 rounded px-1.5 text-[11px] font-medium text-white" style={{ background: color }}>{name}</span>
     </div>
   );
 }

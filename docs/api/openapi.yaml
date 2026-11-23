@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: AI Studio Cloud — Platform API
-  version: 0.6.0
+  version: 0.7.0
   description: 'Phase 0–1 endpoints. Auth: Sanctum SPA session cookie + `X-XSRF-TOKEN`
     (obtain via `GET /sanctum/csrf-cookie`).
 
@@ -573,8 +573,9 @@ paths:
           description: Invalid/expired signature
   /templates:
     get:
-      security: []
-      summary: Published templates
+      summary: Published templates (?source=builtin|community, ?category, ?search);
+        includes author, license, version, installCount
+      parameters: []
       responses:
         '200':
           description: OK
@@ -1963,6 +1964,126 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/template-submissions:
+    post:
+      summary: 'Submit as community template {name, description, category, license:
+        free|personal, changelog?, confirmRights:true}'
+      parameters:
+      - &id016
+        name: project
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+  /organizations/{organization}/templates:
+    get:
+      summary: Organization's submissions and listings
+      parameters:
+      - name: organization
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /organizations/{organization}/templates/{id}/delist:
+    post:
+      summary: Author delists own template
+      parameters:
+      - name: organization
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /templates/{slug}/report:
+    post:
+      summary: Report a template {category, details}
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Created
+  /admin/template-submissions:
+    get:
+      summary: Moderation queue (?status)
+      parameters: []
+      responses:
+        '200':
+          description: OK
+  /admin/template-submissions/{id}:
+    get:
+      summary: Submission with sanitized document
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: '{decision: approve|reject, reason}'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /admin/templates/{id}/delist:
+    post:
+      summary: Delist {reason}
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/presence:
+    post:
+      summary: Heartbeat {pageId?, selectedId?} → {headRevision, participants[]}
+      parameters:
+      - *id016
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Leave
+      parameters:
+      - *id016
+      responses:
+        '200':
+          description: OK
+  /projects/{project}/export:
+    get:
+      summary: ZIP export (?source=draft|live, ?data=none|preview|production)
+      parameters:
+      - *id016
       responses:
         '200':
           description: OK

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.0] — 2026-11-23 — Phase 7
+### Added
+- Community template marketplace: submit from the publish dialog, sanitized snapshots, admin moderation with preview, versions, licenses, install with copied images, delisting and reports.
+- Live collaboration in the editor: collaborator avatars, their selections on the canvas, automatic pull of others' changes and automatic merge of conflicts.
+- Project export (ZIP): static website, data (CSV/JSON), MySQL schema with data, app definition, OpenAPI, README describing what works without the platform.
+- Security review for tenant custom code (decision: not enabled) with a guard test.
+### Changed
+- Concurrent edits no longer require clicking "merge"; the manual banner appears only when edits cannot be combined.
+
 ## [0.6.0] — 2026-11-22 — Phase 6
 ### Added
 - Billing (test mode): plans Free/Pro/Business, checkout via a sandbox provider, signed + idempotent webhooks, invoices with 7% VAT and tax-invoice numbers, trials, cancellation, dunning and data-preserving downgrade; billing page.

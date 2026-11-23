@@ -11,7 +11,7 @@ class Template extends Model
 {
     use HasUlids;
 
-    protected $fillable = ['slug', 'name', 'description', 'category', 'is_published', 'sort_order', 'current_version_id'];
+    protected $fillable = ['slug', 'name', 'description', 'category', 'is_published', 'sort_order', 'current_version_id', 'source', 'author_org_id', 'author_name', 'source_project_id', 'license', 'delisted_reason', 'install_count'];
 
     protected function casts(): array
     {

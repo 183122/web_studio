@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { createProject, inspector, login, register, waitSaved } from './helpers.ts';
 
-test('concurrent edits produce a conflict that can be merged without data loss', async ({ browser }) => {
+test('concurrent edits by two collaborators are combined without data loss', async ({ browser }) => {
   const a = await browser.newPage();
   const email = await register(a);
   const projectId = await createProject(a, 'แก้ไขพร้อมกัน', /Landing page/);
@@ -11,21 +11,20 @@ test('concurrent edits produce a conflict that can be merged without data loss',
   await b.goto(`/app/projects/${projectId}`);
   await expect(b.getByTestId('canvas-frame')).toBeVisible();
 
-  // A saves first.
+  // A saves first; B receives it live (no reload).
   await a.getByTestId('canvas-frame').locator('h1').first().click();
   await inspector(a).getByLabel('ข้อความ', { exact: true }).fill('แก้โดย A');
   await waitSaved(a);
+  await expect(b.getByTestId('canvas-frame').locator('h1').first()).toHaveText('แก้โดย A', { timeout: 15_000 });
 
-  // B edits a different component on a stale revision → conflict.
+  // B edits a different component; whether it is pulled first or merged after a conflict, nothing is lost.
   await b.getByTestId('canvas-frame').locator('h2').first().click();
   await inspector(b).getByLabel('ข้อความ', { exact: true }).fill('แก้โดย B');
-  await expect(b.getByRole('alert').filter({ hasText: 'มีผู้อื่นแก้ไข' })).toBeVisible({ timeout: 15_000 });
-  await b.getByRole('button', { name: 'รวมการแก้ไขของฉัน' }).click();
   await waitSaved(b);
   await expect(b.getByTestId('canvas-frame').locator('h1').first()).toHaveText('แก้โดย A');
-  await expect(b.getByTestId('canvas-frame').locator('h2').first()).toHaveText('แก้โดย B');
-
+  await expect(a.getByTestId('canvas-frame').locator('h2').first()).toHaveText('แก้โดย B', { timeout: 15_000 });
   await a.reload();
+  await expect(a.getByTestId('canvas-frame').locator('h1').first()).toHaveText('แก้โดย A');
   await expect(a.getByTestId('canvas-frame').locator('h2').first()).toHaveText('แก้โดย B');
 });
 

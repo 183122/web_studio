@@ -5,6 +5,9 @@ export interface SiteBootstrap {
   release: { version: number; hash: string };
   document: AppDefinition;
   path: string;
+  /** Static export: no platform backend; images are files under /_assets. */
+  static?: boolean;
+  assetFiles?: Record<string, string>;
 }
 
 /** The release document is embedded by the server as an inert JSON data block. */
@@ -80,7 +83,19 @@ export function siteHasAccounts(doc: AppDefinition): boolean {
   return doc.permissions.some((p) => p.rules.member.length > 0 || p.rules.admin.length > 0);
 }
 
-export function resolveAsset(ref: string): string | undefined {
+export function resolveAsset(ref: string, files?: Record<string, string>): string | undefined {
   const m = /^asset:([0-9A-Za-z]{26})$/.exec(ref);
-  return m ? `/_assets/${m[1]}` : undefined;
+  if (!m) return undefined;
+  if (files) return files[m[1]];
+  return `/_assets/${m[1]}`;
 }
+
+/** Static export: forms and tables need the platform; show a clear notice instead of failing. */
+export const staticDataHost: DataHost = {
+  async submit() {
+    return { ok: false, message: 'แบบฟอร์มนี้ใช้งานไม่ได้ในเว็บไซต์แบบ static (ต้องเผยแพร่บนแพลตฟอร์มหรือมีเซิร์ฟเวอร์ของตัวเอง)' };
+  },
+  async list() {
+    throw new Error('ข้อมูลในตารางไม่แสดงในเว็บไซต์แบบ static');
+  },
+};

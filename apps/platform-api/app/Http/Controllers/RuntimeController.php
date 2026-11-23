@@ -86,16 +86,23 @@ class RuntimeController extends Controller
 
     private function html(int $status, string $title, string $body, ?array $bootstrap, bool $noindex, string $description = '', string $lang = 'th'): Response
     {
+        return response(self::shell($title, $body, $bootstrap, $noindex, $description, $lang), $status, ['Content-Type' => 'text/html; charset=UTF-8', 'Content-Security-Policy' => self::CSP, 'Cache-Control' => 'no-cache']);
+    }
+
+    /** HTML document for a page (also used by the static export, which passes a CSP <meta>). */
+    public static function shell(string $title, string $body, ?array $bootstrap, bool $noindex, string $description = '', string $lang = 'th', bool $cspMeta = false): string
+    {
         $e = fn (string $s) => htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $assets = RuntimeAssets::entry();
         $head = '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
+            .($cspMeta ? '<meta http-equiv="Content-Security-Policy" content="'.$e(str_replace("; frame-ancestors 'self'", '', self::CSP)).'">' : '')
             .'<title>'.$e($title).'</title>'
             .($description !== '' ? '<meta name="description" content="'.$e($description).'">' : '')
             .($noindex ? '<meta name="robots" content="noindex">' : '');
         $data = '';
         if ($bootstrap !== null) {
             // JSON data block (not executed); HEX flags make "</script>" and similar inert.
-            $json = json_encode($bootstrap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+            $json = json_encode($bootstrap, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
             $data = '<script id="__SITE__" type="application/json">'.$json.'</script>';
             if ($assets) {
                 foreach ($assets['css'] as $css) {
@@ -106,9 +113,8 @@ class RuntimeController extends Controller
                 $body = '<noscript>runtime not built</noscript>';
             }
         }
-        $html = '<!doctype html><html lang="'.$e($lang).'"><head>'.$head.'</head><body><div id="root">'.$body.'</div>'.$data.'</body></html>';
 
-        return response($html, $status, ['Content-Type' => 'text/html; charset=UTF-8', 'Content-Security-Policy' => self::CSP, 'Cache-Control' => 'no-cache']);
+        return '<!doctype html><html lang="'.$e($lang).'"><head>'.$head.'</head><body><div id="root">'.$body.'</div>'.$data.'</body></html>';
     }
 
     /** Release assets: public, but only files referenced by the live release of this host. */

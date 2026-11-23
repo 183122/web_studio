@@ -11,14 +11,17 @@ use App\Http\Controllers\Api\V1\Auth\PrivacyController;
 use App\Http\Controllers\Api\V1\Auth\SecurityController;
 use App\Http\Controllers\Api\V1\BillingController;
 use App\Http\Controllers\Api\V1\DataController;
+use App\Http\Controllers\Api\V1\ExportController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\Integrations\DriveController;
 use App\Http\Controllers\Api\V1\Integrations\GoogleConnectionController;
 use App\Http\Controllers\Api\V1\Integrations\SheetSyncController;
 use App\Http\Controllers\Api\V1\Integrations\WebhookController;
+use App\Http\Controllers\Api\V1\MarketplaceController;
 use App\Http\Controllers\Api\V1\MetricsController;
 use App\Http\Controllers\Api\V1\PlatformAdminController;
 use App\Http\Controllers\Api\V1\PlatformSettingsController;
+use App\Http\Controllers\Api\V1\PresenceController;
 use App\Http\Controllers\Api\V1\PreviewRuntimeController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PublishingController;
@@ -163,8 +166,25 @@ Route::prefix('v1')->group(function () {
             Route::post('organizations/{organization}/suspension', [PlatformAdminController::class, 'suspend']);
             Route::post('organizations/{organization}/support-requests', [PlatformAdminController::class, 'requestSupport']);
             Route::get('abuse-reports', [PlatformAdminController::class, 'abuseReports']);
+            Route::get('template-submissions', [MarketplaceController::class, 'queue']);
+            Route::get('template-submissions/{id}', [MarketplaceController::class, 'submission']);
+            Route::post('template-submissions/{id}', [MarketplaceController::class, 'decide']);
+            Route::post('templates/{id}/delist', [MarketplaceController::class, 'delist']);
             Route::post('abuse-reports/{id}', [PlatformAdminController::class, 'resolveAbuse']);
         });
+
+        // ---- Code export (M29) ----
+        Route::get('projects/{project}/export', ExportController::class)->middleware('throttle:5,1');
+
+        // ---- Collaboration presence ----
+        Route::post('projects/{project}/presence', [PresenceController::class, 'heartbeat'])->middleware('throttle:120,1');
+        Route::delete('projects/{project}/presence', [PresenceController::class, 'leave']);
+
+        // ---- Template marketplace (M12) ----
+        Route::post('projects/{project}/template-submissions', [MarketplaceController::class, 'submit'])->middleware('throttle:10,1');
+        Route::get('organizations/{organization}/templates', [MarketplaceController::class, 'mine']);
+        Route::post('organizations/{organization}/templates/{id}/delist', [MarketplaceController::class, 'delistOwn']);
+        Route::post('templates/{slug}/report', [MarketplaceController::class, 'report'])->middleware('throttle:5,1');
 
         // ---- Team ----
         Route::get('workspaces/{workspace}/members', [TeamController::class, 'members']);

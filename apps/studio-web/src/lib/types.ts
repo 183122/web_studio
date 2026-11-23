@@ -45,6 +45,10 @@ export interface Template {
   description: string;
   category: string;
   version: number | null;
+  source: 'builtin' | 'community';
+  license: 'free' | 'personal';
+  authorName: string | null;
+  installCount: number;
 }
 
 export interface Asset {

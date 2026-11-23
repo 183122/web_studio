@@ -69,6 +69,8 @@ export interface EditorState {
   saveFailed: (state: 'retrying' | 'conflict' | 'error' | 'readonly', message: string) => void;
   /** Replace local state with a fresh server head, optionally re-applying unsaved commands on top. */
   rebase: (doc: AppDefinition, revision: number, reapply: boolean) => { ok: boolean; message?: string };
+  /** Live collaboration: take a newer server version when there are no local edits; keeps page/selection. */
+  applyRemote: (doc: AppDefinition, revision: number) => boolean;
 }
 
 const HISTORY_LIMIT = 200;
@@ -208,6 +210,22 @@ export const useEditor = create<EditorState>((set, get) => ({
     }),
 
   saveFailed: (state, message) => set({ saveState: state, saveMessage: message }),
+
+  applyRemote: (doc, revision) => {
+    const s = get();
+    if (revision <= s.serverRevision || s.pending.length > 0 || s.inflight) return false;
+    set({
+      doc,
+      serverRevision: revision,
+      pageId: doc.pages.some((p) => p.id === s.pageId) ? s.pageId : doc.settings.homePageId,
+      selectedId: s.selectedId && doc.components[s.selectedId] ? s.selectedId : null,
+      hoveredId: null,
+      // Local undo history refers to an older document; keep it only while it still applies.
+      past: [],
+      future: [],
+    });
+    return true;
+  },
 
   rebase: (doc, revision, reapply) => {
     const unsaved = [...(get().inflight ?? []), ...get().pending];

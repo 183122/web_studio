@@ -2,7 +2,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 import type { Breakpoint } from '@studio/component-registry';
 import { PageRenderer, findPageByPath } from '@studio/renderer';
 import { AccountBar } from './AccountBar.tsx';
-import { call, liveDataHost, resolveAsset, siteHasAccounts, type AppUser, type SiteBootstrap } from './site.ts';
+import { call, liveDataHost, resolveAsset, siteHasAccounts, staticDataHost, type AppUser, type SiteBootstrap } from './site.ts';
 
 const queries: [Breakpoint, string][] = [['mobile', '(max-width: 600px)'], ['tablet', '(max-width: 1024px)']];
 
@@ -20,7 +20,7 @@ function subscribe(cb: () => void) {
 export function App({ site }: { site: SiteBootstrap }) {
   const { document: doc, path } = site;
   const breakpoint = useSyncExternalStore(subscribe, currentBreakpoint, () => 'base' as Breakpoint);
-  const accounts = siteHasAccounts(doc);
+  const accounts = !site.static && siteHasAccounts(doc);
   const [user, setUser] = useState<AppUser | null | undefined>(accounts ? undefined : null);
 
   useEffect(() => {
@@ -40,8 +40,8 @@ export function App({ site }: { site: SiteBootstrap }) {
           pageId={pageId}
           breakpoint={breakpoint}
           mode="live"
-          resolveAsset={resolveAsset}
-          dataHost={liveDataHost}
+          resolveAsset={(ref) => resolveAsset(ref, site.assetFiles)}
+          dataHost={site.static ? staticDataHost : liveDataHost}
         />
       ) : (
         <main style={{ fontFamily: 'system-ui, sans-serif', padding: '4rem 1rem', textAlign: 'center' }}>

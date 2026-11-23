@@ -20,6 +20,7 @@ import { canvasDropTarget, layerDropTarget, moveIndex, type DragData } from './d
 import { canvasRef, useDragState } from './dragState.ts';
 import { useEditor, type PanelId } from './store.ts';
 import { useAutosave } from './useAutosave.ts';
+import { useCollab, useCollaboration } from './collab.ts';
 import { copySelected, duplicateSelected, moveSelectedBy, paste, removeSelected, reportRejected, selectParent } from './actions.ts';
 import { ComponentsPanel } from './panels/ComponentsPanel.tsx';
 import { LayersPanel } from './panels/LayersPanel.tsx';
@@ -87,6 +88,7 @@ function EditorShell({ projectName, archived }: { projectName: string; archived:
     if (aiPrompt) setPanel('ai');
   }, [aiPrompt, setPanel]);
   const { flushNow } = useAutosave();
+  useCollaboration(useEditor((st) => st.projectId));
   const centerRef = useRef<HTMLDivElement>(null);
   const [centerWidth, setCenterWidth] = useState(0);
   useFitZoom(centerWidth);
@@ -193,6 +195,7 @@ function TopBar({ projectName }: { projectName: string }) {
         </ol>
       </nav>
       <SaveIndicator />
+      <Collaborators />
       <div className="mx-auto flex items-center gap-1">
         <Button variant="ghost" size="icon" disabled={!canUndo} onClick={() => useEditor.getState().undo()} aria-label="เลิกทำ (Ctrl+Z)" title="เลิกทำ (Ctrl+Z)"><Undo2 className="h-4 w-4" /></Button>
         <Button variant="ghost" size="icon" disabled={!canRedo} onClick={() => useEditor.getState().redo()} aria-label="ทำซ้ำ (Ctrl+Shift+Z)" title="ทำซ้ำ (Ctrl+Shift+Z)"><Redo2 className="h-4 w-4" /></Button>
@@ -391,4 +394,25 @@ function useDndController() {
       start.current = null;
     },
   };
+}
+
+function Collaborators() {
+  const participants = useCollab((s) => s.participants);
+  const others = participants.filter((p) => !p.me);
+  const doc = useEditor((s) => s.doc);
+  if (others.length === 0) return null;
+  return (
+    <ul className="flex -space-x-2" aria-label="ผู้ที่กำลังแก้ไขอยู่ด้วย" data-testid="collaborators">
+      {others.slice(0, 5).map((p) => {
+        const page = doc?.pages.find((pg) => pg.id === p.pageId);
+        return (
+          <li key={p.userId} title={`${p.name}${page ? ` · ${page.name}` : ''}${p.canEdit ? '' : ' (ดูอย่างเดียว)'}`}
+            className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white text-xs font-semibold text-white dark:border-navy-900" style={{ background: p.color }}>
+            <span aria-hidden>{p.name.slice(0, 1)}</span><span className="sr-only">{p.name}</span>
+          </li>
+        );
+      })}
+      {others.length > 5 ? <li className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-xs">+{others.length - 5}</li> : null}
+    </ul>
+  );
 }

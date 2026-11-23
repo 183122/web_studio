@@ -11,5 +11,10 @@ class TemplateVersion extends Model
 
     public const UPDATED_AT = null;
 
-    protected $fillable = ['template_id', 'version', 'document', 'content_hash'];
+    protected $fillable = ['template_id', 'version', 'document', 'content_hash', 'assets', 'changelog'];
+
+    protected function casts(): array
+    {
+        return ['assets' => 'array'];
+    }
 }

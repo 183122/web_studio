@@ -65,8 +65,13 @@
 - [ ] Needs approval: real payment provider adapter (e.g. a Thai-compatible gateway) + live activation; accountant review of the tax-invoice format
 - [ ] Deferred: proration, card management UI, passkeys/WebAuthn, organization ownership transfer UI, DAST against staging, WORM export of the audit chain head, error-monitoring SaaS integration
 
-## Phase 7
-- [ ] Template marketplace (moderation, licensing), real-time collaboration, full code export, sandboxed custom code (after security review)
+## Phase 7 ✅ (2026-11-23)
+- [x] M12 template marketplace: sanitized submissions, moderation queue with preview, versions, licenses (free/personal), install with copied assets, delist, reports
+- [x] Real-time collaboration: presence avatars, remote selection outlines, live pull of remote changes, automatic conflict merge (polling transport)
+- [x] M29 code export: static site (runtime in static mode), CSV/JSON data, MySQL schema + inserts, app.json, OpenAPI, README labelled by capability
+- [x] Custom-code sandbox: security review completed — **feature not enabled** (`docs/security/custom-code-sandbox-review.md`), guard test added
+- [ ] Deferred: paid templates + author payouts; WebSocket/CRDT collaboration (same-field merges, cursors); generated server code in exports; custom-code prototype (Wasm, no network) behind a flag after external review
+- [ ] Still open from earlier phases: M30 analytics; verification against real Google/DNS/payment providers; production deployment (each needs approval)
 
 ## Dependency upgrades to evaluate
 - TypeScript 7 (native compiler), React Router 8, Vite 8, Vitest 5 — currently on the previous stable majors (ADR-0001).

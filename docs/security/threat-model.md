@@ -118,6 +118,18 @@ Tenant documents (app definitions, revisions), uploaded files, user accounts/ses
 | P-13 | Audit log tampering | hash chain over canonical snapshots, locked chain head, daily verify + metric | ✅ |
 | O-1 | Blind operations | request ids, readiness, metrics, JSON logs, runbooks | ✅ (alert wiring is deployment-specific) |
 
+### Phase 7 additions
+| # | Threat | Control | Status |
+|---|---|---|---|
+| M-1 | Malicious or infringing community templates | human moderation with rendered preview, rights confirmation, licenses, reports, delisting | ✅ `MarketplaceTest` |
+| M-2 | Data/PII leakage through templates | records never included; fixed-recipient e-mail actions removed; workflows disabled; files copied, not linked | ✅ |
+| M-3 | Template files escaping quotas or tenant prefixes | copied into installer's prefix with storage quota check; signed-URL access unchanged | ✅ |
+| CO-1 | Presence leaking project activity across tenants | presence requires project view; ids validated; no content stored | ✅ `CollaborationTest` |
+| CO-2 | Lost edits under concurrency | optimistic revisions + automatic rebase with validation; manual banner when unmergeable | ✅ E2E |
+| E-1 | Secrets/PII in exports | no keys/tokens/hashes; data opt-in per environment with PDPA notice; manage permission; audited; rate-limited | ✅ `ExportTest` |
+| E-2 | Injection via exported SQL/CSV/HTML | SQL string escaping, formula-safe CSV, inert JSON bootstrap + CSP meta | ✅ (SQL loaded into MySQL 8 in review) |
+| X-1 | Tenant code execution | not enabled; security review + guard test | ✅ `NoTenantCodeExecutionTest` |
+
 ## Residual risks / follow-ups
 - Production must set `SESSION_SECURE_COOKIE=true`, HTTPS, `TRUSTED_PROXIES`, and the CSP in `infra/docker/nginx.conf`.
 - Google: complete OAuth verification for the sensitive `spreadsheets` scope and run `docs/runbooks/google-oauth-review.md` against real Google before enabling for customers.

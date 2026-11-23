@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Domain\Marketplace\MarketplaceService;
 use App\Domain\Schema\DefinitionFactory;
 use App\Domain\Schema\DocumentCodec;
 use App\Models\Organization;
@@ -44,6 +45,10 @@ class ProjectService
                     throw ApiException::unprocessable('template_unavailable', 'เทมเพลตนี้ยังไม่พร้อมใช้งาน');
                 }
                 $doc = DefinitionFactory::fromTemplate(DocumentCodec::decode($version->document), $project->id, $name);
+                if ($template->source === 'community') {
+                    $doc = app(MarketplaceService::class)->materialize($version, $workspace, $user, $doc);
+                    $template->increment('install_count');
+                }
                 $this->definitions->initialize($project, $doc, 'template', $user, "สร้างจากเทมเพลต {$template->name}");
             } else {
                 $this->definitions->initialize($project, DefinitionFactory::blank($project->id, $name), 'blank', $user, 'สร้างโปรเจกต์');
@@ -52,7 +57,7 @@ class ProjectService
             return $project;
         });
 
-        $this->audit->record('project.created', $project, ['template' => $template?->slug]);
+        $this->audit->record('project.created', $project, ['template' => $template?->slug, 'license' => $template?->source === 'community' ? $template->license : null]);
 
         return $project;
     }

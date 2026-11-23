@@ -76,6 +76,8 @@ export function PublishDialog({ projectId, open, onOpenChange, unsaved }: { proj
           <ReleasesSection projectId={projectId} data={data} onDone={refresh} run={run} />
           <DomainsSection projectId={projectId} domains={data.domains} onDone={refresh} />
           <ShareLinks projectId={projectId} />
+          <ExportProject projectId={projectId} hasLive={!!data.live} />
+          <ShareAsTemplate projectId={projectId} />
         </div>
       ) : null}
     </Dialog>
@@ -269,6 +271,71 @@ function ShareLinks({ projectId }: { projectId: string }) {
           ))}
         </ul>
       ) : null}
+    </section>
+  );
+}
+
+const CATEGORIES: Record<string, string> = { business: 'ธุรกิจ', education: 'การศึกษา', event: 'งานอีเวนต์', shop: 'ร้านค้า', portfolio: 'ผลงาน', community: 'ชุมชน', other: 'อื่น ๆ' };
+
+/** M12: share this project as a community template (moderated; data and private e-mail addresses are removed). */
+function ShareAsTemplate({ projectId }: { projectId: string }) {
+  const [open, setOpen] = useState(false);
+  const [v, setV] = useState({ name: '', description: '', category: 'business', license: 'free', changelog: '' });
+  const [rights, setRights] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState('');
+  const submit = useMutation({
+    mutationFn: async () => (await api<Envelope<{ status: string; sanitization: { emailActions: number; workflows: number } }>>(`/projects/${projectId}/template-submissions`, { method: 'POST', body: { ...v, confirmRights: rights } })).data,
+    onSuccess: (d) => { setResult(`ส่งให้ทีมงานตรวจแล้ว${d.sanitization.emailActions ? ` (นำการส่งอีเมลไปยังที่อยู่คงที่ออก ${d.sanitization.emailActions} รายการ)` : ''} — จะแจ้งผลทางอีเมล`); setError(''); },
+    onError: (e) => setError(errorMessage(e)),
+  });
+  return (
+    <section aria-labelledby="tpl-h">
+      <h3 id="tpl-h" className="mb-2 font-semibold">แบ่งปันเป็นเทมเพลต</h3>
+      {!open ? (
+        <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>ส่งโปรเจกต์นี้เป็นเทมเพลตชุมชน</Button>
+      ) : result ? <p role="status" className="text-emerald-700">{result}</p> : (
+        <form className="grid gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700" onSubmit={(e) => { e.preventDefault(); submit.mutate(); }}>
+          <p className="text-slate-500">ทีมงานจะตรวจก่อนเผยแพร่ · ไม่รวมข้อมูลในตาราง · workflow ถูกปิดไว้ให้ผู้ใช้เปิดเอง · การส่งอีเมลไปยังที่อยู่คงที่จะถูกนำออก</p>
+          <label><span className="field-label">ชื่อเทมเพลต</span><input className="field-input" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} /></label>
+          <label><span className="field-label">คำอธิบาย</span><textarea className="field-input" rows={2} value={v.description} onChange={(e) => setV({ ...v, description: e.target.value })} /></label>
+          <div className="flex flex-wrap gap-2">
+            <label><span className="field-label">หมวดหมู่</span><select className="field-input w-auto" value={v.category} onChange={(e) => setV({ ...v, category: e.target.value })}>{Object.entries(CATEGORIES).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
+            <label><span className="field-label">สัญญาอนุญาต</span><select className="field-input w-auto" value={v.license} onChange={(e) => setV({ ...v, license: e.target.value })}>
+              <option value="free">ใช้ได้ทุกวัตถุประสงค์ (รวมเชิงพาณิชย์)</option><option value="personal">ใช้ส่วนตัว/ไม่แสวงหากำไรเท่านั้น</option></select></label>
+          </div>
+          <label><span className="field-label">มีอะไรใหม่ (ไม่บังคับ)</span><input className="field-input" value={v.changelog} onChange={(e) => setV({ ...v, changelog: e.target.value })} /></label>
+          <label className="flex items-start gap-2"><input type="checkbox" className="mt-1" checked={rights} onChange={(e) => setRights(e.target.checked)} />
+            <span>ฉันมีสิทธิ์ในเนื้อหาและรูปภาพทั้งหมด และยินยอมให้ผู้อื่นใช้ตามสัญญาอนุญาตที่เลือก</span></label>
+          {error ? <p role="alert" className="text-red-700">{error}</p> : null}
+          <div><Button type="submit" size="sm" loading={submit.isPending} disabled={!rights || v.name.length < 3 || v.description.length < 10}>ส่งให้ตรวจ</Button></div>
+        </form>
+      )}
+    </section>
+  );
+}
+
+/** M29: download the project (static site + data + schema + definition) as a ZIP. */
+function ExportProject({ projectId, hasLive }: { projectId: string; hasLive: boolean }) {
+  const [source, setSource] = useState<'draft' | 'live'>('draft');
+  const [dataEnv, setDataEnv] = useState<'none' | 'preview' | 'production'>('none');
+  return (
+    <section aria-labelledby="export-h">
+      <h3 id="export-h" className="mb-2 font-semibold">ส่งออกโค้ดและข้อมูล</h3>
+      <p className="mb-2 text-slate-500">ไฟล์ ZIP: เว็บไซต์แบบ static (นำไปวางบนโฮสต์ใดก็ได้), ข้อมูล CSV/JSON, schema.sql สำหรับ MySQL, app.json และ README ที่บอกว่าส่วนใดใช้ได้โดยไม่ต้องใช้แพลตฟอร์ม (ฟอร์ม การเข้าสู่ระบบ และ workflow ต้องใช้เซิร์ฟเวอร์)</p>
+      <div className="flex flex-wrap items-end gap-2">
+        <label><span className="field-label">เนื้อหา</span>
+          <select className="field-input w-auto" value={source} onChange={(e) => setSource(e.target.value as 'draft' | 'live')}>
+            <option value="draft">ฉบับร่างล่าสุด</option>{hasLive ? <option value="live">เวอร์ชันที่เผยแพร่อยู่</option> : null}
+          </select></label>
+        <label><span className="field-label">ข้อมูลในตาราง</span>
+          <select className="field-input w-auto" value={dataEnv} onChange={(e) => setDataEnv(e.target.value as 'none' | 'preview' | 'production')}>
+            <option value="none">ไม่รวมข้อมูล</option><option value="preview">ข้อมูลทดลอง</option>{hasLive ? <option value="production">ข้อมูลจริง</option> : null}
+          </select></label>
+        <a className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-300 px-4 font-medium hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-navy-800"
+          href={`/api/v1/projects/${projectId}/export?source=${source}&data=${dataEnv}`} download>ดาวน์โหลด ZIP</a>
+      </div>
+      {dataEnv === 'production' ? <p className="mt-1 text-xs text-amber-700">ไฟล์จะมีข้อมูลส่วนบุคคลของผู้ใช้เว็บไซต์ — เก็บรักษาตาม PDPA</p> : null}
     </section>
   );
 }

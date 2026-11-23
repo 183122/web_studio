@@ -18,6 +18,10 @@ class TemplateResource extends JsonResource
             'description' => $this->description,
             'category' => $this->category,
             'version' => $this->currentVersion?->version,
+            'source' => $this->source,
+            'license' => $this->license,
+            'authorName' => $this->source === 'community' ? $this->author_name : null,
+            'installCount' => $this->install_count,
         ];
     }
 }
